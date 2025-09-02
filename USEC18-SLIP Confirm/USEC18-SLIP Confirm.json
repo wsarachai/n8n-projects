@@ -1,0 +1,155 @@
+{
+  "name": "USEC18-SLIP Confirm",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -48
+      ],
+      "id": "b61312aa-8237-4ad8-b034-201d7c13c7a7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1jEd0ChOD-0tMyggqw9tK-9bT8a1jLQKQ",
+            "mode": "id"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -112,
+        -48
+      ],
+      "id": "933e3a05-a9bc-4c1e-8dee-4ea2911b2547",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        96,
+        -48
+      ],
+      "id": "e34e6448-03ce-4128-87c3-f095dec7a466",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.slipok.com/api/line/apikey/46109",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        -48
+      ],
+      "id": "15f538e5-7461-4f63-8d2b-2011bb67158a",
+      "name": "Check SLIP",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XyWLFG6zDsQWHvWt",
+          "name": "SLIPOK Header Auth"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Check SLIP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "33ccce7a-dd27-4326-b10f-c3a0b855b788",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "BJiLNUNTmuni4WKF",
+  "tags": []
+}

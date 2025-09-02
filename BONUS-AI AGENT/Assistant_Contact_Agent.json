@@ -1,0 +1,407 @@
+{
+  "name": "Assistant-Contact Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -600,
+        400
+      ],
+      "id": "fa8a1276-2940-4cca-9fae-87f477c2e94c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "nztRNwxSDp8q9im9",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query || $json.chatInput }}",
+        "options": {
+          "systemMessage": "=# 🧠 บทบาทของคุณ: AI ผู้ช่วยจัดการข้อมูลรายชื่อผู้ติดต่อ (Contact Management Agent)\n\nคุณคือ AI Agent ที่รับหน้าที่ดูแลและจัดการรายชื่อผู้ติดต่อให้ผู้ใช้อย่างถูกต้อง ปลอดภัย และเป็นระบบ\nคุณสามารถใช้ **2 เครื่องมือหลัก** ด้านล่างนี้เพื่อตอบสนองคำสั่งจากผู้ใช้\n\n---\n\n## 🔧 เครื่องมือที่คุณใช้ได้\n\n1. **`Get Contacts`**\n\n   * ใช้เพื่อค้นหา/ตรวจสอบรายชื่อผู้ติดต่อที่มีอยู่ในระบบ\n   * ค้นหาจากชื่อ อีเมล หรือเบอร์โทรได้\n\n2. **`Add Contact`**\n\n   * ใช้สำหรับเพิ่มข้อมูลรายชื่อใหม่\n\n3. **`Update Contact`**\n\n   * ใช้สำหรับแก้ไขข้อมูลของรายชื่อเดิม\n\n---\n\n## 📇 โครงสร้างข้อมูลของรายชื่อผู้ติดต่อ\n\nผู้ติดต่อ 1 คน ประกอบด้วย:\n\n* **ชื่อ (Name)**\n* **อีเมล (Email)**\n* **เบอร์โทรศัพท์ (Phone)**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -260,
+        120
+      ],
+      "id": "73c4036d-df14-490d-b924-32196acfe7f4",
+      "name": "Contact Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        40
+      ],
+      "id": "872d5324-6c91-4b47-9adf-a8acdd1e14fd",
+      "name": "Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f360190-a717-4a93-8336-d03ea65975d5",
+              "name": "response",
+              "value": "An error occurred. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        220
+      ],
+      "id": "b0fcdc04-0770-4b01-8c1b-e44c6a543621",
+      "name": "Try Again"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -540,
+        -60
+      ],
+      "id": "137e6bab-09d2-473f-8e19-9040bdf416aa",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -160,
+        400
+      ],
+      "id": "fe653b85-4b19-4b64-bae2-b480bc3899ab",
+      "name": "Get Contacts",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "b4yYTruZSaZ9ezNU",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ชื่อผู้ติดต่อ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('_____________', `ชื่อผู้ติดต่อ`, 'string') }}",
+            "E-Mail": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('E-Mail', `อีเมล์`, 'string') }}",
+            "หมายเลขโทรศัพท์": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('_______________', `เบอร์โทรศัพท์`, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ชื่อผู้ติดต่อ",
+              "displayName": "ชื่อผู้ติดต่อ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "หมายเลขโทรศัพท์",
+              "displayName": "หมายเลขโทรศัพท์",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        0,
+        400
+      ],
+      "id": "ec46cae7-9b1d-447e-89e5-af08cc9560d8",
+      "name": "Add Contact",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "b4yYTruZSaZ9ezNU",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Update row in sheet in Google Sheets",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tAgPbpNs5uzLx5fj6bkUMl2nYU5JgnMeV-pC7OE--XE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ชื่อผู้ติดต่อ": "={{ $fromAI('name', `ชื่อผู้ติดต่อที่ต้องการแก้ไข`, 'string') }}",
+            "E-Mail": "={{ $fromAI('E-Mail', `E-Mail ใหม่ที่ปรับแล้ว`, 'string') }}",
+            "หมายเลขโทรศัพท์": "={{ $fromAI('telephone', `เบอร์โทรใหม่ที่ปรับแล้ว`, 'string') }}"
+          },
+          "matchingColumns": [
+            "ชื่อผู้ติดต่อ"
+          ],
+          "schema": [
+            {
+              "id": "ชื่อผู้ติดต่อ",
+              "displayName": "ชื่อผู้ติดต่อ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "หมายเลขโทรศัพท์",
+              "displayName": "หมายเลขโทรศัพท์",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        160,
+        400
+      ],
+      "id": "a4f4ae5d-9a43-45f3-bdf2-bb2ab8f1c8bd",
+      "name": "Update Contact",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "b4yYTruZSaZ9ezNU",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -540,
+        120
+      ],
+      "id": "a0a79115-a9b7-4fe5-996a-4a40377c051f",
+      "name": "When chat message received",
+      "webhookId": "e79ded84-355a-49d1-ad38-42abff22fc29"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Agent": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Contact": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Contact": {
+      "ai_tool": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Contact Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Try Again": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "jTr4iZVU2L5QEaBY",
+    "timezone": "Asia/Bangkok"
+  },
+  "versionId": "3cbfea22-6f05-4dcc-83b7-cfeaf4189682",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b978f173fca38aeb96a271d98f47cb690ce1bf4049db933df056bd7e786e8d57"
+  },
+  "id": "iFTzc9oaCsZHB80w",
+  "tags": []
+}

@@ -1,0 +1,2133 @@
+{
+  "name": "USEC10-Write Content",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1880,
+        400
+      ],
+      "id": "73cf340e-5d86-4ed2-8031-ee4deff1b60f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.7-sonnet",
+        "options": {}
+      },
+      "id": "11365bc8-a5c0-4449-93c4-bfec45203f8f",
+      "name": "OpenRouter Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        -1100,
+        720
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"ThreePartArticle\",\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"language\", \"target\", \"topic\", \"article\"],\n  \"properties\": {\n    \"language\": {\n      \"type\": \"string\",\n      \"description\": \"ภาษาที่ใช้เขียนบทความ เช่น Thai หรือ English\"\n    },\n    \"target\": {\n      \"type\": \"string\",\n      \"description\": \"กลุ่มเป้าหมายของบทความ\"\n    },\n    \"topic\": {\n      \"type\": \"string\",\n      \"description\": \"หัวข้อหลักของบทความ\"\n    },\n    \"article\": {\n      \"type\": \"object\",\n      \"required\": [\"part1\", \"part2\", \"part3\"],\n      \"additionalProperties\": false,\n      \"properties\": {\n        \"part1\": {\n          \"type\": \"object\",\n          \"required\": [\"title\", \"content\"],\n          \"additionalProperties\": false,\n          \"properties\": {\n            \"title\": {\n              \"type\": \"string\",\n              \"description\": \"หัวข้อช่วงที่ 1\"\n            },\n            \"content\": {\n              \"type\": \"string\",\n              \"description\": \"เนื้อหาช่วงที่ 1\"\n            }\n          }\n        },\n        \"part2\": {\n          \"type\": \"object\",\n          \"required\": [\"title\", \"content\"],\n          \"additionalProperties\": false,\n          \"properties\": {\n            \"title\": {\n              \"type\": \"string\",\n              \"description\": \"หัวข้อช่วงที่ 2\"\n            },\n            \"content\": {\n              \"type\": \"string\",\n              \"description\": \"เนื้อหาช่วงที่ 2\"\n            }\n          }\n        },\n        \"part3\": {\n          \"type\": \"object\",\n          \"required\": [\"title\", \"content\"],\n          \"additionalProperties\": false,\n          \"properties\": {\n            \"title\": {\n              \"type\": \"string\",\n              \"description\": \"หัวข้อช่วงที่ 3\"\n            },\n            \"content\": {\n              \"type\": \"string\",\n              \"description\": \"เนื้อหาช่วงที่ 3\"\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+      },
+      "id": "65d19c82-b5b3-4e4e-997e-8ad321596dbf",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        -540,
+        720
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2af5fca6-5eb6-4054-ba87-14a06953d1d5",
+              "name": "sheet_content_id",
+              "value": "17w5Y5twyAlhIafejCMvYh0QSwsc87qlm1ykk8IFDmik",
+              "type": "string"
+            },
+            {
+              "id": "8a2593f3-3fc7-4299-905e-5622dee4dd1f",
+              "name": "folder_image_id",
+              "value": "10ZopAUxv5isrebaqENTL-W3VY5Nxo1GQ",
+              "type": "string"
+            },
+            {
+              "id": "f7455e45-b213-4bb8-886e-b6842e7ed350",
+              "name": "sheet_content_id_sheet1_gid",
+              "value": "1411231929",
+              "type": "string"
+            },
+            {
+              "id": "31b69da8-bc71-4180-b605-17ce57d3001f",
+              "name": "sheet_content_id_sheet2_gid",
+              "value": "1032085959",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1660,
+        400
+      ],
+      "id": "a5908ec2-b626-4ef6-ba71-ffa41cda3ff4",
+      "name": "Set Config"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ข้อมูลประกอบการเขียนบทความ:\n\n## Topic:{{ $('Read Topic List').item.json.Topic }}\n## Target: {{ $('Read Topic List').item.json.Target }}\n## Language: {{ $('Read Topic List').item.json.Language }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=บทบาทของคุณคือ \"นักเขียนบทความมืออาชีพเพศชาย\" ที่สามารถสื่อสารเนื้อหาด้วยภาษาที่เป็นมิตร เข้าใจง่าย และสร้างความน่าสนใจให้กับผู้อ่านทั่วไปได้อย่างมีประสิทธิภาพ\n\nคุณจะได้รับข้อมูล 4 ส่วนจากผู้ใช้ดังนี้:\n\n- Topic: หัวข้อหรือประเด็นหลักที่ต้องการให้เขียน\n- Information: ข้อมูลประกอบหรือเนื้อหาที่เกี่ยวข้องกับหัวข้อนั้น\n- Target: กลุ่มผู้อ่านเป้าหมาย\n- Language: ภาษาที่ต้องการให้เขียนบทความ (เช่น Thai, English)\n\n**ภารกิจของคุณ:**\n\n1. ต้องค้นหาข้อมูลจากเครื่องมือ \"Idea Search\" Tool ก่อนเขียนบทความเสมอทุกครั้ง เพื่อนำข้อมูลมาใช้วิเคราะห์และสร้างสรรค์บทความ\n2. เขียนบทความโดยอิงจากข้อมูลทั้งหมดที่ได้รับจากการค้นหา เพื่อให้มั่นใจว่าข้อมูลมีความอัพเดตและทันสมัย\n3. ใช้ภาษาที่เป็นมิตร เข้าใจง่าย เหมาะสมกับกลุ่มผู้อ่านเป้าหมาย\n4. จำลองผู้เขียนเป็น “ผู้ชาย” ที่มีน้ำเสียงจริงใจ เป็นกันเอง แต่ยังคงน่าเชื่อถือ\n5. แบ่งบทความออกเป็น **3 ช่วง** โดยแต่ละช่วงต้องมี:\n   - **หัวข้อย่อย (title)** ที่ดึงดูดความสนใจ\n   - **เนื้อหา (content)** ที่ต่อเนื่องจากช่วงก่อน และไม่ซ้ำซ้อน\n6. ห้ามสรุปบทความรวบรัด หรือทิ้งช่วงให้ขาดตอน\n7. ห้ามใส่คำอธิบายอื่นใดนอกเหนือจาก JSON ที่กำหนด\n\n**กรุณาส่งผลลัพธ์ในรูปแบบ JSON ตามโครงสร้างที่ถูกต้องทุกครั้งต่อไปนี้:**\n\n{\n  \"language\": \"ค่าจาก input\",\n  \"target\": \"ค่าจาก input\",\n  \"topic\": \"ค่าจาก input\",\n  \"article\": {\n    \"part1\": {\n      \"title\": \"หัวข้อช่วงที่ 1\",\n      \"content\": \"เนื้อหาช่วงที่ 1\"\n    },\n    \"part2\": {\n      \"title\": \"หัวข้อช่วงที่ 2\",\n      \"content\": \"เนื้อหาช่วงที่ 2\"\n    },\n    \"part3\": {\n      \"title\": \"หัวข้อช่วงที่ 3\",\n      \"content\": \"เนื้อหาช่วงที่ 3\"\n    }\n  }\n}\n\n**ข้อสำคัญเพิ่มเติม:**\n\n* ห้ามเขียนเนื้อหานอกเหนือจากที่กำหนดใน JSON\n* ภาษาที่ใช้ต้องตรงกับค่าที่ระบุใน field `language` เสมอ\n* บทความต้องให้ความรู้ หรือแง่มุมที่น่าสนใจตามกลุ่มเป้าหมาย\n\n---\n\n## 🧪 ตัวอย่าง Output ที่ถูกต้อง:\n\n```json\n{\n  \"language\": \"Thai\",\n  \"target\": \"เจ้าของร้านค้าออนไลน์มือใหม่\",\n  \"topic\": \"เริ่มต้นทำการตลาดด้วยตัวเอง\",\n  \"article\": {\n    \"part1\": {\n      \"title\": \"เข้าใจลูกค้าของคุณให้ชัดก่อนเริ่มต้น\",\n      \"content\": \"ก่อนจะวางแผนทำการตลาด เราต้องรู้ก่อนว่าลูกค้าของเราคือใคร พวกเขาชอบอะไร และเจอเราจากที่ไหน...\"\n    },\n    \"part2\": {\n      \"title\": \"ใช้โซเชียลมีเดียให้เป็นอาวุธหลัก\",\n      \"content\": \"เมื่อเข้าใจกลุ่มเป้าหมายแล้ว ขั้นต่อไปคือการสื่อสารผ่านช่องทางที่พวกเขาใช้งาน เช่น Facebook, Instagram หรือ TikTok...\"\n    },\n    \"part3\": {\n      \"title\": \"อย่าลืมวัดผล และปรับกลยุทธ์ให้เหมาะ\",\n      \"content\": \"การตลาดที่ดีต้องวัดผลได้ ลองใช้เครื่องมืออย่าง Meta Pixel, Google Analytics หรือแม้แต่ยอดขายรายวันมาเป็นตัวชี้วัด...\"\n    }\n  }\n}\n````"
+        }
+      },
+      "id": "ac8c9567-a284-4910-8805-adaaaf6a02b1",
+      "name": "Content Writer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -1040,
+        400
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.article",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        400
+      ],
+      "id": "04059991-7e90-4a3a-9454-6d82874312d9",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -300,
+        400
+      ],
+      "id": "93bf2e7e-93e0-4bd5-8259-afd56268779f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        1320
+      ],
+      "id": "6d05215d-b1ae-4832-bda6-a22af19fcb63"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        720
+      ],
+      "id": "43d6d2d2-51ee-4b9e-ba3a-b2c128046dbf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        580,
+        400
+      ],
+      "id": "0139c8c0-a030-46b8-bc5a-f8cda5436546",
+      "name": "Wait",
+      "webhookId": "945a18ef-562c-4c43-9f28-b4585965bba0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f9f32fa3-4935-49c4-98e4-d9005c03bea0",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        400
+      ],
+      "id": "c0265996-1f43-42ff-a2cf-a1da20225163",
+      "name": "Check Completed"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/flux/requests/{{ $('Generate Image').item.json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        1040
+      ],
+      "id": "fd031c8f-188c-4834-8e54-3b1e99581e41",
+      "name": "Get Image URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        1040
+      ],
+      "id": "c58cf9e6-4a18-4c31-acef-cc06ec3b7854",
+      "name": "Download Image"
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').item.json.folder_image_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        860,
+        1040
+      ],
+      "id": "8ec30681-35c8-41cc-bb92-b16a733759ef",
+      "name": "Upload To Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        40,
+        80
+      ],
+      "id": "eee19296-d122-4186-a5e8-9550e15b9b44",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').first().json.sheet_content_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1032085959,
+          "mode": "list",
+          "cachedResultName": "Generated Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17w5Y5twyAlhIafejCMvYh0QSwsc87qlm1ykk8IFDmik/edit#gid=1032085959"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Read Topic List').first().json.Topic }}",
+            "Content Part 1": "={{ $json.data[0].content }}",
+            "Image Part 1": "={{ $json.data[0].image_url }}",
+            "Vedeo Part 1": "={{ $json.data[0].video_url }}",
+            "Content Part 2": "={{ $json.data[1].content }}",
+            "Image Part 2": "={{ $json.data[1].image_url }}",
+            "Video Part 2": "={{ $json.data[1].video_url }}",
+            "Content Part 3": "={{ $json.data[2].content }}",
+            "Image Part 3": "={{ $json.data[2].image_url }}",
+            "Video Part 3": "={{ $json.data[2].video_url }}",
+            "Generation Date": "={{ $now }}",
+            "row_number": "={{ $('Read Topic List').first().json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content Part 1",
+              "displayName": "Content Part 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image Part 1",
+              "displayName": "Image Part 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Vedeo Part 1",
+              "displayName": "Vedeo Part 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content Part 2",
+              "displayName": "Content Part 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image Part 2",
+              "displayName": "Image Part 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video Part 2",
+              "displayName": "Video Part 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content Part 3",
+              "displayName": "Content Part 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image Part 3",
+              "displayName": "Image Part 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video Part 3",
+              "displayName": "Video Part 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generation Date",
+              "displayName": "Generation Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        380,
+        80
+      ],
+      "id": "30a91ddd-9db5-403a-8ca1-df34571859fc",
+      "name": "Update Content To Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').first().json.sheet_content_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Set Config').first().json.sheet_content_id_sheet1_gid}}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Read Topic List').first().json.row_number }}",
+            "Status": "Completed"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Target",
+              "displayName": "Target",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        700,
+        80
+      ],
+      "id": "b81b93bf-623b-41b2-89a2-5e049b157327",
+      "name": "Update Content Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 1.เริ่มต้น Workflow ",
+        "height": 280,
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1960,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "d2018705-d62e-4449-8cba-5c8fe8458917",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### 2.ดึงรายการหัวข้อที่ยังไม่เสร็จออกมา",
+        "height": 280,
+        "width": 220,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1440,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "bc5af652-fed3-4c6b-b95c-c14f408cbe53",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheet_content_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json.sheet_content_id_sheet1_gid}}",
+          "mode": "id"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1380,
+        400
+      ],
+      "id": "c1c24540-cb99-4066-af60-bb410e4e3a67",
+      "name": "Read Topic List",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 3.ส่งข้อมูลทั้งหมดเพื่อให้ AI ช่วยเขียนบทความ พร้อมแบ่งตอนออกเป็น 3 ช่วง",
+        "height": 280,
+        "width": 800,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "cf6102c7-7243-405d-9870-a6c9b4d3eb22",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "### AI Model",
+        "height": 260,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "2b4b4054-6640-4108-ab2c-5ba20f88c45f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### Structured Output",
+        "height": 260,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -600,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "85bbc223-dec7-4ed0-92a5-2bc7f6805bad",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "### 4.เขียน Prompt สร้างรูปภาพประกอบเนื้อหา",
+        "height": 280,
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "fc7d6c7d-9862-4e8a-8a0b-c58bf8e11309",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "### 5.กระบวนการสร้างรูปประกอบเนื้อหา",
+        "height": 280,
+        "width": 740,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "d35b8caa-8485-4e85-a992-5333eedfd159",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "### 6.ตรวจสอบว่ารูปภาพสร้างเสร็จสมบูรณ์หรือยัง ?",
+        "height": 280,
+        "width": 220,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "a11ace90-36c0-488d-aa0e-cf5c26160aaf",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "### 10.นำรูปและวิดีโอขึ้นไปจัดเก็บไว้ที่ Google Drive",
+        "height": 500,
+        "width": 1000,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        960
+      ],
+      "typeVersion": 1,
+      "id": "404ac639-4856-461e-ab63-c7169ecbeb02",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "### AI Model",
+        "height": 280,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "64a0e1bd-4d0c-4ef0-b228-854f6f6d2192",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "### 11.กระบวนการสุดท้ายคือการบันทึก LOG และปรับสถานะ",
+        "height": 280,
+        "width": 1120,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "89eff4f6-e97f-45ed-a445-8340a9f28bff",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/flux/schnell",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"images\": [\n    {\n      \"url\": \"\",\n      \"content_type\": \"image/jpeg\"\n    }\n  ],\n  \"prompt\": {{ JSON.stringify($json.text.removeMarkdown().removeTags()) }},\n  \"image_size\": \"landscape_16_9\",\n  \"num_inference_steps\": 4,\n  \"num_images\": 1,\n  \"enable_safety_checker\": true\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        400
+      ],
+      "id": "3a087d72-b72b-42e2-af3b-992ae7de6c89",
+      "name": "Generate Image",
+      "executeOnce": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        920,
+        740
+      ],
+      "id": "56a6da65-fbca-440c-ae04-fc4b4ef92149",
+      "name": "Wait1",
+      "webhookId": "945a18ef-562c-4c43-9f28-b4585965bba0"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f9f32fa3-4935-49c4-98e4-d9005c03bea0",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        740
+      ],
+      "id": "a8018e46-a3d9-4da5-95fb-4944206d028c",
+      "name": "Check Completed1"
+    },
+    {
+      "parameters": {
+        "content": "### 7.เขียน Prompt สร้างวิดีโอประกอบเนื้อหา",
+        "height": 280,
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "b9b2fb0c-0d5b-44c4-96a8-c4f68bd9df59",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "### 8.กระบวนการสร้างวิดีโอประกอบเนื้อหา",
+        "height": 280,
+        "width": 620,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "dd935c47-3d7c-45f7-ad54-f0222044044b",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "### 9.ตรวจสอบว่าวิดีโอสร้างเสร็จสมบูรณ์หรือยัง ?",
+        "height": 280,
+        "width": 220,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1300,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "852ed595-ce43-4d65-a1a1-cf196e6d77ea",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI system responsible for generating high-quality, photorealistic images based on provided content.  \nThe image must meet the following criteria:\n\n- Must look like a real photograph (photorealistic), with sharp detail and professional quality.\n- Use proper lighting, natural shadows, and professional camera angles (eye-level, low angle, wide shot, etc.).\n- Composition must reflect the context and meaning of the content.\n- Absolutely no text, watermark, UI elements, logos, or any graphic overlays.\n- Avoid any visual artifacts, glitches, distorted hands, or anatomically incorrect subjects.\n- Scene, background, and objects must naturally fit the given topic and culture.\n\nContent to visualize:  \n**{{ $('Loop Over Items').item.json.content }}**\n\nAdditional instructions:\n- Use DSLR-style depth of field and cinematic lighting if applicable.\n- Ensure the tone and atmosphere match the mood of the content.\n- The image should appear as if taken by a professional photographer in a real-world setting.\n\nให้แสดง Output เฉพาะเนื้อหา Prompt เท่านั้น โดยห้ามมีคำอธิบายที่นอกเหนือจาก Prompt",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -80,
+        400
+      ],
+      "id": "176dd8bc-b125-498f-9cca-66ea7c0784c8",
+      "name": "Create Image Prompt",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI system responsible for generating short, photorealistic videos based on a given article or content topic.\n\nPlease create a high-quality, cinematic, 5-second video that matches the following content:\n\n🔖 Content Summary:\n{{ $('Loop Over Items').item.json.content }}\n\n🎥 Video Guidelines:\n- สร้างวิดีโอที่มีความยาว 5 วินาที\n- Must be **photorealistic** with sharp resolution and professional visual quality.\n- Use appropriate **lighting**, **natural shadows**, and **camera composition** (e.g., eye-level, wide-angle, close-up).\n- Main subject(s) should be directly related to and clearly represent the topic.\n- **No text, no logo, no watermark**, and no graphic overlays in the video.\n- Avoid any unrealistic or distorted visuals (e.g., deformed hands, duplicated limbs, broken proportions).\n- Duration must be exactly **5 seconds**.\n\n🎨 Visual Style:\n- Natural movement, smooth transitions (if any), and realistic rendering.\n- Set the environment/background to match the cultural and emotional tone of the topic.\n- The video should look as if filmed by a skilled human videographer in a real location.\n\n🎯 Output Goal:\nA 5-second photorealistic video that visually enhances and aligns with the message of the content without using any text or narration.\n\nให้แสดง Output เฉพาะเนื้อหา Prompt เท่านั้น โดยห้ามมีคำอธิบายที่นอกเหนือจาก Prompt",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        300,
+        740
+      ],
+      "id": "785b8e56-efea-4a27-971b-d72af9aab4ea",
+      "name": "Create Video Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/bytedance/seedance/v1/lite/text-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": {{ JSON.stringify($json.text.removeMarkdown().removeTags()) }},\n  \"aspect_ratio\": \"16:9\",\n  \"resolution\": \"720p\",\n  \"duration\": \"5\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        740
+      ],
+      "id": "17df9d2e-66b5-496a-8790-42b18580ed31",
+      "name": "Generate Video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/fast-sdxl/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        400
+      ],
+      "id": "3e30c8c2-15c8-4c86-945d-3ee78b03381f",
+      "name": "Create Image Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/bytedance/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        740
+      ],
+      "id": "a6536c19-da9d-4546-a255-20fd64c54347",
+      "name": "Create Video Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').item.json.folder_image_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        860,
+        1280
+      ],
+      "id": "c0cfd988-6f4e-4c16-9e92-013155bca4fe",
+      "name": "Upload To Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/flux/requests/{{ $('Generate Video').item.json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        340,
+        1280
+      ],
+      "id": "c79ce3a9-7c70-4515-9b5a-7d12d42025d1",
+      "name": "Get Video URL",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        1280
+      ],
+      "id": "ed4b6e51-6199-490c-9ac0-228a14af820c",
+      "name": "Download Video"
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {
+          "topic": "general",
+          "time_range": "year",
+          "include_answer": "advanced"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        720
+      ],
+      "id": "dc315263-6b01-4672-8c50-ce9c07401251",
+      "name": "Idea Search",
+      "credentials": {
+        "tavilyApi": {
+          "id": "jjlNnfw8ibMD5sYO",
+          "name": "Tavily Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ค้นข้อมูลเพื่อประกอบการเขียนบทความ",
+        "height": 260,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -940,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "4a713534-8c4c-48e5-9452-1ba4c863920d",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "### 12.รวมวิดีโอ",
+        "height": 280,
+        "width": 620,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1300,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "138eb570-7f7a-4555-9c8a-f759e65537d7",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "### 13.ตรวจสอบว่าวิดีโอรวมเสร็จสมบูรณ์หรือยัง ?",
+        "height": 280,
+        "width": 220,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1940,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "dbe237c0-9806-4e5b-9e21-8d83dd1e4950",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1800,
+        80
+      ],
+      "id": "545bb08a-172d-462a-865d-6f48655f11a3",
+      "name": "Wait2",
+      "webhookId": "945a18ef-562c-4c43-9f28-b4585965bba0",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/ffmpeg-api/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        80
+      ],
+      "id": "414ab338-1bf1-4e7c-9328-ab4c1177f37b",
+      "name": "Create Video Status1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/compose",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n     \"tracks\": [\n       {\n         \"id\": \"\",\n         \"type\": \"\",\n         \"keyframes\": [\n           {\n             \"url\": \"\"\n           }\n         ]\n       }\n     ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        80
+      ],
+      "id": "5f39c84e-47e9-434a-b2ce-38232aca31fa",
+      "name": "FFMPEG",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f9f32fa3-4935-49c4-98e4-d9005c03bea0",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2220,
+        80
+      ],
+      "id": "4a6f4e94-36d4-4c4f-af52-85dbd131c654",
+      "name": "Check Completed2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "### 14.ดาวน์โหลดวิดีโอ",
+        "height": 280,
+        "width": 360,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2180,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "18839298-6a32-4d09-a559-be6b8ae671ec",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/flux/requests/{{ $('Generate Video').item.json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        80
+      ],
+      "id": "a956f580-9887-4022-800b-2f20fcda27a2",
+      "name": "Get Video URL1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bGKWkR2u1PgIYy8T",
+          "name": "FAL Header Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        80
+      ],
+      "id": "fc437b96-87f0-4df3-8a9e-5183b1b57ff6",
+      "name": "Download Video1",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        80
+      ],
+      "id": "46f69b1c-bfc8-48d3-ab0c-2221d03ea4c0",
+      "name": "TO DO PROCESS"
+    },
+    {
+      "parameters": {
+        "content": "### TO DO",
+        "height": 280,
+        "width": 220,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "dc6680c7-6129-4ae3-989b-0faeb5ae421b",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "### 15.Content Post",
+        "height": 280,
+        "width": 1240,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1300,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "3ea87c59-642f-4e51-a2ac-89f9465cba76",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://socialbu.com/api/v1/auth/get_token",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "email",
+              "value": "ใส่อีเมลที่สมัคร social bu"
+            },
+            {
+              "name": "password",
+              "value": "ใส่รหัสผ่าน"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        400
+      ],
+      "id": "2859e6ce-db99-4c2a-bccf-ace20f17ec44",
+      "name": "Get Social Bu Token",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://socialbu.com/api/v1/upload_media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.authToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $('Store Content').item.json.keyword }}.mp4 "
+            },
+            {
+              "name": "mime_type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1800,
+        400
+      ],
+      "id": "f23ad03b-47ef-4431-b3af-e8c903685f9b",
+      "name": "Get Signed URL",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $json.signed_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            },
+            {
+              "name": "x-amz-acl",
+              "value": "private"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "video",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        400
+      ],
+      "id": "6f834bb7-82dd-4bb6-984a-ecfd9d5b56b8",
+      "name": "Upload Video",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://socialbu.com/api/v1/posts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get Social Bu Token').item.json.authToken }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"accounts\": [youtube id,tiktok id,facebook id,instagram id],\n  \"publish_at\": \"{{ $('Store Content').item.json.publish_at }}\",\n  \"content\": \"{{ $('Store Content').item.json.description }}\",\n  \"existing_attachments\": [\n    { \"upload_token\": \"{{ $('Get Upload Status').item.json.upload_token }}\" }\n  ],\n  \"options\": {\n    \"video_title\": \"{{ $('Store Content').item.json.title }}\",\n    \"post_as_reel\": true\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        400
+      ],
+      "id": "f5422220-59a2-4d7a-ad70-59feed3a5e2a",
+      "name": "Schedule Post",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://socialbu.com/api/v1/upload_media/status?key={{ $('Get Signed URL').item.json.key }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get Social Bu Token').item.json.authToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        400
+      ],
+      "id": "f008dfce-a659-4f7f-b392-a067b642b5f8",
+      "name": "Get Upload Status",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2000,
+        400
+      ],
+      "id": "8ad6d3e7-409c-4b00-93c4-9e58e93c2471",
+      "name": "Merge",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        400
+      ],
+      "id": "b08a6775-ec9f-4798-a0a6-3f9c9a02c913",
+      "name": "Finish"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2071f29b-0cab-4538-92c5-57819608e95e",
+              "name": "content",
+              "value": "=\"{{ $('Split Out').item.json.title }}\"\n\n{{ $('Split Out').item.json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "601c547c-30c1-44ba-9f64-0cc8863d47da",
+              "name": "image_url",
+              "value": "={{ $('Upload To Google Drive').item.json.webViewLink }}",
+              "type": "string"
+            },
+            {
+              "id": "a4a7dd7a-d6f2-48a6-b2ca-2dc68f9bc2f1",
+              "name": "video_url",
+              "value": "={{ $('Upload To Google Drive1').item.json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        1280
+      ],
+      "id": "73a13555-ae8f-47b5-8747-58dece15b5f0",
+      "name": "Set Data Content"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Content Writer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Read Topic List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Writer": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Image Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create Image Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Create Video Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Create Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Completed": {
+      "main": [
+        [
+          {
+            "node": "Create Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image URL": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Upload To Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload To Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Get Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Update Content To Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Content To Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Update Content Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Content Status": {
+      "main": [
+        [
+          {
+            "node": "TO DO PROCESS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Topic List": {
+      "main": [
+        [
+          {
+            "node": "Content Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Create Video Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Completed1": {
+      "main": [
+        [
+          {
+            "node": "Get Image URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image Status": {
+      "main": [
+        [
+          {
+            "node": "Check Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Status": {
+      "main": [
+        [
+          {
+            "node": "Check Completed1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video URL": {
+      "main": [
+        [
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video": {
+      "main": [
+        [
+          {
+            "node": "Upload To Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload To Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Set Data Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Idea Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Content Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Create Video Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FFMPEG": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Status1": {
+      "main": [
+        [
+          {
+            "node": "Check Completed2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Completed2": {
+      "main": [
+        [
+          {
+            "node": "Get Video URL1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video URL1": {
+      "main": [
+        [
+          {
+            "node": "Download Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TO DO PROCESS": {
+      "main": [
+        [
+          {
+            "node": "FFMPEG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Social Bu Token": {
+      "main": [
+        [
+          {
+            "node": "Get Signed URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Signed URL": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload Video": {
+      "main": [
+        [
+          {
+            "node": "Get Upload Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Upload Status": {
+      "main": [
+        [
+          {
+            "node": "Schedule Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Upload Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video1": {
+      "main": [
+        [
+          {
+            "node": "Get Social Bu Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Post": {
+      "main": [
+        [
+          {
+            "node": "Finish",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Data Content": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b407b8ec-7f6b-49e6-94df-b196f64ab6b8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "NoYwIhdaX10TcjyP",
+  "tags": []
+}

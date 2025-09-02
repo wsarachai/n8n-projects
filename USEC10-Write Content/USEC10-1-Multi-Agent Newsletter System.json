@@ -1,0 +1,532 @@
+{
+  "name": "USEC10-1-Multi-Agent Newsletter System",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        80
+      ],
+      "id": "82916d25-3119-4d98-87b2-63f27478a936",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "query": "AI adoption for small businesses",
+        "options": {
+          "topic": "news",
+          "max_results": 3,
+          "time_range": "week"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        80
+      ],
+      "id": "33cd73ab-a114-4ed8-98fd-7b757a77acb2",
+      "name": "Initial Research",
+      "credentials": {
+        "tavilyApi": {
+          "id": "jjlNnfw8ibMD5sYO",
+          "name": "Tavily Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        320
+      ],
+      "id": "c8d86d71-381b-4e3d-8823-173b94bb163c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\"title\", \"topics\"],\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\": \"A short, descriptive title\"\n    },\n    \"topics\": {\n      \"type\": \"array\",\n      \"description\": \"An array of exactly three topics\",\n      \"minItems\": 3,\n      \"maxItems\": 3,\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        320
+      ],
+      "id": "b63bedba-15d3-419d-a35d-1ea5ef49c118",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.topics",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        80
+      ],
+      "id": "5be63cde-2d5d-46a1-90a7-138f3c1df26b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "query": "={{ $json['output.topics'] }}",
+        "options": {
+          "time_range": "month",
+          "include_raw_content": true
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavily",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        80
+      ],
+      "id": "b647cc2a-a162-48de-91ee-5afdb833d010",
+      "name": "Research Topics",
+      "credentials": {
+        "tavilyApi": {
+          "id": "jjlNnfw8ibMD5sYO",
+          "name": "Tavily Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic: {{ $json.query }}\n\nResearch:\n{{ $json.results.map(item => JSON.stringify(item, null, 2)).join('\\n\\n') }}\n",
+        "options": {
+          "systemMessage": "=# Overview\nYou are a professional newsletter section writer. Your only task is to write one standalone section of a newsletter in Thai Language.\n\n## Instructions\n- Always include a clear section heading followed by the section content.\n- Do not write an overall title, introduction, or conclusion.\n- Write in a professional, expert, and engaging tone suitable for a business newsletter.\n- If you reference facts, data, or quotes, you must cite your sources and provide the actual clickable URLs.\n- Do not invent citations—only include real, verifiable sources.\n- Keep the section concise, well-structured, and easy to read.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        80
+      ],
+      "id": "00afd7a3-d48e-4388-a157-8d58145a1372",
+      "name": "Section Writer Agent"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        80
+      ],
+      "id": "03afdf63-52c1-4e52-9008-112deb85abb3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        320
+      ],
+      "id": "596a04f8-d37f-442c-b1f0-3b67948230bc",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title: {{ $('Planning Agent').item.json.output.title }}\n\nSections: {{ $json.output.join(\"\\n\\n\\n\") }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Overview\nYou are an expert newsletter editor(Thai Language). Merge exactly three provided sections into a cohesive, email-ready HTML body with a holistic introduction and conclusion. Maintain a professional, concise tone for a business audience and preserve intended meaning.\n\n## Goals\n- Refine clarity, flow, and consistency across all sections.\n- Keep total content output ≤ 1000 words (hard limit). Avoid fluff.\n\n## Structure (HTML only)\n1) <p> Introduction that frames the three topics and their relevance; reference today’s date: {{ $now.format('yyyy-MM-dd') }}.\n2) For each provided section:\n   - <h2> Use or lightly adjust the given title.\n   - Edited <p> content.\n   - Inline, clickable citations near related claims using <a href=\"https://...\">Source</a>. Never invent sources.\n3) <h3>Sources</h3><ul> A single consolidated list:\n   - Each item: <li><a href=\"[URL]\">[Publication Name] – [Article Title]</a></li>\n   - Include full URLs, deduplicate identical links, and alphabetize by Publication Name.\n4) <p> Conclusion tying threads together with implications or next steps.\n\n## Citation and Link Rules\n- Every factual claim relying on external information must include a real, verifiable, clickable URL.\n- Preserve any provided citations; standardize to the <a> format.\n- Omit unverifiable links rather than fabricate.\n- Use only basic HTML tags (<h2>, <h3>, <p>, <ul>, <li>, <a>). No images, scripts, styles, or external CSS.\n\n## Input\n- You will receive three sections. Edit and integrate them without adding unrelated topics.\n\nOutput Format (return only this)\nSubject: One clear, specific subject line (≤ 80 characters)\n\nContent:\n[HTML body only as specified above]\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2336,
+        80
+      ],
+      "id": "2fb0acbc-20ce-4543-8540-08f01c2dad17",
+      "name": "Editor Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"subject\": {\n      \"type\": \"string\",\n      \"description\": \"the email subject\"\n    },\n    \"content\": {\n      \"type\": \"string\",\n      \"description\": \"the newsletter content\"\n    }\n  },\n  \"required\": [\"subject\", \"content\"]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2544,
+        320
+      ],
+      "id": "1b7e86f5-ba52-4e8a-968f-0abb0836a0a2",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.output.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.output.content }}",
+        "options": {
+          "sendTo": "={{ $('Data Config').item.json.send_to_email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2672,
+        80
+      ],
+      "id": "b37b4b23-ab41-4a51-b010-4bca27e56640",
+      "name": "Create a draft",
+      "webhookId": "631942e2-3370-4f03-a546-94e4a3a87b55",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Trigger\nSet cadence",
+        "height": 224,
+        "width": 208,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        0
+      ],
+      "id": "8d3e89fc-c1bb-48f5-b019-3a98468af39b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Set your newsletter topic in the \"query\" field",
+        "height": 224,
+        "width": 208,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        992,
+        0
+      ],
+      "id": "fe85d0d4-24f8-4d1c-8caa-1d4735250b90",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Generating Title & Topics",
+        "height": 224,
+        "width": 448,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "134388e6-3fe1-4c53-888a-f3b7502042d8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.results.map(item => JSON.stringify(item, null, 2)).join('\\n\\n') }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Overview\nYou are an expert newsletter planner. You will receive three articles from the past week. Your job is to come up with a creative and fun title as well as the main topics for this newsletter. \n\n## Instructions\nThe newsletter should flow nicely, feel informative, and holistic. The topics should be 3-5 words. \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        80
+      ],
+      "id": "6740a45b-84d5-44e8-8bd8-2d021b97262a",
+      "name": "Planning Agent"
+    },
+    {
+      "parameters": {
+        "content": "## Writing Newsletter Sections",
+        "height": 224,
+        "width": 448,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "3ba6d792-74ab-4ed2-8f72-c940a9bccffd",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Editing Final Copy",
+        "height": 224,
+        "width": 448,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        0
+      ],
+      "id": "855968f8-fc03-4a37-a9ca-5faa7f985e1b",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Send Draft",
+        "height": 224,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        0
+      ],
+      "id": "83e081b4-0824-448d-82cb-0732889f4db9",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5fa41f6d-7b19-4ea6-a6f2-1f7b38660c96",
+              "name": "send_to_email",
+              "value": "wittayayon70@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        80
+      ],
+      "id": "80190889-d2fc-4cfe-b151-e2871749f8f8",
+      "name": "Data Config"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Data Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initial Research": {
+      "main": [
+        [
+          {
+            "node": "Planning Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Section Writer Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Planning Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Planning Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Research Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Topics": {
+      "main": [
+        [
+          {
+            "node": "Section Writer Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Section Writer Agent": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Editor Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Editor Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Editor Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editor Agent": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planning Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Config": {
+      "main": [
+        [
+          {
+            "node": "Initial Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "842bfb08-d8ed-4e60-9c22-dab666e18217",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "lSQbWZgRm58ImvBt",
+  "tags": []
+}

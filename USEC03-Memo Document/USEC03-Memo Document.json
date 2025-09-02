@@ -1,0 +1,1324 @@
+{
+  "name": "USEC03-Memo Document",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ระบบบันทึกเอกสารเสนออนุมัติออนไลน์",
+        "formDescription": "ใช้สำหรับการบันทึกเอกสารเสนอขออนุมัติภายในองค์กร",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "วัตถุประสงค์เอกสาร",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "เสนอเพื่อพิจารณา"
+                  },
+                  {
+                    "option": "เสนอเพื่ออนุมัติ"
+                  },
+                  {
+                    "option": "แจ้งเพื่อทราบ"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "ชื่อผู้เสนอเรื่อง",
+              "placeholder": "ระบุชื่อผู้เสนอ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "ตำแหน่งผู้เสนอเรื่อง",
+              "placeholder": "ระบุตำแหน่งผู้เสนอ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "ส่วนงาน / หน่วยงาน",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "ฝ่ายพัฒนานวัตกรรม"
+                  },
+                  {
+                    "option": "ฝ่ายบัญชี"
+                  },
+                  {
+                    "option": "ฝ่ายการเงิน"
+                  },
+                  {
+                    "option": "ฝ่ายบุคคล"
+                  },
+                  {
+                    "option": "ฝ่ายบริหาร"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "เรื่อง",
+              "placeholder": "ระบุหัวข้อเรื่องเอกสาร",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "เสนอถึง / เรียน",
+              "placeholder": "ระบุชื่อผู้ที่ต้องการเสนอพิจารณา",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "E-Mail ปลายทางของผู้พิจารณา",
+              "placeholder": "ระบุ E-Mail ของผู้ที่ต้องการเสนอให้พิจารณา",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "รายละเอียดเอกสาร",
+              "fieldType": "textarea",
+              "placeholder": "ระบุเนื้อหาในเอกสาร",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "แนบเอกสาร",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ยืนยันการส่งข้อมูล",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "เอกสารของท่านถูกบันทึกและทำการจัดส่งเรียบร้อยแล้ว"
+            }
+          },
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 12px;\n\t--font-size-label: 14px;\n\t--font-size-test-notice: 12px;\n\t--font-size-input: 14px;\n\t--font-size-header: 20px;\n\t--font-size-paragraph: 14px;\n\t--font-size-link: 12px;\n\t--font-size-error: 12px;\n\t--font-size-html-h1: 28px;\n\t--font-size-html-h2: 20px;\n\t--font-size-html-h3: 16px;\n\t--font-size-html-h4: 14px;\n\t--font-size-html-h5: 12px;\n\t--font-size-html-h6: 10px;\n\t--font-size-subheader: 14px;\n\n\t/* Colors - Blue & Red Theme */\n\t--color-background: #f4f8fc;\n\t--color-test-notice-text: #1e60a9;\n\t--color-test-notice-bg: #e8f1fb;\n\t--color-test-notice-border: #c4d9f3;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #bcd0e7;\n\t--color-card-shadow: rgba(30, 96, 169, 0.08);\n\t--color-link: #1e60a9;\n\t--color-header: #123c66;\n\t--color-label: #1e3a5f;\n\t--color-input-border: #a8c4e0;\n\t--color-input-text: #2a4c6f;\n\t--color-focus-border: #1e60a9;\n\t--color-submit-btn-bg: #e53935; /* Strong red for action */\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #d32f2f;\n\t--color-required: #e53935;\n\t--color-clear-button-bg: #1e60a9;\n\t--color-html-text: #2b2f35;\n\t--color-html-link: #e53935;\n\t--color-header-subtext: #627b94;\n\n\t/* Border Radii */\n\t--border-radius-card: 8px;\n\t--border-radius-input: 6px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 8px;\n\n\t/* Spacing */\n\t--padding-container-top: 24px;\n\t--padding-card: 24px;\n\t--padding-test-notice-vertical: 12px;\n\t--padding-test-notice-horizontal: 24px;\n\t--margin-bottom-card: 16px;\n\t--padding-form-input: 12px;\n\t--card-padding: 24px;\n\t--card-margin-bottom: 16px;\n\n\t/* Dimensions */\n\t--container-width: 448px;\n\t--submit-btn-height: 48px;\n\t--checkbox-size: 18px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 4px 16px 0px var(--color-card-shadow);\n\t--opacity-placeholder: 0.5;\n}"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        300
+      ],
+      "id": "cf1aa5ec-6db9-46bd-9143-f5ca092be87f",
+      "name": "Form Memo",
+      "webhookId": "e6a0cbb1-694b-454e-a905-a08a7ba0e9c7"
+    },
+    {
+      "parameters": {
+        "content": "## แบบฟอร์ม\nwww.facebook.com/iamaiduck\n![Text + Emojis](https://lh3.googleusercontent.com/d/1ihFN63J8_UgYng5m_tLfSY_8Lnaqy8P3)",
+        "height": 960,
+        "width": 360,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "2e9cb612-23f6-4dd2-af66-f18594304426",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### ผู้ใช้เขียนแบบฟอร์ม",
+        "height": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "93d37f29-fa19-4ea1-949f-2de7cdfbc781",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### เช็คไฟล์แนบ",
+        "height": 700,
+        "width": 640,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1340,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "2855c5fd-a129-429e-bde8-8e782535819a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### ทำเอกสาร",
+        "height": 700,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2020,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "bd13868f-7ced-4034-9550-0b7528d732bf",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "### ส่งเมล์เสนอพิจารณา",
+        "height": 700,
+        "width": 260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2640,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "daf204f6-0939-4b05-a4cb-9c9798e403ec",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### บันทึกข้อมูลลง Sheet",
+        "height": 700,
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d83d563c-5b45-49af-965f-9a13f20b3019",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('DOC Generate').item.json.data }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.file_folder_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        300
+      ],
+      "id": "a447896e-8228-4c77-af47-ed7b95c4b178",
+      "name": "Create Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const nodeItems = $items(\"Form Memo\", 0);\nconst output = [];\n\nfor (const item of nodeItems) {\n  if (!item.binary) continue;\n\n  for (const key of Object.keys(item.binary)) {\n    const file = item.binary[key];\n    output.push({\n      json: {\n        fileName: file.fileName,\n        mimeType: file.mimeType,\n        fileSize: file.fileSize\n      },\n      binary: {\n        data: file\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        520
+      ],
+      "id": "b8f02d5f-a549-4c50-bb47-d7ec5647f833",
+      "name": "Get All Files"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.file_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1142458251,
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/192tyLqdrDq8VJyEmgtXydGMUnnQFER3Kqxf3yBT9ybw/edit#gid=1142458251"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "เลขเอกสาร": "={{ $('DOC Generate').item.json.data }}",
+            "วันที่เอกสาร": "={{\n  (() => {\n    const date = new Date();\n    const day = date.getDate();\n    const month = date.getMonth(); // 0-11\n    const year = date.getFullYear() + 543;\n    const monthsThai = [\n      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',\n      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'\n    ];\n    return `${day} ${monthsThai[month]} ${year}`;\n  })()\n}}\n",
+            "วัตถุประสงค์เอกสาร": "={{ $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] }}",
+            "ชื่อผู้เสนอ": "={{ $('Form Memo').item.json['ชื่อผู้เสนอเรื่อง'] }}",
+            "ตำแหน่งผู้เสนอ": "={{ $('Form Memo').item.json['ตำแหน่งผู้เสนอเรื่อง'] }}",
+            "ส่วนงาน/หน่วยงาน": "={{ $('Form Memo').item.json['ส่วนงาน / หน่วยงาน'] }}",
+            "เรื่อง": "={{ $('Form Memo').item.json['เรื่อง'] }}",
+            "เสนอถึง / เรียน": "={{ $('Form Memo').item.json['เสนอถึง / เรียน'] }}",
+            "E-Mail ของผู้พิจารณา": "={{ $('Form Memo').item.json['E-Mail ปลายทางของผู้พิจารณา'] }}",
+            "รายละเอียดเอกสาร": "={{ $('Form Memo').item.json['รายละเอียดเอกสาร'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "เลขเอกสาร",
+              "displayName": "เลขเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "วันที่เอกสาร",
+              "displayName": "วันที่เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "วัตถุประสงค์เอกสาร",
+              "displayName": "วัตถุประสงค์เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ชื่อผู้เสนอ",
+              "displayName": "ชื่อผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ตำแหน่งผู้เสนอ",
+              "displayName": "ตำแหน่งผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ส่วนงาน/หน่วยงาน",
+              "displayName": "ส่วนงาน/หน่วยงาน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "เรื่อง",
+              "displayName": "เรื่อง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "เสนอถึง / เรียน",
+              "displayName": "เสนอถึง / เรียน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail ของผู้พิจารณา",
+              "displayName": "E-Mail ของผู้พิจารณา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "รายละเอียดเอกสาร",
+              "displayName": "รายละเอียดเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "เอกสารแนบ",
+              "displayName": "เอกสารแนบ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Memo Link",
+              "displayName": "Memo Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        800,
+        520
+      ],
+      "id": "71b3a4d2-2a06-4011-ba81-09b5d0718be6",
+      "name": "Write To Memo Form",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Expression เพื่อแปลงเป็นเวลาไทย\n\n{{\n  (() => {\n    const date = new Date();\n    const day = date.getDate();\n    const month = date.getMonth(); // 0-11\n    const year = date.getFullYear() + 543;\n    const monthsThai = [\n      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',\n      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'\n    ];\n    return `${day} ${monthsThai[month]} ${year}`;\n  })()\n}}\n",
+        "height": 460,
+        "width": 280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        720
+      ],
+      "typeVersion": 1,
+      "id": "248b7490-34a2-4871-b4bd-a6f00d5de720",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.file_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1142458251,
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/192tyLqdrDq8VJyEmgtXydGMUnnQFER3Kqxf3yBT9ybw/edit#gid=1142458251"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "เลขเอกสาร": "={{ $('DOC Generate').item.json.data }}",
+            "เอกสารแนบ": "={{ $json.webViewLink }}"
+          },
+          "matchingColumns": [
+            "เลขเอกสาร"
+          ],
+          "schema": [
+            {
+              "id": "เลขเอกสาร",
+              "displayName": "เลขเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "วันที่เอกสาร",
+              "displayName": "วันที่เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "วัตถุประสงค์เอกสาร",
+              "displayName": "วัตถุประสงค์เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ชื่อผู้เสนอ",
+              "displayName": "ชื่อผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ตำแหน่งผู้เสนอ",
+              "displayName": "ตำแหน่งผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ส่วนงาน/หน่วยงาน",
+              "displayName": "ส่วนงาน/หน่วยงาน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เรื่อง",
+              "displayName": "เรื่อง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เสนอถึง / เรียน",
+              "displayName": "เสนอถึง / เรียน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "E-Mail ของผู้พิจารณา",
+              "displayName": "E-Mail ของผู้พิจารณา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "รายละเอียดเอกสาร",
+              "displayName": "รายละเอียดเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เอกสารแนบ",
+              "displayName": "เอกสารแนบ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Memo Link",
+              "displayName": "Memo Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1800,
+        520
+      ],
+      "id": "4e5accd8-590f-46a5-a0b8-63f4274e47ac",
+      "name": "Update Document Link",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1600,
+        520
+      ],
+      "id": "4cba413d-95fb-41d5-8881-1ac026f99ab2",
+      "name": "Upload File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.file_template_id }}",
+          "mode": "id"
+        },
+        "name": "={{ \"Memo\" + \"-\" + $('DOC Generate').item.json.data }}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2140,
+        80
+      ],
+      "id": "258c0dea-7635-46bb-972a-b9b03320df1e",
+      "name": "Create Memo File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{ส่วนงาน}",
+              "replaceText": "={{ $('Form Memo').item.json['ส่วนงาน / หน่วยงาน'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{เลขที่เอกสาร}",
+              "replaceText": "={{ $('DOC Generate').item.json.data }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{วันที่}",
+              "replaceText": "={{\n  (() => {\n    const date = new Date();\n    const day = date.getDate();\n    const month = date.getMonth(); // 0-11\n    const year = date.getFullYear() + 543;\n    const monthsThai = [\n      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',\n      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'\n    ];\n    return `${day} ${monthsThai[month]} ${year}`;\n  })()\n}}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{เรื่อง}",
+              "replaceText": "={{ $('Form Memo').item.json['เรื่อง'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{วัตถุประสงค์}",
+              "replaceText": "={{ $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{รายละเอียดเอกสาร}",
+              "replaceText": "={{ $('Form Memo').item.json['รายละเอียดเอกสาร'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{ชื่อผู้เสนอ}",
+              "replaceText": "={{ $('Form Memo').item.json['ชื่อผู้เสนอเรื่อง'] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{ตำแหน่งผู้เสนอ}",
+              "replaceText": "={{ $('Form Memo').item.json['ตำแหน่งผู้เสนอเรื่อง'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2340,
+        80
+      ],
+      "id": "5b7b002c-0bcf-495d-81b6-bda851b009b2",
+      "name": "Edit Memo Doc",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "kORHFqwX0Nw8xnOa",
+          "name": "Google Docs Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2140,
+        300
+      ],
+      "id": "7433baf6-332b-474b-a331-bc407453a08f",
+      "name": "Convert To PDF",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Create Memo File').item.json.name + \".pdf\" }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create Folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2340,
+        300
+      ],
+      "id": "d8caf13a-0549-4cf3-8327-fb0bd3297ec1",
+      "name": "Upload Memo Doc",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.file_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1142458251,
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/192tyLqdrDq8VJyEmgtXydGMUnnQFER3Kqxf3yBT9ybw/edit#gid=1142458251"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Memo Link": "={{ $json.webViewLink }}",
+            "เลขเอกสาร": "={{ $('DOC Generate').item.json.data }}"
+          },
+          "matchingColumns": [
+            "เลขเอกสาร"
+          ],
+          "schema": [
+            {
+              "id": "เลขเอกสาร",
+              "displayName": "เลขเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "วันที่เอกสาร",
+              "displayName": "วันที่เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "วัตถุประสงค์เอกสาร",
+              "displayName": "วัตถุประสงค์เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ชื่อผู้เสนอ",
+              "displayName": "ชื่อผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ตำแหน่งผู้เสนอ",
+              "displayName": "ตำแหน่งผู้เสนอ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ส่วนงาน/หน่วยงาน",
+              "displayName": "ส่วนงาน/หน่วยงาน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เรื่อง",
+              "displayName": "เรื่อง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เสนอถึง / เรียน",
+              "displayName": "เสนอถึง / เรียน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "E-Mail ของผู้พิจารณา",
+              "displayName": "E-Mail ของผู้พิจารณา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "รายละเอียดเอกสาร",
+              "displayName": "รายละเอียดเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เอกสารแนบ",
+              "displayName": "เอกสารแนบ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Memo Link",
+              "displayName": "Memo Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2140,
+        520
+      ],
+      "id": "b43a34f9-0df7-4aaf-81ea-6cd5bf9279c9",
+      "name": "Update Memo Link",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Form Memo').item.json['E-Mail ปลายทางของผู้พิจารณา'] }}",
+        "subject": "={{ \"[\" + $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] + \"] \" + $('Form Memo').item.json['เรื่อง'] }}",
+        "message": "=<!DOCTYPE html>\n<html lang=\"th\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>{{ \"[\" + $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] + \"] \" + $('Form Memo').item.json['เรื่อง'] }}</title>\n    <style>\n      body {\n        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n        margin: 0;\n        padding: 0;\n        background-color: #fff8e1;\n        color: #333;\n      }\n      .container {\n        max-width: 640px;\n        margin: auto;\n        padding: 20px;\n        background-color: #ffffff;\n        border-radius: 8px;\n        box-shadow: 0 0 10px rgba(0,0,0,0.05);\n      }\n      .header {\n        text-align: center;\n        margin-bottom: 20px;\n      }\n      .header img {\n        max-width: 160px;\n      }\n      .title {\n        font-size: 22px;\n        font-weight: bold;\n        background-color: #fdd835;\n        padding: 16px;\n        text-align: center;\n        border-radius: 8px;\n        margin-bottom: 30px;\n      }\n      .block {\n        background-color: #fffde7;\n        border-left: 6px solid #ffca28;\n        padding: 16px;\n        margin-bottom: 20px;\n        border-radius: 6px;\n      }\n      .block h2 {\n        margin-top: 0;\n        font-size: 16px;\n        color: #444;\n        border-bottom: 1px dashed #ccc;\n        padding-bottom: 4px;\n        margin-bottom: 10px;\n      }\n      .block p {\n        margin: 0;\n        line-height: 1.6;\n      }\n      .footer {\n        text-align: center;\n        font-size: 12px;\n        color: #999;\n        margin-top: 40px;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"container\">\n      <div class=\"header\">\n        <img src=\"https://lh3.googleusercontent.com/d/1SGYOX1kXsLi2BDXVQn7lggaJDy5T_2Bp\" alt=\"Company Logo\" />\n      </div>\n      <div class=\"title\">{{ \"[\" + $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] + \"] \" + $('Form Memo').item.json['เรื่อง'] }}</div>\n\n      <div class=\"block\">\n        <h2>ข้อมูลเอกสาร</h2>\n        <p><strong>เลขที่เอกสาร:</strong> {{ $('DOC Generate').item.json.data }}</p>\n        <p><strong>วันที่เอกสาร:</strong> {{\n  (() => {\n    const date = new Date();\n    const day = date.getDate();\n    const month = date.getMonth(); // 0-11\n    const year = date.getFullYear() + 543;\n    const monthsThai = [\n      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',\n      'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'\n    ];\n    return `${day} ${monthsThai[month]} ${year}`;\n  })()\n}}</p>\n        <p><strong>วัตถุประสงค์:</strong> {{ $('Form Memo').item.json['วัตถุประสงค์เอกสาร'] }}</p>\n        <p><strong>เรื่อง:</strong> {{ $('Form Memo').item.json['เรื่อง'] }}</p>\n      </div>\n\n      <div class=\"block\">\n        <h2>รายละเอียดการแจ้ง</h2>\n        <p>{{ $('Form Memo').item.json['รายละเอียดเอกสาร'] }}</p>\n      </div>\n\n      <div class=\"block\">\n        <h2>ข้อมูลผู้เสนอเรื่อง</h2>\n        <p><strong>ชื่อผู้เสนอ:</strong> {{ $('Form Memo').item.json['ชื่อผู้เสนอเรื่อง'] }}</p>\n        <p><strong>ตำแหน่ง:</strong> {{ $('Form Memo').item.json['ตำแหน่งผู้เสนอเรื่อง'] }}</p>\n        <p><strong>หน่วยงาน:</strong> {{ $('Form Memo').item.json['ส่วนงาน / หน่วยงาน'] }}</p>\n      </div>\n\n      <div class=\"block\">\n        <h2>ลิงก์แนบ</h2>\n        <p>{{ $('Create Folder').item.json.webViewLink }}</p>\n      </div>\n\n      <div class=\"footer\">\n        © {{$now.format('yyyy')}} บริษัทของคุณ — แจ้งเพื่อทราบภายในองค์กรเท่านั้น\n      </div>\n    </div>\n  </body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2720,
+        520
+      ],
+      "id": "7478bcee-8b63-411a-b9fa-d202c8e7cb30",
+      "name": "Send E-Mail",
+      "webhookId": "b39f368d-d10d-492f-8c35-d34f4ce0895d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        3000,
+        520
+      ],
+      "id": "91ebb442-ae12-47c7-9db7-630bdf1d5772",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9ae15975-079a-43bf-9c23-ca8f68574459",
+              "leftValue": "={{ $('Form Memo').item.json['แนบเอกสาร'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthLte",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1400,
+        300
+      ],
+      "id": "4e3792be-ae71-41af-95f5-dd6a3a0e687e",
+      "name": "สถานะการแนบไฟล์"
+    },
+    {
+      "parameters": {
+        "content": "### สร้างโฟลเดอร์",
+        "height": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "79feda2e-4eba-4a55-b1c6-1c60988fd77a",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c960feb9-6a79-4f04-9b86-a24f6b289ac5",
+              "name": "file_sheet_id",
+              "value": "192tyLqdrDq8VJyEmgtXydGMUnnQFER3Kqxf3yBT9ybw",
+              "type": "string"
+            },
+            {
+              "id": "09998c6e-9c0a-4e28-8a46-e28a569051ab",
+              "name": "file_template_id",
+              "value": "1yHo7U13bXU0OL4ZbR_klp1umTkwJB6TKn8bJu8RM-QM",
+              "type": "string"
+            },
+            {
+              "id": "663fe62d-7576-41bf-9afc-7f8d679a2280",
+              "name": "file_folder_id",
+              "value": "1e8iGhuHzFZdkNTX4HaEDF_a2rVn3ZPyI",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        300
+      ],
+      "id": "b81f59cf-b4f1-4c54-bbb9-7dbcd89b6a93",
+      "name": "Master Data"
+    },
+    {
+      "parameters": {
+        "content": "### กำหนดรหัสเอกสาร",
+        "height": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        440,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "b08bf2f5-6930-4920-92d2-37697b366208",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "action": "generate"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        520,
+        300
+      ],
+      "id": "60ea7f4e-ebcb-4b46-adb4-96054621e9a7",
+      "name": "DOC Generate"
+    }
+  ],
+  "pinData": {
+    "Form Memo": [
+      {
+        "json": {
+          "วัตถุประสงค์เอกสาร": "เสนอเพื่อพิจารณา",
+          "ชื่อผู้เสนอเรื่อง": "นายกรุงทเพ เขตทองหล่อ",
+          "ตำแหน่งผู้เสนอเรื่อง": "นักวิชาการ",
+          "ส่วนงาน / หน่วยงาน": "ฝ่ายพัฒนานวัตกรรม",
+          "เรื่อง": "เสนอพิจารณาปรับปรุงระบบเครือข่ายภายใน",
+          "เสนอถึง / เรียน": "ผู้อำนวยการศูนย์ IT",
+          "E-Mail ปลายทางของผู้พิจารณา": "wittayayon70@gmail.com",
+          "รายละเอียดเอกสาร": "ด้วยปัจจุบันหน่วยงานของเราได้ใช้งานระบบเครือข่าย (Network) ในการดำเนินงานและให้บริการระบบสารสนเทศต่าง ๆ อย่างต่อเนื่อง โดยเฉพาะการใช้งานระบบฐานข้อมูลออนไลน์ การประชุมทางไกล และการเข้าถึงแอปพลิเคชันในระบบคลาวด์\r\n\r\nอย่างไรก็ตาม ได้พบปัญหาเกี่ยวกับ ความเร็วของสัญญาณอินเทอร์เน็ตที่ไม่เสถียร, การ เชื่อมต่อหลุดบ่อยครั้ง รวมถึง การรับส่งข้อมูลล่าช้า ในบางช่วงเวลา ซึ่งส่งผลกระทบต่อการทำงานของบุคลากร และประสิทธิภาพในการให้บริการผู้มาติดต่อหน่วยงาน\r\n\r\nเพื่อเป็นการแก้ไขปัญหาดังกล่าว และรองรับการปรับเปลี่ยนอุปกรณ์หรือระบบในอนาคต จึงใคร่ขอเสนอ ดำเนินการปรับปรุงระบบเครือข่ายเน็ตเวิร์ก โดยมีแนวทางเบื้องต้นดังนี้:\r\n\r\nตรวจสอบสภาพแวดล้อมและอุปกรณ์เครือข่ายเดิม (Router, Switch, Access Point ฯลฯ)\r\n\r\nปรับเปลี่ยน/อัปเกรดอุปกรณ์ที่ล้าสมัยหรือมีปัญหา\r\n\r\nจัดระบบโครงข่ายให้ครอบคลุมพื้นที่การใช้งาน พร้อมวางจุด Access Point ให้เหมาะสม\r\n\r\nเพิ่มช่องทางเชื่อมต่ออินเทอร์เน็ต หรือปรับแผนการใช้ Bandwidth ให้สอดคล้องกับจำนวนผู้ใช้งาน\r\n\r\nทดสอบประสิทธิภาพหลังดำเนินการปรับปรุง\r\n\r\nจึงเรียนมาเพื่อ ขออนุมัติดำเนินการปรับปรุงระบบเครือข่ายเน็ตเวิร์ก ตามรายละเอียดข้างต้น เพื่อให้ระบบเครือข่ายมีประสิทธิภาพมากยิ่งขึ้น รองรับการทำงานของหน่วยงานในระยะยาว",
+          "แนบเอกสาร": null,
+          "submittedAt": "2025-07-03T07:44:14.516-04:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Form Memo": {
+      "main": [
+        [
+          {
+            "node": "DOC Generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Folder": {
+      "main": [
+        [
+          {
+            "node": "สถานะการแนบไฟล์",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Files": {
+      "main": [
+        [
+          {
+            "node": "Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write To Memo Form": {
+      "main": [
+        [
+          {
+            "node": "Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Document Link": {
+      "main": [
+        [
+          {
+            "node": "Create Memo File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload File": {
+      "main": [
+        [
+          {
+            "node": "Update Document Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Memo File": {
+      "main": [
+        [
+          {
+            "node": "Edit Memo Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Memo Doc": {
+      "main": [
+        [
+          {
+            "node": "Convert To PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert To PDF": {
+      "main": [
+        [
+          {
+            "node": "Upload Memo Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Memo Doc": {
+      "main": [
+        [
+          {
+            "node": "Update Memo Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Memo Link": {
+      "main": [
+        [
+          {
+            "node": "Send E-Mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send E-Mail": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "สถานะการแนบไฟล์": {
+      "main": [
+        [
+          {
+            "node": "Create Memo File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get All Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Data": {
+      "main": [
+        [
+          {
+            "node": "Write To Memo Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DOC Generate": {
+      "main": [
+        [
+          {
+            "node": "Master Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1266a9a9-ad53-411d-ad13-d1b932075fe1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "JCV8kBsMTP0pEiPx",
+  "tags": []
+}

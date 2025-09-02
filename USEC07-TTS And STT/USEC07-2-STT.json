@@ -1,0 +1,334 @@
+{
+  "name": "USEC07-2-STT",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -64
+      ],
+      "id": "9e93733c-26fe-43d1-8bd0-2ef8d88db1a1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2fb189a6-6ae4-44de-836a-bf404c7c001f",
+              "name": "STT_Result_Folder_ID",
+              "value": "1W1Wa5T4U9GIoPYiXO5-pOeSDXH7tJazl",
+              "type": "string"
+            },
+            {
+              "id": "232c806b-40af-4604-9a4d-1e3aeeb89c5a",
+              "name": "Audio_Folder_ID",
+              "value": "1fkZs1gKVdAmUYtt-Ud0TFGrNBpvmKMg0",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        -64
+      ],
+      "id": "76a83707-5442-47d8-b320-f6109d78644a",
+      "name": "Set Config"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "limit": 1,
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.Audio_Folder_ID }}",
+            "mode": "id"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -192,
+        -64
+      ],
+      "id": "298c1960-bb16-4e20-8d31-756952f8ec95",
+      "name": "Search Audio Files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16,
+        -64
+      ],
+      "id": "6373318c-19c0-4d74-9bac-2a0dacb47b0a",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {
+          "language": "th"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "4a832ba2-3346-415c-9d9a-cc87e0d0eae1",
+      "name": "STT",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=คุณมีหน้าที่ตรวจสอบความถูกต้องของข้อความ ให้ปรับปรุงให้มีความถูกต้อง โดยยังคงเนื้อหาความหมายเดิม"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        432,
+        -64
+      ],
+      "id": "831c5ba2-cfe4-431c-a659-e1ab36964095",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        128
+      ],
+      "id": "14ecd0f8-8ba6-4107-81e8-bf01b234e7f5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "folderId": "=1W1Wa5T4U9GIoPYiXO5-pOeSDXH7tJazl",
+        "title": "={{ $now.format('yyyy-MM-dd') }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -64
+      ],
+      "id": "c51d9847-fba9-4440-9e17-3eddc303537c",
+      "name": "Create Document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "kORHFqwX0Nw8xnOa",
+          "name": "Google Docs Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('Basic LLM Chain').item.json.text }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -64
+      ],
+      "id": "781bebc6-89f5-40ba-b132-8eef2321ccf4",
+      "name": "Write Document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "kORHFqwX0Nw8xnOa",
+          "name": "Google Docs Account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "STT": [
+      {
+        "json": {
+          "text": "looks like she is very professional ในส่วนของบทคัตยอบทความวิจอยนี่ ขอโทษนะคะ น้อยกว่าบทคัตยอในส่วนของงานวิจัยฮ้าบทฉบับเต็ม 5 บทฉบับเต็มมีได้ 1 หน้า อันนี้ค่ะ เหลือแค่จะบอกว่า โห 4 บันทัสก็เหลือฟื้อแล้วค่ะ จัก 1 หน้า 25บันทัส เหลือแค่ 4 บันทัสในบตความวิจัย เราจะเอาอะไรใส่ไป ง่ายๆค่ะ ใส่วิ discovered ใส่กระบวนการวิจาย ใส่ผลการวิจัย ใส่ข้อเสนอนี้เนี้ย แล้วใส่คำสำคันให้อยู่มันไหน 4 บันทัสพอค่ะ จบ ไม่ต้องเขียนเยอะ แค่นี้พอ เค้าให้ใส่แค่นี้ค่ะ ส่อนต่อไป เรียกว่า ส่วนเนื้อห Powers ในส่วนของเนื้อหาเนี่ย คุณจะต้อง เอาทั้ง곳ที่มีอยู่ 100 กว่าน่าเนี่ย ให้มาอยู่แค่ อยู่ในประมาณ 7-8 น้า 100 กว่านλά ให้มาอยู่ใน 7-8 น้า เขียนได้ยังไง หนึ่งก็คือ ส่วนแรกก็คือ บดนำ ช่างละฮะ บดนำเนี่ยเขียนประมาณหนึ่งน้า บดนำอะ เขียนประมาณหนึ่งน้า อันที่สองก็คือ roller เป็นในส่วนของปัญหาวิจัยแล้วก็วัทูประสงค์ อันนี้ไม่ กี่บันทัดหรอกค่ะ ประมาณ 3-4 บันทัด นะครับ แล้วอีกอันหนึ่ง ก็คือเป็นในเรื่อง ของ .... งานวิจัยที่เกี่ยวข้อม แล้วก็ dumpling ในส่วนของที่ซัดี อะไร้ะจะได้ประมาณซัก 2-3 น้า ก็ตีเข้าไปประมาณ 4 น้าแหละ แล้วที่เหลือลnity ที่เหลือก็คือ что ในส่วนของที่ 4 จะเป็นเรื่องของกระบวนการวิจัย กระบวนการวิจัยนี่ ในหมู่มที่ Aku เนี่ย เขียนแค่ครึ่งน้างก็พอแล้ว มันก็จะได้ ประมาณ 4 น้าครึ่ง ในครึ่งน้าเนีียมใส่อะไร ใส่กระบวนการวิจัย ใส่กรุมตัวอย่าง ใส่กรุ่มประชากร ใส่เครื่องมือ ใส่วิธีการในการเก็บรบรรมข้อมูล ใส่วิธีการในการวิครสร้างข้อมูล แค่เนี้ยครึ่งน้าพอแล้ว ไม่ต้องเยอะ เพราะว่ามันไม่มีอะไรมาก ในส่วนของบทที่สามนี่ มันคือน้อยอยู่แล้ว เป็นเรื่องปกตินะคะ มาต่อในส่วนที่ 5 ส่วนที่ 5 นี้ก็จะเป็นในเรื่องของการ สรุปผลวิจัยแล้วก็อภิปายผล อันนี้ค่ะ ใส่ได้เยอะ ๆ เลย พอไหกต่อไปประมาณ 3 ถึง 5 น้า เพราะมันเป็นหัวใจ ของบทความวิจัยเวลาเขาจะให้ คแนนอ่ะ เขาจะให้ส่วนในเยอะสุด เพราะว่า เขาจะดูว่าคุณเกิดอะไร องความรู้ใหญ่จากการทำงานวิจัยหรือป่าบ แล้วผู้วิจัยเนี่ย มีองความรู้ในการ ตั้งแต่ทำงานวิจัยมาเนี่ย แล้วอภิพายผลดีไหม เพราะอันเนี้ยมันคือหืน ของผู้วิจัย จะอยู่ในส่วนของสรุขผล แล้วก็อภิพายผล ฉะนั้น ค์แนนเวลาเขาให้ จะตีผิ่มหรือไม่ตีผิ่ม เค้าให้อยู่ตรงนี้ GUY Comedy เยอะสุดนะฮะ ส่วนที่เหลือ ก็จะเป็นในเรื่องของการ การอภิพายผล ซึ่งอันนี้ธรรมดา ถ้าผิดแพตเทอร์น ก็แค่ปะ มันไม่ได้มีอะไรซีเรียส แต่ส่วนที่ซีเรียสที่พี่ปูบอก ก็คือให้น้ำหนักมันเยอะหน่อย ก็คือสรุขผลกับอภิพายผล ให้มันมากหน่อย คุณก็จะมีโอกาสที่จะได้รับการตีผิ่ม เพราะว่า บทความวิจัยนี่ ถ้าคุณไม่ได้รับการตีผิ่ม หมายคำว่าวิจัยที่คุณทำมา วิทยานิพล หรือวิจัยที่คุณทำมา ไม่เกิดประโยชน์ เพราะว่าคุณไม่ได้ผลหลับ ตามที่เขาต้องการ ผลหลับที่เขาต้องการคือ เขาต้องการให้คุณเอางานวิจัยไปพาบลิก ถ้าคุณได้พับลิก แสดงว่างานคุณมีคุณają แต่ถ้าคุณไม่ได้พับลิก พับลิกแค่ในมหารัย ไม่ พับลิกแค่ในเชิงคาติálื่ม ถือว่าธรรมดา แต่ได้พับลิกออกข้างนอก จากที่อื่น แสดงว่างานคุณมีประโยชน์ ผมจะทำงานวิจัย 5 บทอย่างเดียว แต่ไม่ตีพิมพ์ก็ไม่จบค่ะ ถ้าใครสนใจอยากได้เทคนิคในการตีพิมพ์ บอกเลยค่ะว่า รีเซอเชอ มีเทคนิคในการตีพิมพ์แบบ 7 วันก็ได้ ใบหนังสือตอบรับ ถ้าสนใจก็มาถามเราได้นะคะ สำหรับวันนี้ไปแล้วค่ะ บ๊ายบายค่ะ",
+          "usage": {
+            "type": "duration",
+            "seconds": 253
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Search Audio Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Audio Files": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "STT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "STT": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Create Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Document": {
+      "main": [
+        [
+          {
+            "node": "Write Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "410c7fa5-153a-4b8d-80c8-a9e37d7821f0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "MgvkiCRQK7It2Bg2",
+  "tags": []
+}

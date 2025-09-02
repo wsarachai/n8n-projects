@@ -1,0 +1,1621 @@
+{
+  "name": "USEC16-3-BASIC QDRANT RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "xls",
+        "options": {}
+      },
+      "id": "5319000c-fc71-4658-b926-e16aa6f622aa",
+      "name": "Extract From XLS",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "id": "d560f34d-4fd8-41df-bd5b-91e4647f3b9b",
+      "name": "Extract From XLSX",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1392
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "id": "8968729a-bd62-4bcc-858b-082b4659d02a",
+      "name": "Extract From Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## OCR จากรูปภาพ",
+        "height": 456,
+        "width": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "d720a9eb-cffb-477a-bc3d-61653d24eebb",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        1584
+      ],
+      "id": "cbf3daf0-389b-4ea9-9a13-ec476459fbc4",
+      "name": "Extract from CSV"
+    },
+    {
+      "parameters": {
+        "pdfName": "data"
+      },
+      "type": "@cntrlx/n8n-nodes-pdfgenie-pro.pdfkit",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -432
+      ],
+      "id": "fd65a844-7895-49fb-b563-a3591e933659",
+      "name": "IMG2PDF"
+    },
+    {
+      "parameters": {
+        "binaryFieldName": "data"
+      },
+      "type": "n8n-nodes-doc-to-text.docToText",
+      "typeVersion": 1,
+      "position": [
+        672,
+        496
+      ],
+      "id": "8a4faeca-2df3-4dcb-98b6-7449a6ff3b75",
+      "name": "DOC to Text"
+    },
+    {
+      "parameters": {
+        "options": {
+          "includeImageBase64": true
+        }
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -224
+      ],
+      "id": "dcf8ec18-4b84-4d3c-a08e-180cbe71da05",
+      "name": "Mistral OCR",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.file_id }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        672,
+        656
+      ],
+      "id": "2ea3684d-4b10-442e-a0e7-7084d71e9019",
+      "name": "Get a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "kORHFqwX0Nw8xnOa",
+          "name": "Google Docs Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## อ่านข้อมูลจากไฟล์เอกสารในกลุ่มประเภท Text",
+        "height": 680,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "df690fab-f25e-4109-a3e8-99488607b6f8",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## อ่านข้อมูลจากไฟล์เอกสารในกลุ่มประเภท Sheet",
+        "height": 680,
+        "width": 320,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        1088
+      ],
+      "typeVersion": 1,
+      "id": "56596fcb-1e9d-487f-9d0f-17dc7d05f991",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        144
+      ],
+      "id": "a23d3bbb-7bff-4811-bcdd-601f8832b2d0",
+      "name": "Extract from PDF"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bf04e95d-fc84-48f9-a98e-3400c9209e6c",
+              "leftValue": "={{ $json.text.trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        144
+      ],
+      "id": "f532ae10-87df-4444-b45d-72398c4c421a",
+      "name": "Extract Success"
+    },
+    {
+      "parameters": {
+        "options": {
+          "includeImageBase64": true
+        }
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        144
+      ],
+      "id": "58ae5d02-4d4f-4452-aefa-e46b2dcaa290",
+      "name": "Mistral OCR1",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "pages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        144
+      ],
+      "id": "6a9bfc16-a073-4724-ab70-fbcc501475b1",
+      "name": "Split Page1"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "markdown",
+              "renameField": true,
+              "outputFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "mergeLists": true
+        }
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        144
+      ],
+      "id": "b608d228-d31e-4b53-aa75-ac29fd66dd0a",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "content": "## (1) OCR โดยใช้วิธีปกติ(ไม่มีค่าใช้จ่าย)",
+        "height": 328,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "f0c056f5-3d04-4a31-8a4d-ef44ec365065",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "## (2) OCR โดยใช้ Mistral กรณีที่เป็นไฟล์สแกนหรือเป็นไฟล์ที่ถอดอักษรปกติไม่ได้",
+        "height": 328,
+        "width": 992,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "8db930df-99c5-4541-bc98-08bed4294b48",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "6631f334-b2b3-484e-823f-acefcb213e61",
+      "name": "Aggregate2",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd073b2d-2efe-4ce7-9942-29e1973079ef",
+      "name": "Summarize1",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "09a3aee9-0156-4a63-8547-ecef9d515ca0",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "49ef086b-5d4d-4608-81fc-7cab245cbc99",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "b3e1780f-d8bd-4793-a119-d6e6dbb4e77d",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/msword",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "doc"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "eb325a5a-23fb-4e74-ac00-9ace019ca0b7",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "docx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/vnd.google-apps.document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9cd2a5fc-97e6-47d6-95d0-8a5851311c26"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "g-doc"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "fd6898cf-1ead-4c4e-b0af-0224a1fc9417",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "text/plain",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "txt"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "7c11e7b1-a8ab-4d9b-a81a-ce93b645b11a",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/vnd.ms-excel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xls"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "7dd8f34e-3cf8-4f03-8062-38b027d70b1e",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "xlsx"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "01a3f965-f5e6-4639-a7af-437db43b37f3",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "text/csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "csv"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "id": "7b638329-eebe-418c-bfe8-02ecbb5e7997",
+      "name": "Check File Type1",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        400,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"data\": {{ JSON.stringify($json.data || $json.text || $json.content || $json.concatenated_data) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        656
+      ],
+      "id": "19fbe157-179d-4798-90d2-c084f8a81ad3",
+      "name": "Extract Data Result",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1168,
+        144
+      ],
+      "id": "65752493-7eca-46a2-af38-d6b51b745027",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        16,
+        656
+      ],
+      "id": "e9461b37-80c4-4844-932b-d861ea2e1c2a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c90d643c-0ecb-46bf-ac8c-4534be385198",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "10e00ad4-e3b7-4d54-af15-4e91762740ac",
+              "name": "file_type",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            },
+            {
+              "id": "3dd96aec-78b4-4447-bb96-ef3a1fa90c25",
+              "name": "file_title",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "34a84c55-c700-48ec-9237-774aca7898c5",
+              "name": "file_url",
+              "value": "={{ $json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        656
+      ],
+      "id": "b2e09c61-95c8-42f5-a8bf-ee4fe0e8f2da",
+      "name": "File Detail"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        3296,
+        1616
+      ],
+      "id": "fb0049a0-95dc-4d26-928c-4bcfa9dce49e"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "38bfda78-e623-4a1a-aadf-768e7d6a8ffa",
+      "name": "Summarize",
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "USEC16",
+          "mode": "list",
+          "cachedResultName": "USEC16"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        2400,
+        656
+      ],
+      "id": "0454b693-8cb0-452a-b6c2-dfeec203b927",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "76TDry322YaeSSvo",
+          "name": "QdrantAPI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2352,
+        880
+      ],
+      "id": "6cbc8308-111e-4f5e-baa8-2651f7fc66c7",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "file_name",
+                "value": "={{ $('File Detail').item.json.file_title }}"
+              },
+              {
+                "name": "file_link",
+                "value": "={{ $('File Detail').item.json.file_url }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2592,
+        880
+      ],
+      "id": "29830b9a-0321-4c98-805a-9a2c06b8c021",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 500,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        1056
+      ],
+      "id": "cbb3f767-30f1-41d6-9459-905bbe4c9394",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1136,
+        -48
+      ],
+      "id": "f86806ed-5c25-4e22-8c54-c096d8bc3ee0",
+      "name": "When chat message received",
+      "webhookId": "c3780900-7357-4afa-80c9-69c5374e7b4a"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "คุณคือผู้ให้บริการสืบค้นข้อมูลที่ให้ข้อมูลและรายละเอียดได้อย่างแม่นยำ โดยต้องค้นหาข้อมูลจากเครื่องมือ \"KM Search\" เท่านั้น ห้ามคาดเดา หรือแต่งเติมข้อมูลจนความหมายเปลี่ยนไป หากไม่พบข้อมูล ให้แจ้งผู้ใช้ว่าไม่พบข้อมูล\n\nทุกครั้งที่มีการค้นข้อมูลออกมาแสดง ต้องแสดงแหล่งอ้างอิงเสมอ ได้แก่ ชื่อไฟล์และลิ้งค์ของไฟล์ เป็นต้น รวมถึงหากมีรูปประกอบก็ต้องแสดงรูปออกมาด้วยเช่นกัน"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        -48
+      ],
+      "id": "589fd9c8-e1ac-406a-b31e-bf30a66901f7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -704,
+        176
+      ],
+      "id": "0cb74ac9-6d9b-436a-a97b-32ea1a8fe38b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -512,
+        176
+      ],
+      "id": "26316b14-6ccc-4b07-8b65-7d74df1246fa",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -320,
+        352
+      ],
+      "id": "bee1e395-b010-468c-873a-65b34f169d96",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## สืบค้นข้อมูล AI Agent",
+        "height": 688,
+        "width": 880,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "d9773327-31af-427b-9adf-eab20bd77d7a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use RAG to look up information in the knowledgebase.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "USEC16",
+          "mode": "list",
+          "cachedResultName": "USEC16"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        176
+      ],
+      "id": "bbc4b743-853d-4a92-a39f-b0482176171c",
+      "name": "KM Search",
+      "credentials": {
+        "qdrantApi": {
+          "id": "76TDry322YaeSSvo",
+          "name": "QdrantAPI Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        352
+      ],
+      "id": "cafabf7a-6013-442f-ba48-da60561824b5",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "GKCkHVZ5ZmtJZWKQ",
+          "name": "CohereAPI Account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        656
+      ],
+      "id": "effaadeb-70d6-4b8c-8295-48f9b45b5295",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a7db0f92-394f-4a01-b002-a86de906c50b",
+              "name": "folder_id",
+              "value": "1SMC01ZEpsCxYNoh56ZlacgG_1J8iv9V-",
+              "type": "string"
+            },
+            {
+              "id": "4243e714-4a62-473c-b17a-9fe9849ff54d",
+              "name": "collection_name",
+              "value": "USEC16",
+              "type": "string"
+            },
+            {
+              "id": "a93f3595-39cd-4ada-9cb2-ef8efc54ce50",
+              "name": "qdrant_main_domain",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        656
+      ],
+      "id": "28b29ada-1b46-4390-ab05-472324ba1bbe",
+      "name": "Master Config"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $('Master Config').item.json.folder_id }}",
+            "mode": "id"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -352,
+        656
+      ],
+      "id": "02af5016-fe4a-4ac5-9f8f-909645ca55ee",
+      "name": "List Document",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        656
+      ],
+      "id": "1aff7d81-f9cf-4ecf-985d-c649526e802d",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Master Config').item.json.qdrant_main_domain }}/collections/{{ $('Master Config').item.json.collection_name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantRestApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"vectors\": {\n      \"size\": 1536,\n      \"distance\": \"Cosine\"\n    },\n    \"optimizers_config\": {\n      \"default_segment_number\": 4\n    },\n    \"quantization_config\": {\n      \"scalar\": {\n        \"type\": \"int8\",\n        \"always_ram\": true\n      }\n    },\n    \"on_disk_payload\": false,\n    \"shard_number\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -560,
+        656
+      ],
+      "id": "0c3806c5-dee7-49fd-baad-8910cd47a54e",
+      "name": "Create Collection",
+      "alwaysOutputData": false,
+      "credentials": {
+        "qdrantRestApi": {
+          "id": "D6fkhZm6D23sTTPH",
+          "name": "Qdrant Account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Collection Management",
+        "height": 320,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "9c9a606d-e1e4-49ab-87d6-ab284c8e818c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "deleteCollection",
+        "collectionName": {
+          "__rl": true,
+          "value": "={{ $('Master Config').item.json.collection_name }}",
+          "mode": "name"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-qdrant.qdrant",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        656
+      ],
+      "id": "7548881d-671e-4099-97c7-c5f283772cda",
+      "name": "Delete Collection",
+      "credentials": {
+        "qdrantRestApi": {
+          "id": "D6fkhZm6D23sTTPH",
+          "name": "Qdrant Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract From XLS": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract From XLSX": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract From Text": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from CSV": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IMG2PDF": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DOC to Text": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR": {
+      "main": [
+        [
+          {
+            "node": "Split Page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Success": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Mistral OCR1": {
+      "main": [
+        [
+          {
+            "node": "Split Page1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Page1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "Summarize1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check File Type1": {
+      "main": [
+        [
+          {
+            "node": "IMG2PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from PDF",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DOC to Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DOC to Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a document",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract From Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract From XLS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract From XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data Result": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "File Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Detail": {
+      "main": [
+        [
+          {
+            "node": "Check File Type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Extract Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "KM Search",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KM Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        []
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Config": {
+      "main": [
+        [
+          {
+            "node": "Delete Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Document": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Collection": {
+      "main": [
+        [
+          {
+            "node": "List Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Collection": {
+      "main": [
+        [
+          {
+            "node": "Create Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85a9be1e-850d-4488-9747-e6aedff7b25e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "AObpL9V61WbaJLkW",
+  "tags": []
+}

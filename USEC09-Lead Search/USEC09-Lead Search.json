@@ -1,0 +1,1952 @@
+{
+  "name": "USEC09-Lead Search",
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "include": "allOtherFields",
+        "options": {
+          "destinationFieldName": "search_item"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -100
+      ],
+      "id": "fa4ac8fa-8cb0-45c6-93c0-3da9b43d4bdc",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "formTitle": "ระบบดึงข้อมูลกลุ่มเป้าหมาย",
+        "formDescription": "ระบบดึงข้อมูลกลุ่มเป้าหมายจากช่องทางออนไลน์ต่างๆ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "กลุ่มลูกค้าเป้าหมายที่ต้องการ",
+              "placeholder": "เช่น คลีนิคเสริมความงาม, สถานศึกษา, โรงแรม เป็นต้น",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "แหล่งข้อมูล",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "FACEBOOK SEARCH"
+                  },
+                  {
+                    "option": "GOOGLE SEARCH"
+                  },
+                  {
+                    "option": "MAP SEARCH"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "เขตพื้นที่ที่ต้องการ (ถ้ามี)",
+              "placeholder": "เช่น เชียงใหม่, บางนา, ทองหล่อ, มาเลเซีย เป็นต้น"
+            },
+            {
+              "fieldLabel": "รายการที่ต้องการดึงข้อมูล",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "10"
+                  },
+                  {
+                    "option": "20"
+                  },
+                  {
+                    "option": "30"
+                  },
+                  {
+                    "option": "40"
+                  },
+                  {
+                    "option": "50"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "ค้นหาข้อมูลกลุ่มเป้าหมาย",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "รอสักครู่ ระบบกำลังสแกนหาข้อมูลลูกค้ากลุ่มเป้าหมาย"
+            }
+          },
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 12px;\n\t--font-size-label: 14px;\n\t--font-size-test-notice: 12px;\n\t--font-size-input: 14px;\n\t--font-size-header: 20px;\n\t--font-size-paragraph: 14px;\n\t--font-size-link: 12px;\n\t--font-size-error: 12px;\n\t--font-size-html-h1: 28px;\n\t--font-size-html-h2: 20px;\n\t--font-size-html-h3: 16px;\n\t--font-size-html-h4: 14px;\n\t--font-size-html-h5: 12px;\n\t--font-size-html-h6: 10px;\n\t--font-size-subheader: 14px;\n\n\t/* Colors: Blue - Red Theme */\n\t--color-background: #f3f7fb;\n\t--color-test-notice-text: #d43f00;\n\t--color-test-notice-bg: #fff5f5;\n\t--color-test-notice-border: #ffcccc;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #c6d4e1;\n\t--color-card-shadow: rgba(33, 93, 168, 0.12);\n\t--color-link: #1d4ed8; /* dark blue */\n\t--color-header: #1e293b; /* slate dark */\n\t--color-label: #1e3a8a; /* blue-800 */\n\t--color-input-border: #93c5fd; /* light blue border */\n\t--color-input-text: #1e40af;\n\t--color-focus-border: #2563eb; /* blue-600 */\n\t--color-submit-btn-bg: #dc2626; /* red-600 */\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #b91c1c; /* red-700 */\n\t--color-required: #dc2626; /* same as submit */\n\t--color-clear-button-bg: #1d4ed8;\n\t--color-html-text: #1e293b;\n\t--color-html-link: #dc2626;\n\t--color-header-subtext: #475569;\n\n\t/* Border Radii */\n\t--border-radius-card: 8px;\n\t--border-radius-input: 6px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 8px;\n\n\t/* Spacing */\n\t--padding-container-top: 24px;\n\t--padding-card: 24px;\n\t--padding-test-notice-vertical: 12px;\n\t--padding-test-notice-horizontal: 24px;\n\t--margin-bottom-card: 16px;\n\t--padding-form-input: 12px;\n\t--card-padding: 24px;\n\t--card-margin-bottom: 16px;\n\n\t/* Dimensions */\n\t--container-width: 448px;\n\t--submit-btn-height: 48px;\n\t--checkbox-size: 18px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 4px 16px 0px var(--color-card-shadow);\n\t--opacity-placeholder: 0.5;\n}"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1340,
+        340
+      ],
+      "id": "40addf15-ceb6-467b-af07-94eae2c557b2",
+      "name": "Search Lead Form",
+      "webhookId": "fab041c6-1be0-4da4-b328-58273accf896"
+    },
+    {
+      "parameters": {
+        "jsCode": "const requestedAmount = parseInt($('Search Lead Form').first().json['รายการที่ต้องการดึงข้อมูล'], 10) || 10; // ดึงค่าจากฟอร์ม (default 10)\nconst resultsPerPage = 10;\n\nconst output = [];\n\nfor (let i = 1; i <= requestedAmount; i += resultsPerPage) {\n  output.push({ json: { start: i } });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        340
+      ],
+      "id": "2a31d747-70c3-44cc-9d3c-d63a75eff54f",
+      "name": "Split Page"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const target = item.json[\"กลุ่มลูกค้าเป้าหมายที่ต้องการ\"] || \"\";\n  const area = item.json[\"เขตพื้นที่ที่ต้องการ (ถ้ามี)\"] || \"\";\n\n  // รวมข้อความทั้งสองช่อง\n  const combined = $('Search Lead Form').first().json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] + \" \" + $('Search Lead Form').first().json['เขตพื้นที่ที่ต้องการ (ถ้ามี)'];\n\n  // แยกคำด้วย , หรือ ช่องว่างหลายตัว และลบช่องว่างส่วนเกิน\n  const keywords = combined\n    .split(/[,\\s]+/)\n    .map(word => word.trim())\n    .filter(word => word !== \"\");\n\n  // รวมเป็นสตริงเดียวด้วยเครื่องหมาย +\n  const searchQuery = keywords.join(\"+\");\n\n  return {\n    json: {\n      ...item.json,\n      searchQuery\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1020,
+        340
+      ],
+      "id": "458a8429-e43e-497c-9b61-dfa7e99f254b",
+      "name": "Convert2Query"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        480,
+        -100
+      ],
+      "id": "92073c59-46ca-47cf-80ca-ccb883465b01",
+      "name": "Loop Over Items3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2760,
+        80
+      ],
+      "id": "7a517ec6-561c-4a7e-966c-ec58434ce9b8"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Search Lead Form').item.json['แหล่งข้อมูล'] }}",
+                    "rightValue": "FACEBOOK SEARCH",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "1bc424a4-8608-4bed-a631-a2f15cd809ee"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Facebook Search"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c895b354-d112-447b-b9b3-16673fe3f360",
+                    "leftValue": "={{ $('Search Lead Form').item.json['แหล่งข้อมูล'] }}",
+                    "rightValue": "GOOGLE SEARCH",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Google Search"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7536a266-4bc0-4b75-8090-e63ea25f6fa8",
+                    "leftValue": "={{ $('Search Lead Form').item.json['แหล่งข้อมูล'] }}",
+                    "rightValue": "MAP SEARCH",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Map Search"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -700,
+        340
+      ],
+      "id": "189bfe54-49c7-42b4-8390-96a6778cf03a",
+      "name": "Check Source"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/customsearch/v1?cx=7690dca34b301433a&q=site:facebook.com+{{ $('Convert2Query').item.json.searchQuery }}&num=10&start={{ $('Split Page').item.json.start }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        -100
+      ],
+      "id": "4c0701cf-e8eb-4717-9283-16d3739bda4d",
+      "name": "Facebook Search",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/customsearch/v1?cx=023b3bd1f32a448ff&q={{ $('Convert2Query').item.json.searchQuery }}&num=10&start={{ $('Split Page').item.json.start }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        340
+      ],
+      "id": "3242d61f-7517-45a8-bac3-f3b8465e9263",
+      "name": "Google Search",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Split Out').all().length }}"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        60,
+        -100
+      ],
+      "id": "e9f4b858-fa62-4c73-b474-7c28f3c370f6",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const fullUrl = $json.search_item.link;\n\n// ใช้ RegExp ดึง domain + ชื่อเพจ (เช่น https://www.facebook.com/FarmhouseThai)\nconst match = fullUrl.match(/^https:\\/\\/www\\.facebook\\.com\\/[^\\/]+/);\n\nreturn {\n  json: {\n    title: $json.search_item.title,\n    detail: $json.search_item.snippet,\n    baseUrl: match ? match[0] : null,\n    originalUrl: fullUrl        \n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -120,
+        -100
+      ],
+      "id": "7dd0d247-1c76-4105-8803-81c5ff376e1a",
+      "name": "Get URL Base"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        100
+      ],
+      "id": "aa2f340f-ec31-4418-806c-e6a5c4dd9acd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.title }} {{ $json.detail }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "={{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }}",
+              "description": "=เป็นข้อมูลลูกค้าในกลุ่มประเภท {{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }} โดยต้องไม่ใช่ข้อมูลข่าวสารหรือกิจกรรม"
+            }
+          ]
+        },
+        "options": {
+          "fallback": "other"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        -100
+      ],
+      "id": "fc989bfe-c64e-4e3a-ac6f-b4199c0b1ea5",
+      "name": "Data Classifier",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "include": "allOtherFields",
+        "options": {
+          "destinationFieldName": "search_item"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        340
+      ],
+      "id": "9b40a02e-99c4-4bfc-b8ae-a08405087307",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Split Out1').all().length }}"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        340
+      ],
+      "id": "89146684-fc77-4004-b8b5-95ed0eb1d0d9",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "983acc92-f963-408b-bb18-7d33958ab4c7",
+              "leftValue": "={{ $json.search_item.link }}",
+              "rightValue": "facebook",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        340
+      ],
+      "id": "531d5d12-424c-432c-9c83-7553de24f4ea",
+      "name": "Data Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        260,
+        340
+      ],
+      "id": "96591bde-2bf7-4c32-ab22-e5a61a2c8095",
+      "name": "Loop Over Items4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        2180,
+        500
+      ],
+      "id": "f12048a7-5365-4b98-aeed-7799f72508b7"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        540
+      ],
+      "id": "52ad004a-7451-4c8e-b619-50e2deb1ce73",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.search_item.title }} {{ $json.search_item.snippet }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "={{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }}",
+              "description": "=เป็นข้อมูลลูกค้าในกลุ่มประเภท {{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }} โดยต้องไม่ใช่ข้อมูลข่าวสารหรือกิจกรรม"
+            }
+          ]
+        },
+        "options": {
+          "fallback": "other"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        500,
+        340
+      ],
+      "id": "2fbf1ce9-e853-4d1b-936a-244a8a6a0281",
+      "name": "Data Classifier1"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data.markdown }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Telephone",
+              "description": "=ข้อมูลหมายเลขติดต่อกลุ่มลูกค้าประเภท {{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }} โดยต้องเป็น Format เบอร์โทรที่ถูกต้องเท่านั้น โดยมีค่าเริ่มต้นเป็น \"\"",
+              "required": true
+            },
+            {
+              "name": "E-Mail",
+              "description": "=ข้อมูล E-Mail ของกลุ่มลูกค้าประเภท {{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }} โดยต้องเป็น Format อีเมล์ที่ถูกต้องเท่านั้น โดยมีค่าเริ่มต้นเป็น \"\"",
+              "required": true
+            },
+            {
+              "name": "Address",
+              "description": "=ข้อมูลที่อยู่ ได้แก่ สถานที่ตั้ง ตำบล อำเภอ จังหวัด รหัสไปรษณีย์ เป็นต้น ของกลุ่มลูกค้าประเภท {{ $('Search Lead Form').item.json['กลุ่มลูกค้าเป้าหมายที่ต้องการ'] }} โดยมีค่าเริ่มต้นเป็น \"\"",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        1100,
+        340
+      ],
+      "id": "153ee559-0ae6-4573-89b9-83926fadb42e",
+      "name": "Contact Extractor"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://places.googleapis.com/v1/places:searchText",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "places.id,nextPageToken"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "textQuery",
+              "value": "={{ $('Convert2Query').item.json.searchQuery }}"
+            },
+            {
+              "name": "pageSize",
+              "value": "={{ $('Search Lead Form').item.json['รายการที่ต้องการดึงข้อมูล'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        760
+      ],
+      "id": "5a622e42-7160-4d6d-ad6e-5fb41dd79808",
+      "name": "Search Place",
+      "executeOnce": true,
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://places.googleapis.com/v1/places/{{ $json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "languageCode",
+              "value": "th"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "id,displayName,formattedAddress,internationalPhoneNumber,nationalPhoneNumber,websiteUri"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        140,
+        860
+      ],
+      "id": "e134bd5b-1ba3-410b-a5c3-203c277f221b",
+      "name": "Get Place Detail",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "places",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        760
+      ],
+      "id": "d83a58bc-1044-416c-af9a-e00651c19d4f",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -120,
+        760
+      ],
+      "id": "d1c437e1-770e-4ff6-a978-b6f7ac7c644d",
+      "name": "Loop Over Items5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me2",
+      "typeVersion": 1,
+      "position": [
+        840,
+        920
+      ],
+      "id": "7192788a-e627-4439-8d66-4df8c12d1435"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.google_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/132ZjcJmeGqZZk7EU9ohAvDoCdRitJkum1DQfZyNX5qk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "REF": "={{ $json.id }}",
+            "Lead Name": "={{ $json.displayName.text }}",
+            "Detail": "={{ $json.displayName.text }}",
+            "Address": "={{ $json.formattedAddress }}",
+            "Telephone": "={{ $('Get Place Detail').item.json.nationalPhoneNumber }}",
+            "Link URL": "={{ $json.websiteUri }}"
+          },
+          "matchingColumns": [
+            "REF"
+          ],
+          "schema": [
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Detail",
+              "displayName": "Detail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telephone",
+              "displayName": "Telephone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REF",
+              "displayName": "REF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        600,
+        860
+      ],
+      "id": "d021d22e-ca5d-4b77-93ac-2587ed21be9b",
+      "name": "Record Lead",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.google_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/132ZjcJmeGqZZk7EU9ohAvDoCdRitJkum1DQfZyNX5qk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead Name": "={{ $('Scrape Web').item.json.data.metadata.title }}",
+            "Detail": "={{ $('Scrape Web').item.json.data.metadata.description }}",
+            "Address": "={{ $json.output.Address }}",
+            "Telephone": "={{ $json.safePhone }}",
+            "Link URL": "={{ $('Scrape Web').item.json.data.metadata.url }}",
+            "E-Mail": "={{ $json.output['E-Mail'] }}"
+          },
+          "matchingColumns": [
+            "Lead Name"
+          ],
+          "schema": [
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Detail",
+              "displayName": "Detail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telephone",
+              "displayName": "Telephone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REF",
+              "displayName": "REF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1960,
+        340
+      ],
+      "id": "1cc986fd-e04b-41a5-bcdc-93270afc9d35",
+      "name": "Record Lead1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "68f225bd-e65e-4155-a748-8bf3f30278f1",
+              "leftValue": "={{ $json.output.Telephone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "21e7171d-133e-4a02-adff-b4db9bee14a2",
+              "leftValue": "={{ $json.output['E-Mail'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1460,
+        340
+      ],
+      "id": "099f1be7-c3b9-471b-9e95-3fc2920fefa4",
+      "name": "Is Not Empty"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.google_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/132ZjcJmeGqZZk7EU9ohAvDoCdRitJkum1DQfZyNX5qk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead Name": "={{ $('Get Data Result').item.json.title }}",
+            "Detail": "={{ $('Get Data Result').item.json.intro }}",
+            "Address": "={{ $('Get Data Result').item.json.address }}",
+            "Telephone": "={{ $json.safePhone }}",
+            "Link URL": "={{ $('Get Data Result').item.json.pageUrl }}",
+            "E-Mail": "={{ $('Get Data Result').item.json.email }}"
+          },
+          "matchingColumns": [
+            "Lead Name"
+          ],
+          "schema": [
+            {
+              "id": "Lead Name",
+              "displayName": "Lead Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Detail",
+              "displayName": "Detail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telephone",
+              "displayName": "Telephone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link URL",
+              "displayName": "Link URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REF",
+              "displayName": "REF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2560,
+        -100
+      ],
+      "id": "8b6091e6-d23e-4458-82a9-9a78d4243062",
+      "name": "Record Lead2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const phone = item.json.phone ?? \"\";\n  return {\n    json: {\n      ...item.json,\n      safePhone: phone ? `'${phone}` : \"\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        -100
+      ],
+      "id": "275da8a1-3f6c-45f1-9771-8a035e99a29a",
+      "name": "Mobile Format"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const phone = item.json.output.Telephone ?? \"\";\n  return {\n    json: {\n      ...item.json,\n      safePhone: phone ? `'${phone}` : \"\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1720,
+        340
+      ],
+      "id": "da38b63e-1f53-447b-a274-ca0a1e65dec6",
+      "name": "Mobile Format1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bcd82e65-b1ea-4074-86ff-591038249821",
+              "name": "google_sheet_id",
+              "value": "132ZjcJmeGqZZk7EU9ohAvDoCdRitJkum1DQfZyNX5qk",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1180,
+        340
+      ],
+      "id": "b9b2b494-ba6c-4c81-bb7c-1d66d4e648ac",
+      "name": "Master Data"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        -100
+      ],
+      "id": "0446a387-7548-49ec-b5d8-bba1a5177656",
+      "name": "Wait",
+      "webhookId": "c651173e-6d86-4838-87e2-9243d6fdd0cd"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "https://console.apify.com/actors/4Hv5RhChiaDk6iwad/input",
+          "mode": "url"
+        },
+        "customBody": "={\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.baseUrl }}\",\n            \"method\": \"GET\"\n        }\n    ]\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -100
+      ],
+      "id": "b3adc339-1e3a-422d-9d87-4e12e502aa39",
+      "name": "Facebook Scraper",
+      "credentials": {
+        "apifyApi": {
+          "id": "CNJPT3O4cDzMywf0",
+          "name": "Apify Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2d6c9119-5d6b-4aeb-90fa-35d2071b165e",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1640,
+        -100
+      ],
+      "id": "4fa1263a-d083-437f-9727-cf886eb0192d",
+      "name": "IsSuccess"
+    },
+    {
+      "parameters": {
+        "resource": "Actor runs",
+        "operation": "Get run",
+        "runId": {
+          "__rl": true,
+          "value": "={{ $('Facebook Scraper').item.json.id }}",
+          "mode": "id"
+        }
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        -100
+      ],
+      "id": "7bc56eaa-49bb-4b1e-9e8f-d1e081efce96",
+      "name": "CheckStatus",
+      "credentials": {
+        "apifyApi": {
+          "id": "CNJPT3O4cDzMywf0",
+          "name": "Apify Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "operation": "Get items",
+        "datasetId": "={{ $('CheckStatus').item.json.defaultDatasetId }}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        -100
+      ],
+      "id": "bc72a494-80a2-4715-9ebd-9a379c8f3d0d",
+      "name": "Get Data Result",
+      "credentials": {
+        "apifyApi": {
+          "id": "CNJPT3O4cDzMywf0",
+          "name": "Apify Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ba6d82d1-0d4a-4650-ab3c-a88f076b57e9",
+              "leftValue": "={{ $json.originalUrl }}",
+              "rightValue": "facebook.com/groups",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "108c7fc2-8155-4a8b-bbbb-a7d7c76c274b",
+              "leftValue": "={{ $json.baseUrl }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        260,
+        -100
+      ],
+      "id": "2d57d6c0-febe-4fe5-be36-13fa27b2578c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1840,
+        -100
+      ],
+      "id": "ac27532d-e190-4a2e-b3f4-ff64e2c9d81e",
+      "name": "Wait1",
+      "webhookId": "cb6d1571-f4ad-47af-8ca7-3998cf4fb11f"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "68f225bd-e65e-4155-a748-8bf3f30278f1",
+              "leftValue": "={{ $('Get Data Result').item.json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "21e7171d-133e-4a02-adff-b4db9bee14a2",
+              "leftValue": "={{ $('Get Data Result').item.json.phone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2200,
+        -100
+      ],
+      "id": "3b580603-5b42-4017-be31-ffb9d598747c",
+      "name": "Is Not Empty1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "68f225bd-e65e-4155-a748-8bf3f30278f1",
+              "leftValue": "={{ $('Get Place Detail').item.json.nationalPhoneNumber }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        860
+      ],
+      "id": "290261ed-7784-4e1f-9a64-17617f5a7a05",
+      "name": "Is Not Empty2"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "url": "={{ $json.search_item.link }}",
+        "formats": [
+          "markdown"
+        ],
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        900,
+        340
+      ],
+      "id": "d7737059-c23d-4e22-912c-38e24a7ed1bc",
+      "name": "Scrape Web",
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {
+    "Search Lead Form": [
+      {
+        "json": {
+          "กลุ่มลูกค้าเป้าหมายที่ต้องการ": "สถาบันกวดวิชา",
+          "แหล่งข้อมูล": "GOOGLE SEARCH",
+          "เขตพื้นที่ที่ต้องการ (ถ้ามี)": "กรุงเทพ สุขุมวิท ทองหล่อ",
+          "รายการที่ต้องการดึงข้อมูล": "10",
+          "submittedAt": "2025-07-01T14:51:20.421-04:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get URL Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Lead Form": {
+      "main": [
+        [
+          {
+            "node": "Master Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Page": {
+      "main": [
+        [
+          {
+            "node": "Check Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert2Query": {
+      "main": [
+        [
+          {
+            "node": "Split Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Data Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Source": {
+      "main": [
+        [
+          {
+            "node": "Facebook Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search Place",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Search": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Search": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get URL Base": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Classifier": {
+      "main": [
+        [
+          {
+            "node": "Facebook Scraper",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Data Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items4": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Data Classifier1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Classifier1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Contact Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Classifier1": {
+      "main": [
+        [
+          {
+            "node": "Scrape Web",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Extractor": {
+      "main": [
+        [
+          {
+            "node": "Is Not Empty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Place": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Place Detail": {
+      "main": [
+        [
+          {
+            "node": "Is Not Empty2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items5": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Place Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Lead": {
+      "main": [
+        [
+          {
+            "node": "Replace Me2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Lead1": {
+      "main": [
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Not Empty": {
+      "main": [
+        [
+          {
+            "node": "Mobile Format1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Lead2": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mobile Format": {
+      "main": [
+        [
+          {
+            "node": "Record Lead2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mobile Format1": {
+      "main": [
+        [
+          {
+            "node": "Record Lead1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Data": {
+      "main": [
+        [
+          {
+            "node": "Convert2Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "CheckStatus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Scraper": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IsSuccess": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CheckStatus": {
+      "main": [
+        [
+          {
+            "node": "IsSuccess",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Data Result": {
+      "main": [
+        [
+          {
+            "node": "Is Not Empty1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Get Data Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Not Empty1": {
+      "main": [
+        [
+          {
+            "node": "Mobile Format",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Not Empty2": {
+      "main": [
+        [
+          {
+            "node": "Record Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Web": {
+      "main": [
+        [
+          {
+            "node": "Contact Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "16e3aef1-2936-4e24-adac-58dc8cce82bd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "9ZFOARiDDK15D0XD",
+  "tags": []
+}

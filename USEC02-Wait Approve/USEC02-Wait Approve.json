@@ -1,0 +1,992 @@
+{
+  "name": "USEC02-Wait Approve",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert SEO Content Writer and Copywriter who specializes in crafting high-quality blog articles tailored to a specific audience. Your mission is to write a well-researched, engaging, and SEO-optimized article based on the input provided.\n\n---\n\n🎯 OBJECTIVE:\nCreate a blog article that is useful, easy to read, SEO-friendly, and aligned with the specified topic, audience tone, and language.\n\n---\n\n🖋 WRITING RULES:\n\n1. **Language:**  \n   You must write the entire article in the language specified by the user: `{{ $json.Language }}`.  \n   This includes the title, content, tags, and SEO description. Do not use any other language.  \n   For example, if `{{ $json.Language }}` is \"Thai\", write the entire article in Thai only.\n\n2. **Length:**  \n   800–1200 words.\n\n3. **Tone:**  \n   Friendly, clear, and conversational. Avoid technical jargon unless essential.\n\n4. **Structure:**  \n   - Use `#` (H1) for the title  \n   - Use `##` (H2) for main sections  \n   - Use `###` (H3) for sub-sections  \n   - Use bullet points or numbered lists when helpful  \n   - Maintain logical flow and readability\n\n5. **SEO Optimization:**  \n   - Naturally include relevant keywords  \n   - Write an attention-grabbing title  \n   - Write a 140–160 character SEO description  \n   - Use tags relevant to the content\n\n6. **Formatting:**  \n   Return the result in the JSON format shown below.\n\n7. **Research Required:**  \n   Use up-to-date and relevant information. Use the \"Research Tool\" before writing.\n\n8. **Conclusion:**  \n   End the article with a short summary, call-to-action, or final takeaway for the reader.\n\n---\n\n🧾 INPUT:\n- Topic: {{ $json.Topic }}\n- Audience tone and style: {{ $json.Target }}\n- Language: {{ $json.Language }}\n\n---\n\n✅ OUTPUT FORMAT (JSON):\n\n{\n  \"title\": \"An SEO-optimized title written in {{ $json.Language }}\",\n  \"content\": \"Full article written in markdown format, in {{ $json.Language }}\",\n  \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n  \"description_for_seo\": \"A compelling SEO meta description in {{ $json.Language }}, 140–160 characters\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "8f1d2ba7-d770-4cb5-b185-6a26a1ff6932",
+      "name": "Copywriter AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        928,
+        144
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=> You are a professional article editor and content improvement expert. You have a strong ability to interpret reviewer comments and revise articles without altering the author's intent or overall structure.\n\n---\n\n## 🌟 **YOUR MISSION:**\nYour task is to improve and revise an existing article based strictly on the reviewer's feedback. The final result should:\n- Be clearer, more accurate, and more engaging\n- Align fully with the reviewer’s suggestions\n- Preserve the original article's structure, core message, and tone unless instructed otherwise\n\n---\n\n## 📜 **REVISION GUIDELINES:**\n1. Carefully read and interpret the reviewer’s comments.\n2. Identify the specific areas needing revision based on the feedback.\n3. Improve clarity, flow, tone, and accuracy in those areas.\n4. Add new information only where explicitly requested and ensure seamless integration.\n5. Maintain all original heading structures (`#`, `##`, `###`) unless changes are requested.\n6. Fix grammar, spelling, or word choice issues found during editing.\n7. Use the target language and tone according to the provided metadata.\n\n---\n\n## ✅ **OUTPUT FORMAT (JSON):**\nReturn your final output in this structure:\n{\n  \"title\": \"Revised and SEO-optimized article title\",\n  \"content\": \"Full revised article in markdown format\",\n  \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n  \"description_for_seo\": \"A 140–160 character SEO meta description summarizing the improved article\"\n}\n\n---\n\n## 📂 **INPUT DATA YOU MUST USE:**\n- OriginalArticle:\n  {{ $('Set Fields').item.json.toJsonString() }}\n\n- Target Audience Style and Tone:\n  {{ $('Get Topic from Google Sheets').item.json.Target }}\n\n- Language:\n  {{ $('Get Topic from Google Sheets').item.json.Language }}\n\n- ReviewerComments:\n  {{ $json.data['บันทึกผลการพิจารณาเพิ่มเติม'] }}\n\n---\n\n🚨 **IMPORTANT:**\n- You must revise the article strictly according to the `ReviewerComments`\n- Do not invent or change meaning unless explicitly allowed\n- Language must match the `Language` input 100%\n- Final output must be in valid JSON and fully revised",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "5c767874-62a9-4648-a78d-e8706568c0fc",
+      "name": "Copywriter Revision Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2064,
+        672
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set MasterConfig').item.json.content_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 511624605,
+          "mode": "list",
+          "cachedResultName": "Generated Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zjc3PYs4nt1ZDfKLAmvxkWP4lpIE0LvnxFAXbszPt8E/edit#gid=511624605"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Set Fields').item.json.title }}",
+            "Content": "={{ $('Set Fields').item.json.content }}",
+            "Tags": "={{ $('Set Fields').item.json.tags }}",
+            "Description for SEO": "={{ $('Set Fields').item.json.description_for_seo }}",
+            "Approval Result": "={{ $('Send Content for Approval').item.json.data['ผลพิจารณาตรวจสอบบทความ'] }}",
+            "Feedback": "={{ $('Send Content for Approval').item.json.data['บันทึกผลการพิจารณาเพิ่มเติม'] }}",
+            "Generation Date": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description for SEO",
+              "displayName": "Description for SEO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Approval Result",
+              "displayName": "Approval Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generation Date",
+              "displayName": "Generation Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "6369c892-e3b2-4afc-94ac-d28dc533e391",
+      "name": "Add Generated Content to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2544,
+        304
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.content_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1670759982,
+          "mode": "list",
+          "cachedResultName": "Topic List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zjc3PYs4nt1ZDfKLAmvxkWP4lpIE0LvnxFAXbszPt8E/edit#gid=1670759982"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Pending"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "f90a7848-3864-481a-8bd0-c595f01170ee",
+      "name": "Get Topic from Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        608,
+        144
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $('Set MasterConfig').first().json.email_reviewer }}",
+        "subject": "[โปรดตรวจสอบ] จัดส่งรายละเอียดบทความเพื่อเสนอพิจารณาตรวจสอบ",
+        "message": "={{ $json.data }}",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "ผลพิจารณาตรวจสอบบทความ",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "อนุมัติให้เผยแพร่"
+                  },
+                  {
+                    "option": "ให้ดำเนินการกลับไปแก้ไข"
+                  },
+                  {
+                    "option": "ยกเลิกบทความนี้"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "บันทึกผลการพิจารณาเพิ่มเติม",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "messageButtonLabel": "ดำเนินการต่อ",
+          "responseFormTitle": "ผลดำเนินการ",
+          "responseFormDescription": "จัดส่งผลการพิจารณาเรียบร้อยแล้ว",
+          "responseFormButtonLabel": "ดำเนินการต่อ",
+          "responseFormCustomCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 12px;\n\t--font-size-label: 14px;\n\t--font-size-test-notice: 12px;\n\t--font-size-input: 14px;\n\t--font-size-header: 20px;\n\t--font-size-paragraph: 14px;\n\t--font-size-link: 12px;\n\t--font-size-error: 12px;\n\t--font-size-html-h1: 28px;\n\t--font-size-html-h2: 20px;\n\t--font-size-html-h3: 16px;\n\t--font-size-html-h4: 14px;\n\t--font-size-html-h5: 12px;\n\t--font-size-html-h6: 10px;\n\t--font-size-subheader: 14px;\n\n\t/* Colors (Blue/Red theme) */\n\t--color-background: #f5f9ff;\n\t--color-test-notice-text: #1e60a9;\n\t--color-test-notice-bg: #eaf3ff;\n\t--color-test-notice-border: #c6dcf9;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #c9d8e8;\n\t--color-card-shadow: rgba(30, 96, 169, 0.08);\n\t--color-link: #1e60a9;\n\t--color-header: #1b3a57;\n\t--color-label: #1b3a57;\n\t--color-input-border: #b3cde3;\n\t--color-input-text: #2c4966;\n\t--color-focus-border: #1e60a9;\n\t--color-submit-btn-bg: #e53935; /* Red button */\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #d32f2f; /* Strong red */\n\t--color-required: #d32f2f;\n\t--color-clear-button-bg: #1e60a9;\n\t--color-html-text: #2c3e50;\n\t--color-html-link: #e53935;\n\t--color-header-subtext: #607d99;\n\n\t/* Border Radii */\n\t--border-radius-card: 8px;\n\t--border-radius-input: 6px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 8px;\n\n\t/* Spacing */\n\t--padding-container-top: 24px;\n\t--padding-card: 24px;\n\t--padding-test-notice-vertical: 12px;\n\t--padding-test-notice-horizontal: 24px;\n\t--margin-bottom-card: 16px;\n\t--padding-form-input: 12px;\n\t--card-padding: 24px;\n\t--card-margin-bottom: 16px;\n\n\t/* Dimensions */\n\t--container-width: 448px;\n\t--submit-btn-height: 48px;\n\t--checkbox-size: 18px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 4px 16px 0px var(--color-card-shadow);\n\t--opacity-placeholder: 0.5;\n}",
+          "appendAttribution": false
+        }
+      },
+      "id": "23113d9d-b073-402d-afee-c102c7985d07",
+      "name": "Send Content for Approval",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1760,
+        144
+      ],
+      "webhookId": "168945b5-5163-46fd-a350-99b1b1108db7",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UbKIIS9f8EXaLtxk",
+          "name": "Gmail Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "317039f4-754e-4cb0-a674-eb8d26c9ed27",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.data['ผลพิจารณาตรวจสอบบทความ'] }}",
+                    "rightValue": "อนุมัติให้เผยแพร่"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "YES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "caace3ea-4ca0-40de-84fb-5a8fd809a0eb",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.data['ผลพิจารณาตรวจสอบบทความ'] }}",
+                    "rightValue": "ให้ดำเนินการกลับไปแก้ไข"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "NO"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f93e5649-6a21-49a9-9993-85f1323139b0",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ $json.data['ผลพิจารณาตรวจสอบบทความ'] }}",
+                    "rightValue": "ยกเลิกบทความนี้"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "CANCEL"
+            }
+          ]
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "id": "0e402d42-ed6a-45aa-a967-a80e095e4b63",
+      "name": "Approval Result",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        2128,
+        128
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "### 🕒 WORKFLOW STARTER\n",
+        "height": 500,
+        "width": 480
+      },
+      "id": "4c414a20-b47a-407c-a581-d348d2554ce3",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### 📊 ดึงข้อมูลร่างหัวข้อจาก Google Sheet",
+        "height": 500,
+        "width": 260
+      },
+      "id": "d1697337-8e08-400c-bf1d-9b636aca9c56",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### 🤖 เขียนเนื้อหาบทความโดยใช้ AI และจัดรูปแบบ Output",
+        "height": 500,
+        "width": 460,
+        "color": 4
+      },
+      "id": "eb4fb392-cf5d-4977-b4e6-5e2c34fb2771",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### 📧 ส่งข้อมูลให้ผู้ตรวจสอบทาง E-Mail",
+        "height": 500,
+        "width": 600,
+        "color": 5
+      },
+      "id": "bceee2f1-aa2d-4695-8209-8cc93897c03f",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### ✏️ CONTENT REVISION",
+        "height": 360,
+        "width": 440,
+        "color": 4
+      },
+      "id": "e52cbab1-dd3e-4f6c-84b2-3478a7745492",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1968,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### ✅ กำหนดขั้นตอนหลังพิจารณา",
+        "height": 500,
+        "width": 440,
+        "color": 3
+      },
+      "id": "1849d9bf-b32c-426a-8003-1c22e6da7b03",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1968,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### 💾 บันทึกประวัติรายงาน",
+        "height": 500,
+        "width": 300
+      },
+      "id": "3a6cd207-6a3e-4238-a998-67bde52d581c",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2448,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        80,
+        144
+      ],
+      "id": "51c05f70-f5f1-4709-a498-7159d590fed1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "000e05d8-e6ed-4d7a-8a1f-9a1ca4896873",
+              "name": "content_file_id",
+              "value": "1Zjc3PYs4nt1ZDfKLAmvxkWP4lpIE0LvnxFAXbszPt8E",
+              "type": "string"
+            },
+            {
+              "id": "bb45f65f-20ab-42ca-8169-9cf510d999ed",
+              "name": "email_reviewer",
+              "value": "wittayayon70@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        144
+      ],
+      "id": "01e6dcc9-0f0d-4983-8db4-a32c4cea13c6",
+      "name": "Set MasterConfig"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set MasterConfig').item.json.content_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1670759982,
+          "mode": "list",
+          "cachedResultName": "Topic List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Zjc3PYs4nt1ZDfKLAmvxkWP4lpIE0LvnxFAXbszPt8E/edit#gid=1670759982"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get Topic from Google Sheets').item.json.row_number }}",
+            "Status": "Completed"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Target",
+              "displayName": "Target",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2544,
+        80
+      ],
+      "id": "169c429c-e7e1-4c4a-b9cb-be66a5243648",
+      "name": "Update Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### AI Model For Content",
+        "height": 360,
+        "width": 220,
+        "color": 7
+      },
+      "id": "09a94861-3318-4ade-b3a3-29b983df2c16",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        912,
+        672
+      ],
+      "id": "00131769-5184-401e-8039-b57ac68522aa",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        304
+      ],
+      "id": "41f5abcf-63a0-4a04-b084-c4a384df60c4",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\",\n      \"description\": \"หัวข้อบทความที่ปรับปรุงแล้วให้น่าสนใจและเหมาะกับ SEO\"\n    },\n    \"content\": {\n      \"type\": \"string\",\n      \"description\": \"เนื้อหาบทความทั้งหมดในรูปแบบ markdown\"\n    },\n    \"tags\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      },\n      \"description\": \"รายการคีย์เวิร์ด SEO ที่เกี่ยวข้องกับบทความ\"\n    },\n    \"description_for_seo\": {\n      \"type\": \"string\",\n      \"description\": \"คำอธิบาย SEO ความยาว 140–160 ตัวอักษร ที่ดึงดูดและอธิบายเนื้อหาได้ตรงประเด็น\"\n    }\n  },\n  \"required\": [\n    \"title\",\n    \"content\",\n    \"tags\",\n    \"description_for_seo\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1120,
+        672
+      ],
+      "id": "e95a821d-03f7-4521-88d3-d00978619ba5",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "### Output Parser",
+        "height": 360,
+        "width": 340,
+        "color": 7
+      },
+      "id": "439e033d-414c-4539-89a3-762e4d932459",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Research Tool",
+        "height": 360,
+        "width": 260,
+        "color": 6
+      },
+      "id": "7b8ea86e-7dcc-47e5-9a3d-c533dc6834db",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        544
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {
+          "topic": "general",
+          "time_range": "year",
+          "include_answer": "advanced"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        624,
+        672
+      ],
+      "id": "31877ca1-cc59-409d-9908-330db47cdc15",
+      "name": "Research Tool",
+      "credentials": {
+        "tavilyApi": {
+          "id": "jjlNnfw8ibMD5sYO",
+          "name": "Tavily Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8d3b9ae-b7f7-473a-8cb2-b64552a669ba",
+              "name": "title",
+              "value": "={{ $json.output.title }}",
+              "type": "string"
+            },
+            {
+              "id": "e86aba96-e400-4cc3-a260-bafbc995d9fd",
+              "name": "content",
+              "value": "={{ $json.output.content }}",
+              "type": "string"
+            },
+            {
+              "id": "f446ca88-c72c-4ca8-a319-5b21bf0b63d3",
+              "name": "tags",
+              "value": "={{ $json.output.tags }}",
+              "type": "array"
+            },
+            {
+              "id": "ad97659b-752b-4aa5-80d3-024b7d575ab1",
+              "name": "description_for_seo",
+              "value": "={{ $json.output.description_for_seo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1360,
+        144
+      ],
+      "id": "70f03243-2ee9-4103-bd85-6ea71b22a4b0",
+      "name": "Set Fields"
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=รายละเอียดบทความ\n\nTitle:\n{{ $json.title }}\n\nContent:\n{{ $json.content }}\n\nTAG:\n{{ $json.tags }}\n\nDescription for SEO:\n{{ $json.description_for_seo }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        144
+      ],
+      "id": "885d1375-3437-44e1-9f88-e4c8f38cdc91",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        784
+      ],
+      "id": "eeca948d-55c8-417d-a37c-c58a06a5f3c9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Copywriter AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter Revision Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Topic from Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Copywriter AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Content for Approval": {
+      "main": [
+        [
+          {
+            "node": "Approval Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Result": {
+      "main": [
+        [
+          {
+            "node": "Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Generated Content to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Copywriter Revision Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Generated Content to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set MasterConfig",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set MasterConfig": {
+      "main": [
+        [
+          {
+            "node": "Get Topic from Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status": {
+      "main": [
+        [
+          {
+            "node": "Add Generated Content to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Copywriter Revision Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Generated Content to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Copywriter AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Copywriter Revision Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Copywriter AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Fields": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send Content for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "aa12e328-587a-4b89-8f33-570880d56970",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "Q4W3ujUJtQdq6frX",
+  "tags": []
+}

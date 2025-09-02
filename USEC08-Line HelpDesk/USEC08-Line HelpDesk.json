@@ -1,0 +1,2017 @@
+{
+  "name": "USEC08-Line HelpDesk",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2be2e38d-eb5d-4b25-817b-f1d29e00bd6d",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2500,
+        200
+      ],
+      "id": "bd5ee8a8-ad06-4bfe-844b-cc2cde97f48c",
+      "name": "Webhook",
+      "webhookId": "2be2e38d-eb5d-4b25-817b-f1d29e00bd6d"
+    },
+    {
+      "parameters": {
+        "action": "hmac",
+        "binaryData": true,
+        "type": "SHA256",
+        "dataPropertyName": "expectedSignature",
+        "secret": "091efbdf688bd69e4e69613449d5173d",
+        "encoding": "base64"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        -2260,
+        200
+      ],
+      "id": "8dc78af5-c5ec-41c4-b82e-905dde71f3ef",
+      "name": "Read Signature",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "86cfb8a7-6b40-47ad-a7b7-61b2fcd7bd76",
+              "leftValue": "={{ $('Webhook').item.json.headers['x-line-signature'] }}",
+              "rightValue": "={{ $json.expectedSignature }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2080,
+        200
+      ],
+      "id": "6a8d377a-1cac-4f37-bb84-a829e4375f13",
+      "name": "Check Signature"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bb0dd29e-5321-4b01-b774-0005443ab47f",
+                    "leftValue": "={{ $('Webhook').first().json.body.events[0].message.type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "57c33580-5f46-45f4-97a7-9d620d27a5b9",
+                    "leftValue": "={{ $('Webhook').first().json.body.events[0].message.type }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1440,
+        200
+      ],
+      "id": "8ce529fa-eaa1-444c-91c2-a1f7f2d446d3",
+      "name": "Message Type"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        420
+      ],
+      "id": "8910955d-3591-4749-a9b3-b35413692f7b",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "474b2563-dd59-4a47-864f-06a84c57b933",
+              "name": "message",
+              "value": "={{ $('Webhook').item.json.body.events[0].message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1160,
+        20
+      ],
+      "id": "17ef99e5-f4f1-4e09-99e8-73ec1e1ce73f",
+      "name": "Set Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $('Webhook').first().json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n        \"type\":\"text\",\n        \"text\": {{ JSON.stringify($json.output['Message History']) }}\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        20
+      ],
+      "id": "c820fd3b-807a-44e6-93fe-b87ebed9a157",
+      "name": "Reply Message",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "474b2563-dd59-4a47-864f-06a84c57b933",
+              "name": "message",
+              "value": "=ส่งรูปแล้วนะ ลิ้งค์ {{ $('Merge1').item.json.webViewLink }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        480
+      ],
+      "id": "88689e35-45fd-4a99-b312-b5f329d28edb",
+      "name": "Set Message1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        380,
+        20
+      ],
+      "id": "4e7cf199-9415-4046-aa01-d24fa1136eee",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// กำหนดข้อความที่ต้องการต่อท้าย (สามารถแก้เป็น input แบบ dynamic ได้)\nconst suffix = $('Webhook').first().json.body.events[0].source.userId;\n\n// สร้างวันที่ปัจจุบันในรูปแบบ dd-mm-yyyy\nconst now = new Date();\nconst day = String(now.getDate()).padStart(2, '0');\nconst month = String(now.getMonth() + 1).padStart(2, '0');\nconst year = now.getFullYear();\n\nconst requestID = `${day}-${month}-${year}-${suffix}`;\n\n// ส่งออกชื่อโฟลเดอร์เป็น output\nreturn [\n  {\n    json: {\n      requestID\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1780,
+        420
+      ],
+      "id": "32d2db61-24e1-40a0-9d62-e63d9d9ab488",
+      "name": "RequestID"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('RequestID').item.json.requestID }}",
+        "limit": 10,
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $('Master Data').item.json.main_folder }}",
+            "mode": "id"
+          }
+        },
+        "options": {
+          "fields": [
+            "name",
+            "webViewLink",
+            "id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1160,
+        480
+      ],
+      "id": "8c7cd165-5ba7-4ba4-8fd4-beee596d2301",
+      "name": "Search Folder",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bf219b34-04f3-48ba-836a-16076e6e79d9",
+              "leftValue": "={{ $('Search Folder').item.json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -940,
+        480
+      ],
+      "id": "111f05e4-389c-407c-bbe2-00a19c019a22",
+      "name": "Is Exits"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "95d4c70d-6e47-4c15-9e97-679e0246acdb",
+              "name": "main_folder",
+              "value": "1JlHBBcZVvXvpLl-jBW7oOkZ6PEMabCXa",
+              "type": "string"
+            },
+            {
+              "id": "0491b417-a8d0-45f3-9e56-2924e8bcae84",
+              "name": "request_form_sheet",
+              "value": "1HOJq-dDpfZuajVHrttZXr3tICR4Rd98xbxsyzA_mbMM",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1780,
+        200
+      ],
+      "id": "51dedebc-5ea4-4a34-b966-7ae22f877e10",
+      "name": "Master Data"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('RequestID').item.json.requestID }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').item.json.main_folder }}",
+          "mode": "id"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -740,
+        580
+      ],
+      "id": "a555e6d2-6137-4aa0-8a7f-b1506c1c3486",
+      "name": "Create Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Webhook').first().json.body.events[0].source.userId }}.{{ $binary.data.fileExtension }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Merge1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -40,
+        480
+      ],
+      "id": "b8824e61-79b8-44f8-9e15-a70de7be054e",
+      "name": "Upload File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -540,
+        480
+      ],
+      "id": "af4c7336-34da-49c5-a7e6-a3cb13f50385",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d18cc0fb-8cd2-4626-9147-98ecb15ade54",
+              "leftValue": "={{ $('HelpDesk Agent').item.json.output['Customer Confirmation Status'] }}",
+              "rightValue": "Y",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1260,
+        320
+      ],
+      "id": "930c48e2-5ccf-4849-93ee-476c4b8eaaff",
+      "name": "Check Confirm"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $('HelpDesk Agent').item.json.output['Reported Issue'] }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "แจ้งเหตุซ่อมบำรุง",
+              "description": "เป็นข้อมูลเกี่ยวกับการแจ้งซ่อม ปัญหาของสินค้าหรือสิ่งปลูกสร้าง ข้อมูลความเสียหายเป็นต้น"
+            },
+            {
+              "category": "บัญชีและการเงิน",
+              "description": "เป็นข้อมูลเกี่ยวกับการเงิน บัญชี การเสนอราคา การสอบถามราคา หรือเรื่องที่เกี่ยวข้องกับตัวเลขด้านเงินและบัญชี"
+            }
+          ]
+        },
+        "options": {
+          "fallback": "other"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        1740,
+        320
+      ],
+      "id": "163cf4f1-8495-4e17-a954-a935260e4799",
+      "name": "Request Classifier"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2420,
+        320
+      ],
+      "id": "6c4311a9-3043-4ec8-8ab9-dafd29abe021",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Data').first().json.request_form_sheet }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HOJq-dDpfZuajVHrttZXr3tICR4Rd98xbxsyzA_mbMM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "วันที่และเวลา": "={{ $now }}",
+            "หมวด": "={{ $('Merge2').item.json.category }}",
+            "รายละเอียดที่ได้รับแจ้ง": "={{ $('HelpDesk Agent').item.json.output['Reported Issue'] }}",
+            "รูปแนบ": "={{ $('HelpDesk Agent').item.json.output['Image Link'] }}",
+            "ผู้แจ้ง": "={{ $('HelpDesk Agent').item.json.output['Customer Name'] }}",
+            "หมายเลขติดต่อ": "={{ $('HelpDesk Agent').item.json.output['Contact Number'] }}",
+            "E-Mail": "={{ $('HelpDesk Agent').item.json.output.Email }}",
+            "สถานที่": "={{ $('HelpDesk Agent').item.json.output.Location }}",
+            "ระดับความสำคัญ": "={{ $json.output['ระดับความสำคัญ'] }}",
+            "ประเมินผลกระทบ": "={{ $json.output['ผลประเมิน'] }}",
+            "สถานะ": "รอเจ้าหน้าที่รับเรื่อง"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "วันที่และเวลา",
+              "displayName": "วันที่และเวลา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "หมวด",
+              "displayName": "หมวด",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "รายละเอียดที่ได้รับแจ้ง",
+              "displayName": "รายละเอียดที่ได้รับแจ้ง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "รูปแนบ",
+              "displayName": "รูปแนบ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ผู้แจ้ง",
+              "displayName": "ผู้แจ้ง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "หมายเลขติดต่อ",
+              "displayName": "หมายเลขติดต่อ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "สถานที่",
+              "displayName": "สถานที่",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ระดับความสำคัญ",
+              "displayName": "ระดับความสำคัญ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ประเมินผลกระทบ",
+              "displayName": "ประเมินผลกระทบ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "บันทึกผลดำเนินการ (เพื่อแจ้งลูกค้า)",
+              "displayName": "บันทึกผลดำเนินการ (เพื่อแจ้งลูกค้า)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "วันที่บันทึกผลของเจ้าหน้าที่",
+              "displayName": "วันที่บันทึกผลของเจ้าหน้าที่",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "สถานะ",
+              "displayName": "สถานะ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2980,
+        20
+      ],
+      "id": "e4216b4a-662b-4fe4-8bdf-431b157ec8eb",
+      "name": "Record Report",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('HelpDesk Agent').item.json.output['Reported Issue'] }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## บทบาทของคุณ:\nคุณคือผู้เชี่ยวชาญด้านการบริหารความสัมพันธ์กับลูกค้า (Customer Experience Specialist) ขององค์กร  \nหน้าที่ของคุณคือการประเมิน **ระดับความสำคัญ** ของปัญหาที่ลูกค้าแจ้งเข้ามาแต่ละเคส และวิเคราะห์ **ผลกระทบที่อาจเกิดขึ้นต่อแบรนด์หรือบริษัท**\n\n## วิธีการทำงาน:\n1. วิเคราะห์เนื้อหาปัญหาที่ลูกค้าแจ้งเข้ามา โดยพิจารณาจาก:\n   - ความรุนแรงหรือความเร่งด่วนของปัญหา\n   - จำนวนผู้ใช้ที่อาจได้รับผลกระทบ\n   - การเกี่ยวข้องกับระบบหลักของธุรกิจ\n   - ภาพลักษณ์หรือชื่อเสียงของแบรนด์\n   - ความคาดหวังของลูกค้า\n\n2. จากการวิเคราะห์ ให้ทำการ:\n   - ประเมิน “ระดับความสำคัญ” เป็นตัวเลขตั้งแต่ 1 ถึง 5:\n     - 1 = ความสำคัญน้อยมาก (กระทบน้อย ไม่เร่งด่วน)\n     - 3 = ความสำคัญปานกลาง (มีผลต่อบางส่วนของระบบหรือภาพลักษณ์)\n     - 5 = ความสำคัญสูงมาก (กระทบรุนแรง เร่งด่วน หรือมีผลต่อความเชื่อมั่นในแบรนด์)\n   - วิเคราะห์ “ผลกระทบที่อาจเกิดขึ้นต่อแบรนด์หรือบริษัท” ด้วยข้อความที่กระชับ ชัดเจน และครอบคลุม\n\n## ข้อกำหนด Output:\nคุณต้องแสดงผลลัพธ์ออกมาในรูปแบบ JSON เท่านั้น โดยมีโครงสร้างดังนี้:\n\n```json\n{\n  \"ระดับความสำคัญ\": <ค่าตัวเลขตั้งแต่ 1 ถึง 5>,\n  \"ผลประเมิน\": \"<ข้อความวิเคราะห์ผลกระทบที่อาจเกิดขึ้นต่อแบรนด์หรือบริษัท>\"\n}\n````\n\n## ข้อจำกัด:\n\n* ห้ามแสดงข้อความอื่นนอกจาก JSON Output ที่กำหนด\n* การประเมินต้องอยู่บนพื้นฐานของความรับผิดชอบต่อภาพลักษณ์ของแบรนด์เป็นหลัก\n* หากข้อมูลไม่เพียงพอ ให้ใช้คำว่า “ข้อมูลไม่เพียงพอสำหรับการประเมิน” ในฟิลด์ `ผลประเมิน` และกำหนด `ระดับความสำคัญ` เป็น 1\n\n## ตัวอย่าง Output:\n\n```json\n{\n  \"ระดับความสำคัญ\": 4,\n  \"ผลประเมิน\": \"ปัญหามีแนวโน้มกระทบกับภาพลักษณ์แบรนด์ด้านความน่าเชื่อถือ เนื่องจากลูกค้าไม่สามารถใช้งานระบบหลักได้ตามปกติ หากไม่แก้ไขโดยเร็ว อาจเกิดความไม่พอใจในวงกว้าง\"\n}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2600,
+        320
+      ],
+      "id": "d05a3fe8-adb9-4d64-bde2-8e582925e57d",
+      "name": "Score Analysis"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('HelpDesk Agent').item.json.output.Email }}",
+        "subject": "ได้รับแจ้งเรื่องปัญหาของท่านเรียบร้อยแล้ว บริษัทฯ จะเร่งประสานงานโดยเร็วที่สุด",
+        "message": "=<!DOCTYPE html>\n<html lang=\"th\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>แจ้งรับข้อมูล</title>\n  <style>\n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      background-color: #f4f6f9;\n      color: #333;\n      padding: 20px;\n    }\n    .container {\n      background-color: #ffffff;\n      border-radius: 10px;\n      padding: 30px;\n      max-width: 600px;\n      margin: auto;\n      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n      border-top: 6px solid #0052cc;\n    }\n    h2 {\n      color: #0052cc;\n      border-bottom: 1px solid #e0e0e0;\n      padding-bottom: 10px;\n    }\n    .section {\n      margin-top: 20px;\n    }\n    .label {\n      font-weight: bold;\n      color: #c62828;\n    }\n    .footer {\n      margin-top: 30px;\n      font-size: 0.9em;\n      color: #666;\n      text-align: right;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h2>📨 ทีมงานได้รับข้อมูลของท่านเรียบร้อยแล้ว</h2>\n    <p>เราจะเร่งดำเนินการตรวจสอบและแจ้งผลให้ท่านโดยเร็วที่สุด</p>\n\n    <div class=\"section\">\n      <p class=\"label\">ข้อมูลที่ได้รับแจ้ง:</p>\n      <p>{{ $('HelpDesk Agent').item.json.output['Reported Issue'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">ชื่อผู้แจ้ง:</p>\n      <p>คุณ{{ $('HelpDesk Agent').item.json.output['Customer Name'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">หมายเลขติดต่อ:</p>\n      <p>{{ $('HelpDesk Agent').item.json.output['Contact Number'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">สถานที่:</p>\n      <p>{{ $('HelpDesk Agent').item.json.output.Location }}</p>\n    </div>\n\n    <div class=\"footer\">\n      <p>ขอแสดงความนับถือ<br>\n      ฝ่ายบริการลูกค้าสัมพันธ์</p>\n    </div>\n  </div>\n</body>\n</html>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1500,
+        320
+      ],
+      "id": "2879cdca-02ec-49c2-bc1e-01754671e1af",
+      "name": "Send E-Mail",
+      "webhookId": "ce0e446a-2006-44d2-a337-567d87e8841e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\"ระดับความสำคัญ\", \"ผลประเมิน\"],\n  \"properties\": {\n    \"ระดับความสำคัญ\": {\n      \"type\": \"integer\",\n      \"minimum\": 1,\n      \"maximum\": 5,\n      \"description\": \"ระดับความสำคัญของปัญหา (1 = ต่ำ, 5 = สูง)\"\n    },\n    \"ผลประเมิน\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อความสรุปผลการประเมินปัญหาที่เกิดขึ้น\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2680,
+        540
+      ],
+      "id": "144a852f-05df-43d8-96b7-c4c792d5e8f4",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Merge2').item.json.group_id }}",
+        "text": "=รับแจ้งปัญหาใหม่\nหมายเลข {{ $('RequestID').first().json.requestID }}\n\nวันและเวลาที่รับแจ้ง:\n{{ $json['วันที่และเวลา'].toDateTime().format('yyyy-MM-dd') }}\n\nหมวด:\n{{ $json['หมวด'] }}\n\nระดับความสำคัญ(1 - 5):\n{{ $json['ระดับความสำคัญ'] }}\n\nรายละเอียดที่ได้รับแจ้ง:\n{{ $json['รายละเอียดที่ได้รับแจ้ง'] }}\n\nประเมินผลกระทบ:\n{{ $json['ประเมินผลกระทบ'] }}\n\nไฟล์แนบ:\n{{ $json['รูปแนบ'] ? $json['รูปแนบ'] : \"ไม่พบไฟล์แนบ\" }}\n\n---\n\nข้อมูลผู้แจ้ง\nชื่อ: {{ $json['ผู้แจ้ง'] }}\nหมายเลขติดต่อ: {{ $json['หมายเลขติดต่อ'] }}\nE-mail: {{ $json['E-Mail'] }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2980,
+        300
+      ],
+      "id": "28fb79a0-947e-415a-88c3-478cf708cf04",
+      "name": "Send Message Notify",
+      "webhookId": "5ff61634-72eb-4e36-9b22-d340a4c3ec97",
+      "credentials": {
+        "telegramApi": {
+          "id": "b641eKsXY2hl5rWr",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2980,
+        580
+      ],
+      "id": "30f22fba-0d34-4594-b9f9-32fbe83ed61c",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1HOJq-dDpfZuajVHrttZXr3tICR4Rd98xbxsyzA_mbMM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HOJq-dDpfZuajVHrttZXr3tICR4Rd98xbxsyzA_mbMM/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {
+          "columnsToWatch": [
+            "สถานะ"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2460,
+        1020
+      ],
+      "id": "7efc9fa2-a6ef-4c46-a739-888dd0f213e3",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "CT9byHIOmHolw3AH",
+          "name": "Google Sheets Trigger - XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['E-Mail'] }}",
+        "subject": "แจ้งผลดำเนินการตามคำร้องของท่าน",
+        "message": "=<!DOCTYPE html>\n<html lang=\"th\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n  <title>แจ้งสถานะการดำเนินงาน</title>\n  <style>\n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      background-color: #f4f6f9;\n      color: #333;\n      padding: 20px;\n    }\n    .container {\n      background-color: #ffffff;\n      border-radius: 10px;\n      padding: 30px;\n      max-width: 700px;\n      margin: auto;\n      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);\n      border-top: 6px solid #0052cc;\n    }\n    h2 {\n      color: #0052cc;\n      margin-bottom: 10px;\n    }\n    .section {\n      margin-top: 20px;\n      border-left: 4px solid #c62828;\n      padding-left: 15px;\n      padding-top: 10px;\n      padding-bottom: 10px;\n      background-color: #f9f9f9;\n      border-radius: 4px;\n    }\n    .label {\n      font-weight: bold;\n      color: #c62828;\n    }\n    .footer {\n      margin-top: 30px;\n      font-size: 0.9em;\n      color: #666;\n      text-align: right;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h2>📢 แจ้งสถานะการดำเนินงานตามคำร้องของท่าน</h2>\n\n    <div class=\"section\">\n      <p class=\"label\">ข้อมูลที่ได้รับแจ้ง:</p>\n      <p>{{ $json['รายละเอียดที่ได้รับแจ้ง'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">ชื่อผู้แจ้ง:</p>\n      <p>คุณ{{ $json['ผู้แจ้ง'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">หมายเลขติดต่อ:</p>\n      <p>{{ $json['หมายเลขติดต่อ'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">สถานที่:</p>\n      <p>{{ $json['สถานที่'] }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">บันทึกผลดำเนินการ:</p>\n      <p>{{ $json['บันทึกผลดำเนินการ (เพื่อแจ้งลูกค้า)'] ? $json['บันทึกผลดำเนินการ (เพื่อแจ้งลูกค้า)'] : \"ไม่พบข้อมูล\" }}</p>\n    </div>\n\n    <div class=\"section\">\n      <p class=\"label\">สถานะดำเนินการ:</p>\n      <p>{{ $json['สถานะ'] }}</p>\n    </div>\n\n    <div class=\"footer\">\n      <p>ขอแสดงความนับถือ<br>\n      ฝ่ายบริการลูกค้าสัมพันธ์</p>\n    </div>\n  </div>\n</body>\n</html>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -2120,
+        1020
+      ],
+      "id": "76ff26aa-f0e4-454b-93fd-edd1a169d350",
+      "name": "Send E-Mail Notify",
+      "webhookId": "e69b585b-a67d-46de-9e7a-2e927235fc36",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Start Trigger",
+        "height": 900,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2580,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "e6b18397-7423-4dd1-b476-982fbc31a560",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## ตรวจสอบความถูกต้องของ Webhook",
+        "height": 900,
+        "width": 380,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2300,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "94c73518-f81e-492f-b7d5-7cebea6da502",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ตั้งค่าพื้นฐาน",
+        "height": 900,
+        "width": 280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1860,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "ab88d7f5-fc1b-40e1-a253-591d506e373b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ตรวจสอบประเภท Message",
+        "height": 900,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1520,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "1d16836a-d3f5-4023-9a7f-528882832ce2",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## กรณีเป็นข้อความ",
+        "height": 360,
+        "width": 1540,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1240,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "cf780c17-4049-4432-aacb-b884c17a128f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## กรณีเป็นรูป",
+        "height": 480,
+        "width": 1540,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1240,
+        300
+      ],
+      "typeVersion": 1,
+      "id": "e309bf1c-817f-43f8-9114-2de2670b86c7",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## ดาวน์โหลดไฟล์จาก Line",
+        "height": 380,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -360,
+        380
+      ],
+      "typeVersion": 1,
+      "id": "2e9905e7-3057-4df0-8804-81e66e637de1",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## AI Chat Bot",
+        "height": 360,
+        "width": 820,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "caedc361-0606-47d8-ac23-b7f5ed08d04e",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## ตอบกลับ User",
+        "height": 900,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1180,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "c8c2c9f9-9573-4527-87f5-1840ce8fde51",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "## ส่ง E-Mail ถึงลูกค้า",
+        "height": 900,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1440,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "bff4eaca-709b-4bf0-baaa-774a1cf3199a",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "## คัดแยกกลุ่มเรื่องแจ้งปัญหา",
+        "height": 900,
+        "width": 640,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1700,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "9072d374-e0af-4310-bea2-04bb07a1d862",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "## วิเคราะห์ระดับความสำคัญและประเมินผลกระทบ",
+        "height": 900,
+        "width": 520,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2360,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "a1d70a2d-cb68-4a7d-afa6-f56fedd88825",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกรายงานและแจ้งเตือนไปยังทีมงาน",
+        "height": 900,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2900,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "85ac8c38-63c9-4c89-ba0a-0fcd85702b99",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "## ตรวจสอบโฟลเดอร์",
+        "height": 380,
+        "width": 800,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1200,
+        380
+      ],
+      "typeVersion": 1,
+      "id": "b55c28d6-4c21-4ede-a525-7913cb9bc88c",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "url": "=https://api-data.line.me/v2/bot/message/{{ $('Webhook').first().json.body.events[0].message.id }}/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        480
+      ],
+      "id": "b08d2534-4793-42a6-ad85-a97f556dbfbb",
+      "name": "Line Get File",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## อัพโหลดไฟล์ขึ้น G-Drive",
+        "height": 380,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -100,
+        380
+      ],
+      "typeVersion": 1,
+      "id": "19203a18-38a9-4abd-973d-9118438cb2b7",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "## Model AI",
+        "height": 480,
+        "width": 200,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        300
+      ],
+      "typeVersion": 1,
+      "id": "f995d673-0b30-4126-a58c-a291290ca7a0",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "## Memmory",
+        "height": 480,
+        "width": 200,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        300
+      ],
+      "typeVersion": 1,
+      "id": "76612639-afde-464e-8221-0133dd840c25",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "## จัดระเบียบข้อมูล",
+        "height": 480,
+        "width": 340,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        300
+      ],
+      "typeVersion": 1,
+      "id": "544fb2c1-5805-457f-bf4a-f9015a023ed8",
+      "name": "Sticky Note20"
+    },
+    {
+      "parameters": {
+        "content": "## แจ้งผลดำเนินงานถึงลูกค้าอัตโนมัติ",
+        "height": 300,
+        "width": 1000,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2580,
+        920
+      ],
+      "typeVersion": 1,
+      "id": "fd971a1a-6faf-469d-a83c-3058dbb64e7a",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1820,
+        1020
+      ],
+      "id": "5d5c838c-8cfa-44ba-9fe1-4ddd28f826f1",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "content": "## Get Webhook Info\n\nhttps://api.telegram.org/bot{ACCESS_TOKEN}/getWebhookInfo",
+        "height": 100,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2660,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "e2c7daa7-16fd-492c-89eb-b6131fd1bab0",
+      "name": "Sticky Note22"
+    },
+    {
+      "parameters": {
+        "content": "## Delete Webhook\n\nhttps://api.telegram.org/bot{ACCESS_TOKEN}/deleteWebhook",
+        "height": 100,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2660,
+        920
+      ],
+      "typeVersion": 1,
+      "id": "595e5e34-a971-4c45-91f0-71894e8eb3bd",
+      "name": "Sticky Note23"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/chat/loading/start",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"chatId\": \"{{ $('Webhook').item.json.body.events[0].source.userId }}\",\n    \"loadingSeconds\": 10\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1780,
+        620
+      ],
+      "id": "d1cfea1b-0b63-4871-8e76-72dadbca26dd",
+      "name": "Loading Message",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        500
+      ],
+      "id": "22f1f36b-7cfd-42a1-9ce4-80d9308195c6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1c65a5be-6525-4278-b916-13cdfc542c13",
+              "name": "category",
+              "value": "แจ้งเหตุซ่อมบำรุง",
+              "type": "string"
+            },
+            {
+              "id": "c170b39b-c720-42ed-9d2e-6ae1a27d6150",
+              "name": "group_id",
+              "value": "-1002658834794",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2140,
+        120
+      ],
+      "id": "371731e0-33b1-4df3-b9dc-fe6af0e1dfe4",
+      "name": "ซ่อมบำรุง"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1c65a5be-6525-4278-b916-13cdfc542c13",
+              "name": "category",
+              "value": "บัญชีและการเงิน",
+              "type": "string"
+            },
+            {
+              "id": "c170b39b-c720-42ed-9d2e-6ae1a27d6150",
+              "name": "group_id",
+              "value": "-1002702153216",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2140,
+        320
+      ],
+      "id": "5155e58a-c65c-4d25-98ef-583d53a62ede",
+      "name": "บัญชีการเงิน"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1c65a5be-6525-4278-b916-13cdfc542c13",
+              "name": "category",
+              "value": "อื่นๆ",
+              "type": "string"
+            },
+            {
+              "id": "c170b39b-c720-42ed-9d2e-6ae1a27d6150",
+              "name": "group_id",
+              "value": "-1002833415443",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2140,
+        520
+      ],
+      "id": "544ebffd-51c6-4920-8e65-d1eaae233b26",
+      "name": "อื่นๆ"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=**Your Role**\nYou are a female staff member responsible for communicating with customers through the HelpDesk system only.  \nYour duties include coordinating and communicating with customers in a polite, professional, and attentive manner.  \nYou are multilingual and must always respond to customers in the same language they use.  \n**However, all recorded data must be written in Thai only.**\n\n---\n\n**Conversation Analysis & Intent Recognition**\n\nAt the beginning of every conversation, you must analyze the customer's message and classify their intent into **exactly one** of the following:\n\n1. **Product Inquiry** – The customer wants to ask about a product or service.\n2. **Issue Report** – The customer wants to report a problem or request assistance.\n\n---\n\n**If Intent = Product Inquiry:**\n\n- You must use the internal knowledge retrieval tool **\"km_search\"** to find product information from the official **Vector Store (RAG)**.\n- **You are strictly forbidden from creating, assuming, or adding any product information on your own.**\n- If the system cannot find relevant information, politely inform the customer that the information is not available.\n- If product information includes **image links or file URLs**, you must display those to the customer so they can view the product clearly:\n  - Show the **image link(s)** for reference.\n  - Show the **source file URL** (e.g., PDF, product sheet) if available.\n- **Do not request or collect any personal information**, such as name, phone number, email, address, or images from the customer.\n- Do not fill in the full report or confirmation structure unless the intent changes.\n\n---\n\n**If Intent = Issue Report:**\n\n- Follow full HelpDesk protocol.\n- Collect the following information from the customer:\n  - Name\n  - Contact Number\n  - Email\n  - Location\n  - Issue details\n  - Optional: ask if they have any images to provide\n- Check all required fields are filled. If anything is missing, ask follow-up questions.\n- Summarize the issue clearly in **Thai** and ask the customer to confirm correctness before setting confirmation status to \"Y\".\n- Never mark confirmation status as \"Y\" until the customer explicitly confirms.\n- **Do not display image URLs to the customer** during the process.\n\n---\n\n**The Output must contain exactly the following fields. All fields are required — if any field has no information, use an empty string:**\n\n* Intent Type: [\"Product Inquiry\" or \"Issue Report\"]\n* Message History: [ข้อความสนทนาที่ใช้โต้ตอบกับลูกค้า โดยห้ามทวนคำพูดครั้งก่อน ต้องเป็นข้อความสนทนาใหม่ล่าสุดเท่านั้น]\n* Reported Issue: [The problem the customer reported, plus a clearly summarized explanation in Thai. Leave empty if not applicable.]\n* Image Attached Status: [\"Y\" or \"N\"]\n* Primary Language Used: [Thai, English, etc.]\n* Image Link: [The link to the image provided, or empty if none]\n* Customer Name: [Customer's name or empty if none]\n* Location: [Location related to the issue or empty if none]\n* Contact Number: [Customer's phone number or empty if none]\n* Email: [Customer's email address or empty if none]\n* Customer Confirmation Status: [\"Y\" = Confirmed by customer, \"N\" = Not yet confirmed]\n\nYou must respond using only a valid JSON object that exactly matches the above structure.  \n**Do not add any explanations, markdown formatting, or extra text before or after the JSON.**\n\n---\n\n**Special Case Example**\n\n* If the customer types in English, you must respond in English, and set `Primary Language Used` as \"English\". However, the `Reported Issue` field must still be written and summarized **in Thai only**."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        620,
+        20
+      ],
+      "id": "f32fdebc-683f-4dda-bf50-7c53082720f2",
+      "name": "HelpDesk Agent",
+      "retryOnFail": false,
+      "maxTries": null,
+      "waitBetweenTries": 500,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"Intent Type\": {\n      \"type\": \"string\",\n      \"enum\": [\"Product Inquiry\", \"Issue Report\"],\n      \"description\": \"Intent Type\"\n    },\n    \"Message History\": {\n      \"type\": \"string\",\n      \"description\": \"The full conversation with the customer, using the same language the customer used\"\n    },\n    \"Reported Issue\": {\n      \"type\": \"string\",\n      \"description\": \"The problem the customer reported, plus a clearly summarized explanation in Thai\",\n      \"default\": \"\"\n    },\n    \"Image Attached Status\": {\n      \"type\": \"string\",\n      \"enum\": [\"Y\", \"N\"],\n      \"description\": \"Indicates whether an image was attached\",\n      \"default\": \"N\"\n    },\n    \"Primary Language Used\": {\n      \"type\": \"string\",\n      \"description\": \"Language used in communication with the customer, e.g., Thai, English, etc.\",\n      \"default\": \"\"\n    },\n    \"Image Link\": {\n      \"type\": \"string\",\n      \"description\": \"The link to the attached image (or empty if none)\",\n      \"default\": \"\"\n    },\n    \"Customer Name\": {\n      \"type\": \"string\",\n      \"description\": \"Name of the customer (or empty if none)\",\n      \"default\": \"\"\n    },\n    \"Location\": {\n      \"type\": \"string\",\n      \"description\": \"Location related to the issue (or empty if none)\",\n      \"default\": \"\"\n    },\n    \"Contact Number\": {\n      \"type\": \"string\",\n      \"description\": \"Phone number of the customer (or empty if none)\",\n      \"default\": \"\"\n    },\n    \"Email\": {\n      \"type\": \"string\",\n      \"description\": \"Email address of the customer (or empty if none)\",\n      \"default\": \"\"\n    },\n    \"Customer Confirmation Status\": {\n      \"type\": \"string\",\n      \"enum\": [\"Y\", \"N\"],\n      \"description\": \"Whether the customer has confirmed the correctness of the information\",\n      \"default\": \"N\"\n    }\n  },\n  \"required\": [\n    \"Message History\",\n    \"Reported Issue\",\n    \"Image Attached Status\",\n    \"Primary Language Used\",\n    \"Image Link\",\n    \"Customer Name\",\n    \"Location\",\n    \"Contact Number\",\n    \"Email\",\n    \"Customer Confirmation Status\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        860,
+        500
+      ],
+      "id": "576a6759-bc3a-4f56-94fc-20800643e01d",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('RequestID').first().json.requestID }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        620,
+        500
+      ],
+      "id": "653bff7f-bbdf-43e9-9e73-90857f917fa9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        580
+      ],
+      "id": "000056db-d843-4ead-ae83-5cd09ac42bcc",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $('Webhook').first().json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n        \"type\":\"text\",\n        \"text\": \"ขออภัยขณะนี้ระบบพบข้อผิดพลาดชั่วคราว กรุณาพิมพ์ข้อความใหม่อีกครั้ง\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        80
+      ],
+      "id": "1dbd2be9-ba3d-4a86-a3b0-62e700f26abd",
+      "name": "Reply Message1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        1060
+      ],
+      "id": "acf7c966-822f-49f0-90fd-9957ada9efd2",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "ใช้สำหรับการค้นหาข้อมูลใช้งานสินค้า และข้อมูลรายละเอียดที่เกี่ยวข้องกับสินค้า",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "VISION_RAG",
+          "mode": "list",
+          "cachedResultName": "VISION_RAG"
+        },
+        "topK": 5,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        620,
+        940
+      ],
+      "id": "cb112cec-7f80-404e-a852-f8d8dd55c3c1",
+      "name": "km_search",
+      "credentials": {
+        "qdrantApi": {
+          "id": "76TDry322YaeSSvo",
+          "name": "QdrantApi Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Tool",
+        "height": 340,
+        "width": 820,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        880
+      ],
+      "typeVersion": 1,
+      "id": "f3536ffc-5a73-41f0-a951-4efdb0bc8fe9",
+      "name": "Sticky Note16"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "primary-l4up-iamai-lead.up.railway.app",
+            "user-agent": "LineBotWebhook/2.0",
+            "content-length": "583",
+            "content-type": "application/json; charset=utf-8",
+            "x-forwarded-for": "147.92.149.170",
+            "x-forwarded-host": "primary-l4up-iamai-lead.up.railway.app",
+            "x-forwarded-proto": "https",
+            "x-line-signature": "5PSGHVrH9xoOzOIZBJNQ1JDu7PMd0vlKl1ZKtLEc1ss=",
+            "x-railway-edge": "railway/asia-southeast1-eqsg3a",
+            "x-railway-request-id": "6IU6EMitRqCOwDuWDcO5xA",
+            "x-real-ip": "147.92.149.170",
+            "x-request-start": "1751565756095",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "destination": "U71cfb988f7642e60b22dfae0cd2457fb",
+            "events": [
+              {
+                "type": "message",
+                "message": {
+                  "type": "text",
+                  "id": "568302105476726921",
+                  "quoteToken": "cYdbF2tMDv-yPlAXBVctFMo5sVMUj--k7E8YKv3uPx70Z_BIlGK2Icl2M8hpcBImNgC6vRhnkUf0gLyeXwkJJ2-NjhPoD6U5gEj108P7PmqdC1J3bB8BKUu2IpekXNFs4VQrARYrHmnMtnjbxeaHmQ",
+                  "text": "เคถูกต้อง"
+                },
+                "webhookEventId": "01JZ8Q8SAW65KQE2JW9H6BHEE7",
+                "deliveryContext": {
+                  "isRedelivery": false
+                },
+                "timestamp": 1751565755234,
+                "source": {
+                  "type": "user",
+                  "userId": "U8f1050d4aeb9b97b43d9a51e3eb3910b"
+                },
+                "replyToken": "964eea8fb697491ca01f2bd24f54bb76",
+                "mode": "active"
+              }
+            ]
+          },
+          "webhookUrl": "https://primary-l4up-iamai-lead.up.railway.app/webhook/2be2e38d-eb5d-4b25-817b-f1d29e00bd6d",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Check Signature": {
+      "main": [
+        [
+          {
+            "node": "Master Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Signature": {
+      "main": [
+        [
+          {
+            "node": "Check Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Type": {
+      "main": [
+        [
+          {
+            "node": "Set Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Message": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HelpDesk Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Message1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "RequestID": {
+      "main": [
+        [
+          {
+            "node": "Loading Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Folder": {
+      "main": [
+        [
+          {
+            "node": "Is Exits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Exits": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Data": {
+      "main": [
+        [
+          {
+            "node": "RequestID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Folder": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload File": {
+      "main": [
+        [
+          {
+            "node": "Set Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Line Get File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Message": {
+      "main": [
+        [
+          {
+            "node": "Check Confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Confirm": {
+      "main": [
+        [
+          {
+            "node": "Send E-Mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Classifier": {
+      "main": [
+        [
+          {
+            "node": "ซ่อมบำรุง",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "บัญชีการเงิน",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "อื่นๆ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Score Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score Analysis": {
+      "main": [
+        [
+          {
+            "node": "Record Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send E-Mail": {
+      "main": [
+        [
+          {
+            "node": "Request Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Score Analysis",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Report": {
+      "main": [
+        [
+          {
+            "node": "Send Message Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message Notify": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send E-Mail Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line Get File": {
+      "main": [
+        [
+          {
+            "node": "Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send E-Mail Notify": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loading Message": {
+      "main": [
+        [
+          {
+            "node": "Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Request Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Score Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "HelpDesk Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ซ่อมบำรุง": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "บัญชีการเงิน": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "อื่นๆ": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HelpDesk Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "HelpDesk Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "HelpDesk Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "km_search",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "km_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "HelpDesk Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "119e0727-0573-4ce6-9a42-dc256839662e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "n7F2qZvoEetL5zSM",
+  "tags": []
+}

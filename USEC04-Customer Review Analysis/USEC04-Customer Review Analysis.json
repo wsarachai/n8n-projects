@@ -1,0 +1,813 @@
+{
+  "name": "USEC04-Customer Review Analysis",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        160
+      ],
+      "id": "4e434813-eb40-4833-a604-c492c870ddad",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dbe2fdaf-cb10-436c-87df-f2ac872969ab",
+              "name": "review_file_id",
+              "value": "1ECklg3naYqf2BJS4tDBdDML0cRPgONmFtIyLUeetxi8",
+              "type": "string"
+            },
+            {
+              "id": "f7244159-b63e-476e-b648-237e161807f2",
+              "name": "place_id",
+              "value": "ChIJaxq89xaZ4jARQtKhE1uqq9c",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        160
+      ],
+      "id": "cfb6fdfb-d340-4e26-8053-6f7b42a8fe98",
+      "name": "Master Config"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        816,
+        160
+      ],
+      "id": "b1073cc1-6543-400b-a957-f19854f3fa6d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        624
+      ],
+      "id": "badaad44-12d0-4202-b1aa-8890fa300ed3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Comment / Review'] }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a highly skilled Thai-language customer sentiment analyst, trained to evaluate social media comments and customer reviews with precision and empathy.\n\nYour job is to analyze the customer's comment or review in **Thai language** and return a detailed evaluation under the following criteria:\n\n1. **ระดับความรุนแรง (Severity Level)**: Evaluate the emotional intensity or seriousness of the comment on a scale of 1 (very mild) to 5 (very severe).\n2. **ผลกระทบต่อแบรนด์ (Brand Impact)**: Analyze how this comment could affect the brand's reputation or trust, either positively, negatively, or neutrally.\n3. **แนวทางปรับปรุง (Improvement Suggestion)**: Recommend specific actions or improvements the brand can implement in response to this feedback.\n4. **ประโยคโต้ตอบที่ควรใช้ (Suggested Customer Response)**: Draft a polite and appropriate Thai-language message to respond to this customer. It should reflect empathy and align with the sentiment of the original comment.\n\n---\n\nPlease return your analysis in this **structured JSON** format:\n\n\"severity\": <1-5>,\n\"impact\": \"<ผลกระทบต่อแบรนด์>\",\n\"improvement\": \"<ข้อเสนอแนะในการปรับปรุง>\",\n\"response\": \"<ประโยคโต้ตอบลูกค้า>\",\n\"summary\": \"<สรุปใจความสำคัญของความคิดเห็นลูกค้า>\"\n\n---\n\n### 💬 Example Input:\n\n**Customer Review (Thai):**\n\"ได้รับของช้ามากค่ะ สั่งไปเกือบ 10 วันยังไม่ถึง ของข้างในกล่องยังบุบอีก ผิดหวังมาก ไม่กล้าสั่งอีกแล้ว\""
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        1632,
+        176
+      ],
+      "id": "a0e7cbd6-e546-4482-b75f-189cc7ea7ea9",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        640
+      ],
+      "id": "415d1661-0522-45fb-9275-f0c140ea5466",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json['Comment / Review'] }}",
+        "options": {
+          "categories": "เชิงบวก, ปกติ, เชิงลบ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        160
+      ],
+      "id": "bc699680-9473-4de2-8400-3fff723fb06e",
+      "name": "Sentiment Analysis1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Config').item.json.review_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1627933817,
+          "mode": "list",
+          "cachedResultName": "Review",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ECklg3naYqf2BJS4tDBdDML0cRPgONmFtIyLUeetxi8/edit#gid=1627933817"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Sentiment Analysis1').item.json.row_number }}",
+            "Sentiment": "={{ $('Sentiment Analysis1').item.json.sentimentAnalysis.category }}",
+            "ระดับความรุนแรง (1–5)": "={{ $json.output.severity }}",
+            "วิเคราะห์ผลกระทบต่อแบรนด์": "={{ $json.output.impact }}",
+            "แนวทางปรับปรุง": "=ผลสรุป:\n{{ $json.output.summary }}\nแนวทางพัฒนา:\n{{ $json.output.improvement }}",
+            "คำโต้ตอบที่ควรใช้": "={{ $json.output.response }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Comment / Review",
+              "displayName": "Comment / Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ระดับความรุนแรง (1–5)",
+              "displayName": "ระดับความรุนแรง (1–5)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "วิเคราะห์ผลกระทบต่อแบรนด์",
+              "displayName": "วิเคราะห์ผลกระทบต่อแบรนด์",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "แนวทางปรับปรุง",
+              "displayName": "แนวทางปรับปรุง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "คำโต้ตอบที่ควรใช้",
+              "displayName": "คำโต้ตอบที่ควรใช้",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2064,
+        176
+      ],
+      "id": "4edb8377-c929-410b-b571-52693ad0f33f",
+      "name": "Update Analysis Report",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## อ่านข้อมูลคอมเม้นท์ / รีวิว",
+        "height": 420,
+        "width": 740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "30fd8d4a-21b7-4b7d-8df7-2563a274f371",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## วิเคราะห์ Sentiment",
+        "height": 520,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "132f31b4-a6aa-4dae-9a8d-567ef8a72952",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## วิเคราะห์เชิงลึก",
+        "height": 520,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "5c8b4e9f-e8f2-4dc6-9549-5083a8ba8b7d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกรายงานผล",
+        "height": 520,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1984,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "e8d7aea7-c134-43f1-8ea8-e5a44a419b2e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## AI Model",
+        "height": 220,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1088,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "ed563d65-3254-4152-8ca1-fc5b18077967",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"severity\": 1,\n  \"impact\": \"<ผลกระทบต่อแบรนด์>\",\n  \"improvement\": \"<ข้อเสนอแนะในการปรับปรุง>\",\n  \"response\": \"<ประโยคโต้ตอบลูกค้า>\",\n  \"summary\": \"<สรุปใจความสำคัญของความคิดเห็นลูกค้า>\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1824,
+        640
+      ],
+      "id": "151a7183-aee5-4c62-80a6-398e0063a2b0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## AI Model",
+        "height": 220,
+        "width": 180
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "c1a38c03-89db-4e26-8125-c09af8ebc581",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Output Parser",
+        "height": 220,
+        "width": 200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1760,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "a44d4cc1-3729-4342-92f1-13e22de96259",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        640
+      ],
+      "id": "b0f0cdf0-6f4b-4598-b7d7-d21ee5ed7e8b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://places.googleapis.com/v1/places/{{ $json.place_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "languageCode",
+              "value": "th"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Goog-FieldMask",
+              "value": "id,displayName,formattedAddress,userRatingCount,rating,reviewSummary,googleMapsLinks.reviewsUri,reviews.rating,reviews.text,reviews.publishTime,reviews.authorAttribution.displayName,reviews.authorAttribution.uri,reviews.authorAttribution.photoUri"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -64,
+        160
+      ],
+      "id": "5b3c6d27-916f-4f37-9db5-6a6357a4f335",
+      "name": "Get Place Detail",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "reviews",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        128,
+        160
+      ],
+      "id": "f2e33771-fbe5-4276-bcd2-508b47d7ac72",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Config').item.json.review_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1627933817,
+          "mode": "list",
+          "cachedResultName": "Review",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ECklg3naYqf2BJS4tDBdDML0cRPgONmFtIyLUeetxi8/edit#gid=1627933817"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Comment / Review": "={{ $json.text.text }}",
+            "Date / Time": "={{ $json.publishTime.toDateTime().format('dd-MM-yyyy HH:mm') }}"
+          },
+          "matchingColumns": [
+            "Comment / Review"
+          ],
+          "schema": [
+            {
+              "id": "Comment / Review",
+              "displayName": "Comment / Review",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date / Time",
+              "displayName": "Date / Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ระดับความรุนแรง (1–5)",
+              "displayName": "ระดับความรุนแรง (1–5)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "วิเคราะห์ผลกระทบต่อแบรนด์",
+              "displayName": "วิเคราะห์ผลกระทบต่อแบรนด์",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "แนวทางปรับปรุง",
+              "displayName": "แนวทางปรับปรุง",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "คำโต้ตอบที่ควรใช้",
+              "displayName": "คำโต้ตอบที่ควรใช้",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        160
+      ],
+      "id": "1e23d25f-2def-4c06-bc01-243e6f86608d",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Config').item.json.review_file_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1627933817,
+          "mode": "list",
+          "cachedResultName": "Review",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ECklg3naYqf2BJS4tDBdDML0cRPgONmFtIyLUeetxi8/edit#gid=1627933817"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Sentiment"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        160
+      ],
+      "id": "07281d98-d930-4592-817d-b19fe1caf62a",
+      "name": "Get Reviews",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ดึงคอมเม้นท์ / รีวิว",
+        "height": 420,
+        "width": 436,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "97af0e2b-55d2-4ae9-a9b8-2f34e3fdff5e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Find Place ID \nhttps://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder",
+        "height": 112,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        448
+      ],
+      "typeVersion": 1,
+      "id": "a02c40d6-7567-4c06-80b3-a209b010676f",
+      "name": "Sticky Note8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Config": {
+      "main": [
+        [
+          {
+            "node": "Get Place Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Sentiment Analysis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Update Analysis Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment Analysis1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Analysis Report": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Place Detail": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get Reviews",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Reviews": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f21d0235-a6c6-4d77-b55a-8fe6151d78bc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "AhFvcXdSVmlDAPKA",
+  "tags": []
+}

@@ -1,0 +1,1210 @@
+{
+  "name": "USEC06-EMail Classifier",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### กรอง E-Mail เฉพาะที่มีไฟล์แนบ",
+        "height": 540,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "fa3d64cb-3354-4b9f-80c2-4a103a6572ea",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### วิเคราะห์แยกเฉพาะการเงิน",
+        "height": 540,
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "4ee10d23-df64-49b3-9727-78785a136439",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "### วิเคราะห์และอ่านข้อมูลไฟล์แนบ",
+        "height": 540,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1160,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "79d71c76-ff37-4fe9-a085-e3de33389368",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### สร้างโฟลเดอร์ประจำวัน",
+        "height": 540,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "345bcbef-83a2-481a-bf0d-bed7c0666a42",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8c95c9d6-8ab1-4c5a-8627-5fd8a33ed55d",
+              "name": "finance_folder_id",
+              "value": "1AxQryfPbKY0BjwGs9J07VWLMOR9X3kQC",
+              "type": "string"
+            },
+            {
+              "id": "f7c2c7f9-ed92-44a6-abdd-383891d813ee",
+              "name": "finance_sheet_id",
+              "value": "1DRT8n_Ez93JP8f0d58iJyGAmVbtUjKIL5AdvPUN8N2g",
+              "type": "string"
+            },
+            {
+              "id": "2b203f1e-d72b-48f2-bc4b-ea47c1d7cd33",
+              "name": "finance_sheet_id_gid",
+              "value": "187921726",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        160
+      ],
+      "id": "1df1ddf1-98c0-4509-84d9-b4f89112df68",
+      "name": "Master Config"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $now.format('yyyy-MM-dd') }}",
+        "filter": {
+          "driveId": {
+            "__rl": true,
+            "value": "My Drive",
+            "mode": "list",
+            "cachedResultName": "My Drive",
+            "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1enbHNv3fOekxgj_9pth6BNXSTgPqHhub",
+            "mode": "id"
+          },
+          "whatToSearch": "folders"
+        },
+        "options": {
+          "fields": [
+            "id",
+            "webViewLink",
+            "name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        80,
+        420
+      ],
+      "id": "8517f535-7808-4730-926c-2ce30124bbc2",
+      "name": "Search Folder",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8e1bde36-5871-4ddf-b4dc-ba24f5cdfa15",
+              "leftValue": "={{ $('Search Folder').item.json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        160
+      ],
+      "id": "1e571131-11dd-424e-8435-600420ae8419",
+      "name": "Folder Exits"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $now.format('yyyy-MM-dd') }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Master Config').item.json.finance_folder_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "simplifyOutput": false
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        320,
+        420
+      ],
+      "id": "cfabf20c-7e9d-49ee-a893-9aaa1f2e9b65",
+      "name": "Create Folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "simple": false,
+        "filters": {
+          "q": "has:attachment",
+          "readStatus": "unread"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        600,
+        420
+      ],
+      "id": "c2254ed7-45cb-493b-b37f-3b36ba59f013",
+      "name": "Get Many E-mail",
+      "webhookId": "9b34bfb7-3a77-42a5-ace1-0a7486c25d0d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "=Subject: {{ $json.headers.subject }}\nBody: {{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "บัญชีและการเงิน",
+              "description": "เป็นข้อมูลที่เกี่ยวข้องกับด้านการเงินและบัญชี เช่น เสนอราคา แจ้งหนี้ สั่งซื้อ สลิปโอนเงิน เป็นต้น"
+            },
+            {
+              "category": "อื่นๆ",
+              "description": "เป็นข้อมูลที่ไม่ได้เกี่ยวข้องกับการเงินและบัญชี"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        840,
+        160
+      ],
+      "id": "750fd8c1-627f-4ff5-8cb3-24c0e1d6d327",
+      "name": "E-Mail Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1980,
+        760
+      ],
+      "id": "232c15d9-30ec-484e-b769-5b470d0721e5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1240,
+        160
+      ],
+      "id": "32a0f251-4064-457b-a0b9-556cfb0ba2b8",
+      "name": "Download Attachments",
+      "webhookId": "e060a609-d8a2-4b20-8770-e8ddfea2837a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const nodeItems = $items(\"Download Attachments\", 0);\nconst output = [];\n\nfor (const item of nodeItems) {\n  if (!item.binary) continue;\n\n  for (const key of Object.keys(item.binary)) {\n    const file = item.binary[key];\n    output.push({\n      json: {\n        fileName: file.fileName,\n        mimeType: file.mimeType,\n        fileSize: file.fileSize\n      },\n      binary: {\n        data: file\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1240,
+        420
+      ],
+      "id": "7a4585c1-5a70-42af-9d43-13f02dc8010b",
+      "name": "Get All Files",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "279ff14f-e77a-4004-b974-dbadf5d8658f",
+              "name": "folder_id",
+              "value": "={{ $('Search Folder').item.json.id || $('Create Folder').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        600,
+        160
+      ],
+      "id": "14ecb332-add8-42ba-9be6-5d8e1284b569",
+      "name": "Set Folder ID"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.pages.markdown }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "เลขที่เอกสาร",
+              "description": "เป็นเลขที่เอกสาร โดยต้องระวังให้ดีห้ามตกขระพิเศษ เพราะบางที่อาจใช้อักขระพิเศษมาประกอบเป็นหมายเลข เช่นเครื่องหมาย \"-\" เป็นต้น กรณีทีข้อมูลมีหลายหมายเลข ให้ดูว่าข้อมูลเป็นเอกสารประเภทไหนเป็นหลัก\n1.ใบเสนอราคา\n2.ใบแจ้งหนี้\n3.ใบเสร็จรับเงิน\nแล้วจึงให้นำหมายเลขของประเภทนั้นๆ มาแสดง",
+              "required": true
+            },
+            {
+              "name": "ประเภทเอกสาร",
+              "description": "=เป็นประเภทเอกสาร ซึ่งคุณต้องจำแนกว่า จากข้อมูลนั้น เป็นประเภทเอกสารอะไร ซึ่งประกอบด้วย 4 ประเภทคือ\n\n1.ใบเสนอราคา\n2.ใบแจ้งหนี้\n3.ใบเสร็จรับเงิน\n4.สลิปชำระเงิน\n5.อื่นๆ",
+              "required": true
+            },
+            {
+              "name": "วันที่เอกสาร",
+              "type": "date",
+              "description": "วันที่เอกสารที่ปรากฏในข้อมูล โดยให้เป็นรูปแบบ ตัวอย่างเช่น 12 มีนาคม 2568 เป็นต้น",
+              "required": true
+            },
+            {
+              "name": "บริษัท",
+              "description": "ชื่อบริษัทที่ปรากฏในข้อมูล",
+              "required": true
+            },
+            {
+              "name": "ข้อมูลติดต่อบริษัท",
+              "description": "เป็นข้อมูลของบริษัท เช่น ที่อยู่ หรือ E-Mail หรือ เบอร์ติดต่อ โดยให้จัดประโยคข้อความให้อ่านง่าย",
+              "required": true
+            },
+            {
+              "name": "รายละเอียดสินค้า",
+              "description": "เป็นข้อมูลรายละเอียดสินค้าที่ปรากฏในข้อมูล เช่น รหัสสินค้า ชื่อสินค้า รายละเอียดสินค้า เป็นต้น โดยให้จัดประโยคข้อความให้อ่านง่าย",
+              "required": true
+            },
+            {
+              "name": "ยอดรวมทั้งสิ้น",
+              "type": "number",
+              "description": "แสดงยอดค่าใช้จ่าย หรือมูลค่ารวมจำนวนเงินทั้งหมด",
+              "required": true
+            },
+            {
+              "name": "สกุลเงิน",
+              "description": "=พิจารณาว่า ข้อมูลนี้ ใช้อัตราค่าเงิน เป็นเงินไทยหรือต่างประเทศ โดยต้องตอบโดยใช้ตัวเลือก 2 ตัวนี้คือ\n\n1.ไทย\n2.ต่างประเทศ",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        740
+      ],
+      "id": "5a60903a-bf31-4a4e-85f9-a9277784441d",
+      "name": "Information Extractor",
+      "executeOnce": false,
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Download Attachments').item.json.id }}",
+        "labelIds": [
+          "Label_1822722969243572191"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1720,
+        160
+      ],
+      "id": "fd1b2029-f07c-4b71-b564-a609a331866b",
+      "name": "Add Label",
+      "webhookId": "c8d2f8de-889a-4ad4-8954-0290f46f0d1a",
+      "executeOnce": true,
+      "alwaysOutputData": false,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Download Attachments').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1720,
+        420
+      ],
+      "id": "91adf0fa-115b-4353-a79f-de632c500263",
+      "name": "Mark as Read",
+      "webhookId": "f8751eee-f359-4900-96bc-af7748930870",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "633895ec-84d9-44d8-9ba3-8b00afcba65b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d22e7ca9-d575-4455-b432-1f7fe054c05d",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "image/jpeg",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IMG"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        320,
+        740
+      ],
+      "id": "742f8e0a-b831-48e2-8c76-c7ac417db8a4",
+      "name": "Check Type File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        160
+      ],
+      "id": "cfc1a74e-e0b4-4f9c-bb03-42a329735da5",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Master Config').first().json.finance_sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Master Config').first().json.finance_sheet_id_gid }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "เลขเอกสาร": "={{ $('Information Extractor').item.json.output['เลขที่เอกสาร'] }}",
+            "ประเภทเอกสาร": "={{ $('Information Extractor').item.json.output['ประเภทเอกสาร'] }}",
+            "วันที่เอกสาร": "={{ $('Information Extractor').item.json.output['วันที่เอกสาร'] }}",
+            "จากบริษัท": "={{ $('Information Extractor').item.json.output['บริษัท'] }}",
+            "ข้อมูลติดต่อบริษัท": "={{ $('Information Extractor').item.json.output['ข้อมูลติดต่อบริษัท'] }}",
+            "รายละเอียดสินค้า": "={{ $('Information Extractor').item.json.output['รายละเอียดสินค้า'] }}",
+            "มูลค่ารวมทั้งสิ้น": "={{ $('Information Extractor').item.json.output['ยอดรวมทั้งสิ้น'] }}",
+            "สกุลเงิน": "={{ $('Information Extractor').item.json.output['สกุลเงิน'] }}",
+            "วันที่ได้รับ E-Mail": "={{ $('Download Attachments').first().json.date }}",
+            "From E-Mail": "={{ $('Download Attachments').first().json.from.value[0].address }}",
+            "From E-Mail [Text]": "={{ $('Download Attachments').first().json.from.value[0].name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "เลขเอกสาร",
+              "displayName": "เลขเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ประเภทเอกสาร",
+              "displayName": "ประเภทเอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "วันที่เอกสาร",
+              "displayName": "วันที่เอกสาร",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "วันที่ได้รับ E-Mail",
+              "displayName": "วันที่ได้รับ E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "จากบริษัท",
+              "displayName": "จากบริษัท",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ข้อมูลติดต่อบริษัท",
+              "displayName": "ข้อมูลติดต่อบริษัท",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "From E-Mail",
+              "displayName": "From E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "From E-Mail [Text]",
+              "displayName": "From E-Mail [Text]",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "รายละเอียดสินค้า",
+              "displayName": "รายละเอียดสินค้า",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "มูลค่ารวมทั้งสิ้น",
+              "displayName": "มูลค่ารวมทั้งสิ้น",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "สกุลเงิน",
+              "displayName": "สกุลเงิน",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Document Link",
+              "displayName": "Document Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1720,
+        740
+      ],
+      "id": "5fd6413e-cbdb-4224-9dc4-6026af96da67",
+      "name": "Record Document To Sheet3",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### แยกแยะและจัดระเบียบข้อมูล",
+        "height": 300,
+        "width": 460,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1160,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "7980ccf9-1229-42e1-b832-bbe4b1684f44",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "### บันทึกข้อมูลไว้ใน Google Sheet",
+        "height": 300,
+        "width": 260,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1640,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "eeb2241b-8f93-4180-85d1-e9b4e5d47ce9",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "### ทำสถานะอ่านแล้วและติดป้ายกำกับ",
+        "height": 540,
+        "width": 260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1640,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "b3d6ae0f-ff9d-47fd-bbf1-9bce0f93b882",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "### AI Model",
+        "height": 300,
+        "width": 220,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "1954b5d3-3e6b-4194-b119-3bfe8b7efa29",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "### กรณีเป็นไฟล์รูปต้องแปลงเป็น PDF",
+        "height": 300,
+        "width": 260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "7ffc76cd-614c-498d-87da-1b63f5d03ec4",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Get All Files').item.json.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Set Folder ID').item.json.folder_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1480,
+        160
+      ],
+      "id": "11c415d9-bc5b-400e-9293-0d45edee93e5",
+      "name": "Upload File1",
+      "executeOnce": false,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### สำรองไฟล์ไว้ใน Google Drive",
+        "height": 540,
+        "width": 180
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1440,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "84fce833-c72b-4c7e-98dc-afad6e88e0ff",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "jsCode": "const nodeItems = $items(\"Download Attachments\", 0);\nconst output = [];\n\nfor (const item of nodeItems) {\n  if (!item.binary) continue;\n\n  for (const key of Object.keys(item.binary)) {\n    const file = item.binary[key];\n    output.push({\n      json: {\n        fileName: file.fileName,\n        mimeType: file.mimeType,\n        fileSize: file.fileSize\n      },\n      binary: {\n        data: file\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        740
+      ],
+      "id": "df92f3ed-d6d3-4e3d-9318-6d855a3bc561",
+      "name": "Get All Files1",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        920,
+        420
+      ],
+      "id": "9e8c6c23-6367-4cbb-881d-69be4b0b26b0",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "### คัดกรองตามประเภทไฟล์แนบ",
+        "height": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "d9c60aa1-a296-469b-a232-998cb12fd282",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "### ตรวจสอบประเภทไฟล์",
+        "height": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "d0bc9d5c-7ed2-498f-9fb9-4bb5c141f8c7",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        840,
+        740
+      ],
+      "id": "f00d70e4-96e4-4fad-9a8a-4c2752c5f84c",
+      "name": "Mistral OCR",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pdfName": "image",
+        "keepImages": true
+      },
+      "type": "@cntrlx/n8n-nodes-pdfgenie-pro.pdfkit",
+      "typeVersion": 1,
+      "position": [
+        600,
+        740
+      ],
+      "id": "2ba2b9c4-0e5c-4edc-a299-c4d9fed9d524",
+      "name": "PDFGenie"
+    },
+    {
+      "parameters": {
+        "content": "### OCR ด้วย Mistral",
+        "height": 300,
+        "width": 340,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "003a81b8-67a6-490d-ad89-1ff9677b88af",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "pages",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        740
+      ],
+      "id": "4bc357a8-0213-40b8-9bd8-ddb598a5211b",
+      "name": "Split Page"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Master Config": {
+      "main": [
+        [
+          {
+            "node": "Search Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Folder": {
+      "main": [
+        [
+          {
+            "node": "Folder Exits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Folder Exits": {
+      "main": [
+        [
+          {
+            "node": "Set Folder ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Folder": {
+      "main": [
+        [
+          {
+            "node": "Set Folder ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Many E-mail": {
+      "main": [
+        [
+          {
+            "node": "E-Mail Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "E-Mail Classifier": {
+      "main": [
+        [
+          {
+            "node": "Download Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "E-Mail Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Attachments": {
+      "main": [
+        [
+          {
+            "node": "Get All Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Files": {
+      "main": [
+        [
+          {
+            "node": "Upload File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Folder ID": {
+      "main": [
+        [
+          {
+            "node": "Get Many E-mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Record Document To Sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Label": {
+      "main": [
+        [
+          {
+            "node": "Mark as Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Type File": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PDFGenie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Document To Sheet3": {
+      "main": [
+        []
+      ]
+    },
+    "Upload File1": {
+      "main": [
+        [
+          {
+            "node": "Add Label",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Files1": {
+      "main": [
+        [
+          {
+            "node": "Check Type File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Read": {
+      "main": [
+        [
+          {
+            "node": "Get All Files1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR": {
+      "main": [
+        [
+          {
+            "node": "Split Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFGenie": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Page": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b147e65b-2d71-4559-bcb3-8b03d3a7c2be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "H91VrMEVw8rHCbos",
+  "tags": []
+}

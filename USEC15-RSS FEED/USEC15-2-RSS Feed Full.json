@@ -1,0 +1,393 @@
+{
+  "name": "USEC15-2-RSS Feed Full",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        -112
+      ],
+      "id": "60ed8e0c-7b56-4a49-a9f8-f62d5f801445",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['RSS Link'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "a6a94326-5530-4157-94ba-3ef3a25e9941",
+      "name": "RSS Read",
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "maxItems": 50
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -112
+      ],
+      "id": "9d78db39-9dc7-462f-8c61-44596732ad31",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        112
+      ],
+      "id": "78d1d0fa-3bfe-47e9-83ca-8fca969dfebd",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"title\": \"\",\n\t\"news_content\": \"\",\n    \"image_link\": \"\",\n    \"date\":\"\",\n    \"ref\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        112
+      ],
+      "id": "26725e03-1972-4992-959a-12039f4758f9",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=News Data:\n{{ $json.toJsonString() }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=คุณคือผู้เชี่ยวชาญด้านการสรุปข่าว\n\nคุณต้องนำข้อมูลข่าวที่ได้รับมาจาก User Input มาวิเคราะห์และสรุปข่าวภาษาไทยให้ได้เฉพาะใจความเนื้อหาสำคัญที่น่าสนใจ  โดย Output ที่ต้องการต้องเป็นโครงสร้าง Json ที่ประกอบด้วย\n\n- หัวข้อข่าว(title) ที่เขียนได้อย่างน่าสนใจ\n- เนื้อหาข่าว(news_content) เนื้อหาโดยสรุป\n- รูปประกอบ(image_link) ลิ้งค์รูปประกอบ\n- วันที่(date) วันที่ข่าว เช่น 01 มกราคม 2568\n- แหล่งอ้างอิง(ref) ลิ้งค์แหล่งข่าวอ้างอิง"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        608,
+        -112
+      ],
+      "id": "6be63001-5c21-45ac-8d7c-f7677c0b731c",
+      "name": "News Summary"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8bf5773-9232-411f-b8a6-a9bd14e8ca48",
+              "name": "sheet_id",
+              "value": "17wkw_88Vi4xITULd6CtLTC0HY7vxFM2vM5g-1Z2ZahY",
+              "type": "string"
+            },
+            {
+              "id": "9a4665a7-4129-443b-9aa1-fb0085eb4755",
+              "name": "send_email_to",
+              "value": "wittayayon70@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -112
+      ],
+      "id": "47bb5b0c-3b9d-433c-9b1a-b5c03d2d01b0",
+      "name": "Set Master Config"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set Master Config').first().json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1967378587,
+          "mode": "list",
+          "cachedResultName": "NEWS Detail",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17wkw_88Vi4xITULd6CtLTC0HY7vxFM2vM5g-1Z2ZahY/edit#gid=1967378587"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $json.output.title }}",
+            "Date": "={{ $json.output.date }}",
+            "Content": "={{ $json.output.news_content }}",
+            "Link": "={{ $json.output.ref }}",
+            "Image": "={{ $json.output.image_link }}"
+          },
+          "matchingColumns": [
+            "Link"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image",
+              "displayName": "Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1008,
+        -112
+      ],
+      "id": "6612d7fd-bb45-4693-8bcb-4c2242e3d1db",
+      "name": "Update News Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// กำหนดจำนวนวันที่ต้องการเก็บ (3 วัน)\nconst days = 3;\n\n// เวลาปัจจุบัน\nconst now = new Date();\n\n// คำนวณเวลาที่ห่างจากวันนี้ไป 3 วัน\nconst thresholdDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);\n\n// ดึงรายการข่าวจาก input\nconst items = $input.all();\n\n// กรองเฉพาะข่าวที่มี isoDate ภายใน 3 วันที่ผ่านมา\nconst filteredItems = items.filter(item => {\n  const isoDate = new Date(item.json.isoDate);\n  return isoDate >= thresholdDate;\n});\n\n// ส่งผลลัพธ์ที่ผ่านการกรองกลับไป\nreturn filteredItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -112
+      ],
+      "id": "52f77794-b80e-455d-83e0-b5a358f640a9",
+      "name": "Filter Recent News"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "RSS List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17wkw_88Vi4xITULd6CtLTC0HY7vxFM2vM5g-1Z2ZahY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -224,
+        -112
+      ],
+      "id": "63e7da68-77ee-4e4b-abf2-041d0ab4803c",
+      "name": "Get RSS",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Filter Recent News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "News Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "News Summary",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Summary": {
+      "main": [
+        [
+          {
+            "node": "Update News Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Master Config": {
+      "main": [
+        [
+          {
+            "node": "Get RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update News Sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Filter Recent News": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get RSS": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0cba4396-7ffa-4b1b-8d15-10b058e5b674",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "nHzSdHovWgF9xIZe",
+  "tags": []
+}

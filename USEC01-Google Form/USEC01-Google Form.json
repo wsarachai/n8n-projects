@@ -1,0 +1,486 @@
+{
+  "name": "USEC01-Google Form",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ข้อมูลผู้ใช้\n\nชื่อ-สกุล: {{ $('Google Sheets Add Row Trigger').item.json['ชื่อ-สกุล'] }}\nเพศ:{{ $('Google Sheets Add Row Trigger').item.json['เพศ'] }}\nวันเดือนปีเกิด:{{ $('Google Sheets Add Row Trigger').item.json['วันเดือนปีเกิด'] }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "คุณคือนักพยากรณ์ดวงชะตา AI ที่เชี่ยวชาญการทำนายดวงชะตาภาพรวมจากข้อมูลพื้นฐานของบุคคล ได้แก่ ชื่อ-สกุล, เพศ และวันเกิด (ควรมีปีเกิดด้วย) ซึ่งได้มาจากข้อมูลของผู้ใช้\n\n1. หากผู้ใช้กรอกข้อมูล **ไม่ครบถ้วน** (เช่น ขาดชื่อ, เพศ หรือวันเกิด), ให้แจ้งเตือนผู้ใช้ว่า:\n   - \"กรุณาระบุข้อมูลให้ครบถ้วน ได้แก่ ชื่อ-สกุล, เพศ และวันเกิด (รวมปีเกิด) เพื่อให้สามารถดูดวงได้อย่างแม่นยำ\"\n\n2. หากข้อมูล **ครบถ้วน**, ให้วิเคราะห์ดวงชะตาภาพรวมของผู้ใช้ในหัวข้อต่อไปนี้:\n   - **พื้นฐานดวงชะตา** (นิสัยโดยรวม, จุดเด่น-จุดด้อย)\n   - **การงาน**\n   - **การเงิน**\n   - **ความรัก**\n   - **สุขภาพ**\n   - **คำแนะนำหรือแนวทางเสริมดวง**\n\nกรุณาแสดงผลให้เป็นลำดับหัวข้ออย่างชัดเจน และใช้ภาษาที่เข้าใจง่าย เป็นกันเอง แต่ยังคงความน่าเชื่อถือ โดยให้แสดงเฉพาะ Output ที่เป็นคำทำนายเท่านั้น เพื่อส่งเข้า E-Mail\n"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        560,
+        140
+      ],
+      "id": "877ada47-2092-4503-bdc4-f622478bfd9b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        640,
+        480
+      ],
+      "id": "c73bd38b-7ed9-49c8-b891-e5688bd6a2cc",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Df4OPtRtC4yGbXGZ",
+          "name": "OpenRouter Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ตัวอย่างลิ้งค์รูปจาก Google Drive \nhttps://lh3.googleusercontent.com/d/<<image_id>>",
+        "height": 240,
+        "width": 260,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "9b677ae5-37e4-4219-ac20-8f246e2db15d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{\n$('Google Sheets Add Row Trigger').first().json['E-Mail']\n}}",
+        "subject": "จัดส่งผลทำนายพยากรณ์ดวงชะตาภาพรวม",
+        "message": "=<!DOCTYPE html>\n<html lang=\"th\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>ผลการพยากรณ์ดวงชะตา</title>\n  <style>\n    body {\n      margin: 0;\n      padding: 0;\n      background-color: #fffdf6;\n      font-family: 'Open Sans', sans-serif;\n      color: #4d4d4d;\n    }\n    .container {\n      max-width: 600px;\n      width: 100%;\n      margin: 0 auto;\n      background-color: #ffffff;\n      border: 1px solid #ffe082;\n      border-radius: 10px;\n      padding: 32px;\n      box-shadow: 0 6px 18px rgba(255, 215, 0, 0.1);\n      box-sizing: border-box;\n    }\n    .header {\n      text-align: center;\n      background-color: #fff8e1;\n      padding: 24px;\n      border-radius: 10px 10px 0 0;\n      border-bottom: 1px solid #ffe082;\n    }\n    .header img.logo {\n      max-width: 120px;\n      height: auto;\n      display: block;\n      margin: 0 auto 8px;\n    }\n    .header .brand {\n      font-size: 14px;\n      color: #a67c00;\n      margin-top: 4px;\n      font-weight: bold;\n    }\n    .header h1 {\n      margin: 12px 0 0;\n      color: #b78b00;\n      font-size: 22px;\n    }\n    .content {\n      padding: 24px 0;\n      line-height: 1.8;\n      font-size: 15px;\n    }\n    .footer {\n      text-align: center;\n      padding-top: 24px;\n      color: #8d8d8d;\n      font-size: 13px;\n      word-break: break-word;\n    }\n    .highlight {\n      background-color: #fff8e1;\n      padding: 16px;\n      border-left: 4px solid #fbc02d;\n      margin: 16px 0;\n      border-radius: 6px;\n    }\n    @media (max-width: 600px) {\n      .container {\n        padding: 16px;\n      }\n      .header, .content, .footer {\n        padding-left: 12px;\n        padding-right: 12px;\n      }\n      .header h1 {\n        font-size: 20px;\n      }\n    }\n  </style>\n</head>\n<body style=\"margin:0; padding:0; background-color:#fffdf6;\">\n  <div class=\"container\">\n    <div class=\"header\">\n      <img src=\"https://lh3.googleusercontent.com/d/1TAVgNkCttEK5ibLnm7Fo9uQ5e-0JH2qm\" alt=\"พ่อหมอเป็ด\" class=\"logo\">\n      <h1>ผลการทำนายดวงชะตาภาพรวม</h1>\n    </div>\n    <div class=\"content\">\n      <p>เรียน คุณ<strong>{{\n  $('Google Sheets Add Row Trigger').first().json['ชื่อ-สกุล']\n}}</strong></p>\n\n      <p>ทีมงาน <strong>พ่อหมอออนไลน์</strong> ขอขอบพระคุณที่ท่านไว้วางใจใช้บริการพยากรณ์ดวงชะตากับเรา</p>\n\n      <div class=\"highlight\">\n        <p>เราขอส่งผลการพยากรณ์ดวงชะตาภาพรวมของท่าน ประกอบไปด้วย:</p>\n        <p><em>{{ $json.data }}</em></p>\n      </div>\n\n      <p>ขอขอบคุณลูกค้าที่น่ารักทุกท่านอีกครั้งจากใจ 💛</p>\n      <p>ขอให้ดวงชะตาของท่านพบเจอแต่สิ่งดีงาม</p>\n\n      <p>ด้วยความเคารพอย่างสูง,</p>\n      <p><strong>ทีมงานพ่อหมอออนไลน์</strong></p>\n    </div>\n    <div class=\"footer\">\n      พ่อหมอออนไลน์ &copy; 2025 | ติดต่อ: support@iamaiduck.com\n    </div>\n  </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1180,
+        140
+      ],
+      "id": "2d20e139-c046-419a-be17-07eb4f231659",
+      "name": "Send E-Mail",
+      "webhookId": "3905000b-e046-40aa-8b73-054f33cd8a3d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1HDI4xrz_sxtaga2SdrsGdxxo5EhAQWST5hMs5IZTJQU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2002568813,
+          "mode": "list",
+          "cachedResultName": "ผลสำรวจคำทำนาย",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDI4xrz_sxtaga2SdrsGdxxo5EhAQWST5hMs5IZTJQU/edit#gid=2002568813"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ประทับเวลา": "={{ $('Google Sheets Add Row Trigger').item.json['ประทับเวลา'] }}",
+            "ผลคำทำนาย": "={{ $('Markdown').item.json.text }}"
+          },
+          "matchingColumns": [
+            "ประทับเวลา"
+          ],
+          "schema": [
+            {
+              "id": "ประทับเวลา",
+              "displayName": "ประทับเวลา",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ชื่อ-สกุล",
+              "displayName": "ชื่อ-สกุล",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "เพศ",
+              "displayName": "เพศ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "วันเดือนปีเกิด",
+              "displayName": "วันเดือนปีเกิด",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "E-Mail",
+              "displayName": "E-Mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ผลคำทำนาย",
+              "displayName": "ผลคำทำนาย",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1440,
+        140
+      ],
+      "id": "ca9a667e-d510-41da-bfcf-9c2fc51c9aea",
+      "name": "Record Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        140
+      ],
+      "id": "6c4bff53-026d-4fbf-b9b3-0731740dc33a",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "## มีการกรอกข้อมูลผ่าน Google Form",
+        "height": 360,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "4ebd8288-c514-49ac-9861-58f5f79ff95c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ทำนายด้วย AI",
+        "height": 360,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "ec4b46c3-eb26-4582-9a0c-6374ef62b31d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ส่ง E-Mail ให้ผู้ใช้",
+        "height": 360,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        920,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "6187c551-7036-47dc-a545-d09008a55662",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกข้อมูลลง Sheet",
+        "height": 360,
+        "width": 260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "7d73a5f8-53e4-4ade-bfe4-42ee5f41b339",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1HDI4xrz_sxtaga2SdrsGdxxo5EhAQWST5hMs5IZTJQU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2002568813,
+          "mode": "list",
+          "cachedResultName": "ผลสำรวจคำทำนาย",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HDI4xrz_sxtaga2SdrsGdxxo5EhAQWST5hMs5IZTJQU/edit#gid=2002568813"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        60,
+        140
+      ],
+      "id": "38531ebe-c472-4145-af0e-8b3c7e53e918",
+      "name": "Google Sheets Add Row Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "CT9byHIOmHolw3AH",
+          "name": "Google Sheets Trigger - XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        960,
+        140
+      ],
+      "id": "faf0156b-1779-46f7-8b22-40a543d7f6c9",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "content": "## Model AI",
+        "height": 240,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "fe097ce8-b5df-4768-818e-c12bff599117",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "407e2aba-6546-487e-8ad8-1a82e2dd414a",
+              "name": "sheet_id",
+              "value": "1HDI4xrz_sxtaga2SdrsGdxxo5EhAQWST5hMs5IZTJQU",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        140
+      ],
+      "id": "2ee59554-14d6-4835-8e6d-381a328ad900",
+      "name": "Set Config"
+    },
+    {
+      "parameters": {
+        "content": "## Google Form - ดูดวง\n[แบบฟอร์ม Google Form](https://forms.gle/VJQxJA3Y1DSPTwpR6)",
+        "height": 240,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "48bdcc43-31d5-4f16-881b-fee5d1149f91",
+      "name": "Sticky Note6"
+    }
+  ],
+  "pinData": {
+    "Google Sheets Add Row Trigger": [
+      {
+        "json": {
+          "ประทับเวลา": "3/7/2025, 3:33:59",
+          "ชื่อ-สกุล": "วิชาญ ชัยจำรัส",
+          "เพศ": "ชาย",
+          "วันเดือนปีเกิด": "3/12/1987",
+          "E-Mail": "wittayayon70@gmail.com",
+          "ผลคำทำนาย": ""
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send E-Mail": {
+      "main": [
+        [
+          {
+            "node": "Record Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Add Row Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Send E-Mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4709dd8d-13a8-4dc1-9a91-9a63a0b2f2f8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "woiHmConz1MC23TU",
+  "tags": []
+}

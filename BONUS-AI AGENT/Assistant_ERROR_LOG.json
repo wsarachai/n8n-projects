@@ -1,0 +1,153 @@
+{
+  "name": "Assistant-ERROR LOG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -20
+      ],
+      "id": "b59590f0-96e0-4ca5-aaf5-b6369ed23c8e",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1jw_eX-xLDfVU2CppEla8t0rNX6XV8d6JFjuXe67bAHg",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jw_eX-xLDfVU2CppEla8t0rNX6XV8d6JFjuXe67bAHg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Workflow Name": "={{ $json.workflow.name }}",
+            "Error Message": "={{ $json.execution.error.message }}",
+            "Error Stack": "={{ $json.execution.error.stack }}",
+            "DateTime": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "E"
+          ],
+          "schema": [
+            {
+              "id": "Workflow Name",
+              "displayName": "Workflow Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Error Stack",
+              "displayName": "Error Stack",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DateTime",
+              "displayName": "DateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        40,
+        -20
+      ],
+      "id": "7f10c315-850d-4519-8058-d25c56eae8f6",
+      "name": "Error Log Record",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "b4yYTruZSaZ9ezNU",
+          "name": "Google Sheets Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -20
+      ],
+      "id": "c7e08df2-c167-49a4-b3a6-bd2f252bf21c",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Error Log Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Log Record": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Bangkok",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "f40d835f-cdfa-44a1-8fbd-7a892a7ab1c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b978f173fca38aeb96a271d98f47cb690ce1bf4049db933df056bd7e786e8d57"
+  },
+  "id": "jTr4iZVU2L5QEaBY",
+  "tags": []
+}

@@ -1,0 +1,583 @@
+{
+  "name": "USEC05-1-OCR",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        0
+      ],
+      "id": "c441c697-5e3b-48bf-a1bb-fa69a33c1bdb",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "https://drive.google.com/file/d/1W5e4ArX3Uq5CSZo94hQHX3x0CmuImsIk/view?usp=drive_link",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        0
+      ],
+      "id": "1fec0fcc-8f6f-430d-b0cb-e482dcd72862",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "16cb7b11-f108-4e32-9f34-be120bcb09ae",
+      "name": "Mistral OCR",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.pages[0].markdown }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Thai Financial Document (Full Field Output)\",\n  \"type\": \"object\",\n  \"description\": \"Schema ที่บังคับให้ทุกฟิลด์ต้องแสดงใน Output เสมอ\",\n  \"required\": [\n    \"document_type\",\n    \"document_title\",\n    \"document_number\",\n    \"book_number\",\n    \"issue_date\",\n    \"due_date\",\n    \"currency_code\",\n    \"language\",\n    \"seller\",\n    \"buyer\",\n    \"references\",\n    \"vat\",\n    \"line_items\",\n    \"totals\",\n    \"payment\",\n    \"notes\",\n    \"terms_and_conditions\",\n    \"signatures\",\n    \"source\",\n    \"confidence\"\n  ],\n  \"properties\": {\n    \"document_type\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"invoice\", \"receipt\", \"receipt_tax_invoice\",\n        \"quotation\", \"advance_receipt\", \"pos_receipt\",\n        \"credit_note\", \"debit_note\"\n      ],\n      \"default\": \"\"\n    },\n    \"document_title\": { \"type\": \"string\", \"default\": \"\" },\n    \"document_number\": { \"type\": \"string\", \"default\": \"\" },\n    \"book_number\": { \"type\": \"string\", \"default\": \"\" },\n    \"issue_date\": { \"type\": \"string\", \"default\": \"\" },\n    \"due_date\": { \"type\": \"string\", \"default\": \"\" },\n    \"currency_code\": { \"type\": \"string\", \"default\": \"THB\" },\n    \"language\": { \"type\": \"string\", \"default\": \"th\" },\n\n    \"seller\": {\n      \"type\": \"object\",\n      \"required\": [\"name\", \"branch\", \"tax_id\", \"address\", \"phone\", \"email\"],\n      \"properties\": {\n        \"name\": { \"type\": \"string\", \"default\": \"\" },\n        \"branch\": { \"type\": \"string\", \"default\": \"\" },\n        \"tax_id\": { \"type\": \"string\", \"default\": \"\" },\n        \"address\": { \"type\": \"string\", \"default\": \"\" },\n        \"phone\": { \"type\": \"string\", \"default\": \"\" },\n        \"email\": { \"type\": \"string\", \"default\": \"\" }\n      }\n    },\n\n    \"buyer\": {\n      \"type\": \"object\",\n      \"required\": [\"name\", \"branch\", \"tax_id\", \"address\", \"phone\", \"email\"],\n      \"properties\": {\n        \"name\": { \"type\": \"string\", \"default\": \"\" },\n        \"branch\": { \"type\": \"string\", \"default\": \"\" },\n        \"tax_id\": { \"type\": \"string\", \"default\": \"\" },\n        \"address\": { \"type\": \"string\", \"default\": \"\" },\n        \"phone\": { \"type\": \"string\", \"default\": \"\" },\n        \"email\": { \"type\": \"string\", \"default\": \"\" }\n      }\n    },\n\n    \"references\": {\n      \"type\": \"object\",\n      \"required\": [\"po_number\",\"quotation_number\",\"related_invoice_number\",\"contract_number\",\"customer_code\"],\n      \"properties\": {\n        \"po_number\": { \"type\": \"string\", \"default\": \"\" },\n        \"quotation_number\": { \"type\": \"string\", \"default\": \"\" },\n        \"related_invoice_number\": { \"type\": \"string\", \"default\": \"\" },\n        \"contract_number\": { \"type\": \"string\", \"default\": \"\" },\n        \"customer_code\": { \"type\": \"string\", \"default\": \"\" }\n      }\n    },\n\n    \"vat\": {\n      \"type\": \"object\",\n      \"required\": [\"vat_status\",\"vat_rate_percent\",\"vat_amount\"],\n      \"properties\": {\n        \"vat_status\": { \"type\": \"string\", \"default\": \"unknown\" },\n        \"vat_rate_percent\": { \"type\": \"number\", \"default\": 0 },\n        \"vat_amount\": { \"type\": \"number\", \"default\": 0 }\n      }\n    },\n\n    \"line_items\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\": [\"line_no\",\"code\",\"name\",\"quantity\",\"unit_price\",\"total_inc_vat\"],\n        \"properties\": {\n          \"line_no\": { \"type\": \"integer\", \"default\": 0 },\n          \"code\": { \"type\": \"string\", \"default\": \"\" },\n          \"name\": { \"type\": \"string\", \"default\": \"\" },\n          \"quantity\": { \"type\": \"number\", \"default\": 0 },\n          \"unit_price\": { \"type\": \"number\", \"default\": 0 },\n          \"total_inc_vat\": { \"type\": \"number\", \"default\": 0 }\n        }\n      },\n      \"default\": []\n    },\n\n    \"totals\": {\n      \"type\": \"object\",\n      \"required\": [\"items_subtotal\",\"discount_total\",\"vat_amount\",\"grand_total\",\"amount_paid\",\"balance_due\"],\n      \"properties\": {\n        \"items_subtotal\": { \"type\": \"number\", \"default\": 0 },\n        \"discount_total\": { \"type\": \"number\", \"default\": 0 },\n        \"vat_amount\": { \"type\": \"number\", \"default\": 0 },\n        \"grand_total\": { \"type\": \"number\", \"default\": 0 },\n        \"amount_paid\": { \"type\": \"number\", \"default\": 0 },\n        \"balance_due\": { \"type\": \"number\", \"default\": 0 }\n      }\n    },\n\n    \"payment\": {\n      \"type\": \"object\",\n      \"required\": [\"payment_terms\",\"methods\"],\n      \"properties\": {\n        \"payment_terms\": { \"type\": \"string\", \"default\": \"\" },\n        \"methods\": {\n          \"type\": \"array\",\n          \"default\": [],\n          \"items\": {\n            \"type\": \"object\",\n            \"required\": [\"method\",\"amount\",\"currency\"],\n            \"properties\": {\n              \"method\": { \"type\": \"string\", \"default\": \"\" },\n              \"amount\": { \"type\": \"number\", \"default\": 0 },\n              \"currency\": { \"type\": \"string\", \"default\": \"THB\" }\n            }\n          }\n        }\n      }\n    },\n\n    \"notes\": { \"type\": \"string\", \"default\": \"\" },\n    \"terms_and_conditions\": { \"type\": \"string\", \"default\": \"\" },\n\n    \"signatures\": {\n      \"type\": \"object\",\n      \"required\": [\"seller_signature_name\",\"buyer_signature_name\"],\n      \"properties\": {\n        \"seller_signature_name\": { \"type\": \"string\", \"default\": \"\" },\n        \"buyer_signature_name\": { \"type\": \"string\", \"default\": \"\" }\n      }\n    },\n\n    \"source\": {\n      \"type\": \"object\",\n      \"required\": [\"filename\",\"page_number\",\"ocr_engine\",\"extraction_timestamp\"],\n      \"properties\": {\n        \"filename\": { \"type\": \"string\", \"default\": \"\" },\n        \"page_number\": { \"type\": \"integer\", \"default\": 1 },\n        \"ocr_engine\": { \"type\": \"string\", \"default\": \"\" },\n        \"extraction_timestamp\": { \"type\": \"string\", \"default\": \"\" }\n      }\n    },\n\n    \"confidence\": {\n      \"type\": \"object\",\n      \"required\": [\"overall\"],\n      \"properties\": {\n        \"overall\": { \"type\": \"number\", \"default\": 0 }\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "77c0df5a-cdfb-456c-8076-7bbbd567a061",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        208
+      ],
+      "id": "e7069252-924a-487f-b764-1e48f38911c1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1xiakhYyQKLw5IBkAf5-MHxGpK3e5Fe9vUbf69iZ8Ytk/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Document",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xiakhYyQKLw5IBkAf5-MHxGpK3e5Fe9vUbf69iZ8Ytk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_title": "={{ $json.output.document_title }}",
+            "document_number": "={{ $json.output.document_number }}",
+            "issue_date": "={{ $json.output.issue_date }}",
+            "seller_name": "={{ $json.output.seller.name }}",
+            "seller_tax_id": "={{ $json.output.seller.tax_id }}",
+            "seller_address": "={{ $json.output.seller.address }}",
+            "seller_phone": "={{ $json.output.seller.phone }}",
+            "seller_email": "={{ $json.output.seller.email }}",
+            "discount_total": "={{ $json.output.totals.discount_total }}",
+            "vat_amount": "={{ $json.output.totals.vat_amount }}",
+            "grand_total": "={{ $json.output.totals.grand_total }}",
+            "amount_paid": "={{ $json.output.totals.amount_paid }}",
+            "balance_due": "={{ $json.output.totals.balance_due }}",
+            "notes": "={{ $json.output.payment.payment_terms }}\n{{ $json.output.notes }}",
+            "terms_and_conditions": "={{ $json.output.terms_and_conditions }}"
+          },
+          "matchingColumns": [
+            "document_number"
+          ],
+          "schema": [
+            {
+              "id": "document_title",
+              "displayName": "document_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "document_number",
+              "displayName": "document_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "issue_date",
+              "displayName": "issue_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seller_name",
+              "displayName": "seller_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seller_tax_id",
+              "displayName": "seller_tax_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seller_address",
+              "displayName": "seller_address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seller_phone",
+              "displayName": "seller_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "seller_email",
+              "displayName": "seller_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "discount_total",
+              "displayName": "discount_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "vat_amount",
+              "displayName": "vat_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "grand_total",
+              "displayName": "grand_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "amount_paid",
+              "displayName": "amount_paid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "balance_due",
+              "displayName": "balance_due",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "terms_and_conditions",
+              "displayName": "terms_and_conditions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        0
+      ],
+      "id": "d210a451-9d07-4b78-b021-4de738795a74",
+      "name": "Record Document",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.line_items",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "output.document_number",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        336,
+        480
+      ],
+      "id": "4b1be9e7-e59c-4cfa-b82e-63848de79f4b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "content": "## Download File",
+        "height": 464,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -688,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "827fa26c-81a8-4854-89c5-94bba64642ab",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## อ่านข้อมูลจากไฟล์ Scan",
+        "height": 464,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "e0686a7d-f606-42a6-b5a0-29581ef60671",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## คัดกรองและแยกข้อมูล",
+        "height": 464,
+        "width": 368,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "97c62315-eb2f-48d8-bc7d-9f1d726707db",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกข้อมูลเอกสาร",
+        "height": 464,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "b3bae805-c1fb-4b1f-affc-1098305199a9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## บันทึกข้อมูลรายการย่อย",
+        "height": 288,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        368
+      ],
+      "typeVersion": 1,
+      "id": "35f7a2e4-7f0c-42e1-9fd2-0e18f6b59da2",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1xiakhYyQKLw5IBkAf5-MHxGpK3e5Fe9vUbf69iZ8Ytk/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1389946039,
+          "mode": "list",
+          "cachedResultName": "Items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xiakhYyQKLw5IBkAf5-MHxGpK3e5Fe9vUbf69iZ8Ytk/edit#gid=1389946039"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_number": "={{ $json['output.document_number'] }}",
+            "item_detail": "={{ $json['output.line_items'].name }}",
+            "item_quantity": "={{ $json['output.line_items'].quantity }}",
+            "item_unit_price": "={{ $json['output.line_items'].unit_price }}",
+            "item_total_inc_vat": "={{ $json['output.line_items'].total_inc_vat }}"
+          },
+          "matchingColumns": [
+            "document_number"
+          ],
+          "schema": [
+            {
+              "id": "document_number",
+              "displayName": "document_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "item_detail",
+              "displayName": "item_detail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item_quantity",
+              "displayName": "item_quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item_unit_price",
+              "displayName": "item_unit_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item_total_inc_vat",
+              "displayName": "item_total_inc_vat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "items_subtotal",
+              "displayName": "items_subtotal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        480
+      ],
+      "id": "39a69ea3-458d-455b-92dd-2c19b4173e24",
+      "name": "Record Items",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Record Document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Document": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Record Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8aa84129-e7c5-405f-b472-7d214c0a77f7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "AUmr1cvGv6yoSZMZ",
+  "tags": []
+}

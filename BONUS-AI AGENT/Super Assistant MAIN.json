@@ -1,0 +1,776 @@
+{
+  "name": "Super Assistant MAIN",
+  "nodes": [
+    {
+      "parameters": {
+        "name": "emailAgent",
+        "description": "Call this tool for any email actions.",
+        "workflowId": {
+          "__rl": true,
+          "value": "6Pqv8x9m9R9c7hAE",
+          "mode": "list",
+          "cachedResultName": "Assistant Email Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        480,
+        368
+      ],
+      "id": "011ed243-bedb-4649-9542-fd0ff8ff450b",
+      "name": "Email Agent"
+    },
+    {
+      "parameters": {
+        "name": "contentCreator",
+        "description": "Call this tool to create blog posts.",
+        "workflowId": {
+          "__rl": true,
+          "value": "iY1VJV8g7AQlW31p",
+          "mode": "list",
+          "cachedResultName": "Assistant Content Creator Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        944,
+        368
+      ],
+      "id": "a6cf057a-7554-4f6a-a655-2ba773ac74a0",
+      "name": "Content Creator Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        368
+      ],
+      "id": "69d8e40d-bf5a-44dc-82aa-6196a159640f",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "name": "calendarAgent",
+        "description": "Call this tool for any calendar action.",
+        "workflowId": {
+          "__rl": true,
+          "value": "dAtlR2SuIIRJ8N4n",
+          "mode": "list",
+          "cachedResultName": "Assistant Calendar Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        640,
+        368
+      ],
+      "id": "2c6d6f04-38ec-4648-98d4-10fd959227cc",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        368
+      ],
+      "id": "150b60cb-82de-437c-93f5-c267eb35492a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 200,
+        "width": 1220,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        432,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "3e61a2c9-a20f-4650-a32c-87bd9df2b086",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "b8e854b2-0ebf-43c9-bc5f-10d1bbae1578",
+      "name": "When chat message received",
+      "webhookId": "c90a0ca0-592b-4581-9957-4ad2d70064b0"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        368
+      ],
+      "id": "412872ab-2d64-4e26-834d-c6a489554f27",
+      "name": "AI Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GTgPAxGRKTAbCJAg",
+          "mode": "list",
+          "cachedResultName": "Assistant Contact Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        368
+      ],
+      "id": "af55060f-c8cc-495f-9b14-fc1803dbe882",
+      "name": "Contact Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to search the internet",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', `What the user has requested to write a blog about`, 'string') }}",
+        "options": {
+          "topic": "general",
+          "search_depth": "basic",
+          "max_results": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Max_Results', ``, 'number') }}",
+          "time_range": "month",
+          "include_answer": "advanced",
+          "include_raw_content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Include_Raw_Content', ``, 'boolean') }}"
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        368
+      ],
+      "id": "06d4bba7-87e2-4c12-ac7d-781cc525f2e6",
+      "name": "Search Data",
+      "credentials": {
+        "tavilyApi": {
+          "id": "jjlNnfw8ibMD5sYO",
+          "name": "Tavily Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 200,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "af33f465-1cda-4fa3-9664-9ac0de736414",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 200,
+        "width": 200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        192,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "95cdcdd5-45b3-45e6-a462-dbe0eed8c4f3",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 200,
+        "width": 200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        320
+      ],
+      "typeVersion": 1,
+      "id": "bfb1020e-6e49-4293-a767-34fb0c9f82b6",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        752,
+        -96
+      ],
+      "id": "28a361c8-70ba-4658-a8ea-b61f253b3161",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "description": "ใช้สำหรับการสร้างรูปภาพ",
+        "workflowId": {
+          "__rl": true,
+          "value": "pxi5ORtbeeApqjyX",
+          "mode": "list",
+          "cachedResultName": "Assistant Create Image"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        368
+      ],
+      "id": "e1f0692b-c467-4f37-b292-98ef0e59f54c",
+      "name": "Image Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1904,
+        128
+      ],
+      "id": "909105bf-809b-4653-9283-74a44b13ea7a",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "km_search",
+        "toolDescription": "ใช้สำหรับการค้นข้อมูลเกี่ยวกับรายงานการเงินหรือผลประกอบการของบริษัท หรือข้อมูลการดำเนินงานของบริษัท",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "rag_documents_traditional",
+          "mode": "list",
+          "cachedResultName": "rag_documents_traditional"
+        },
+        "topK": 6,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        1728,
+        0
+      ],
+      "id": "a31e221e-42cf-4d25-b418-534df7c9ed41",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "76TDry322YaeSSvo",
+          "name": "QdrantAPI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agent Tools for RAG",
+        "height": 389,
+        "width": 343,
+        "color": 6
+      },
+      "id": "27ae347b-d9dd-4758-a979-61b7df323330",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get row(s) in sheet in Google Sheets Tool named \"Product Search\" that allows you to search for products using keywords. For each product, you will get:\n-ProductID\n-Product Name\n-Product Price\n-Balance (stock quantity)",
+        "documentId": {
+          "__rl": true,
+          "value": "=1UBlhJOdG9aNtnOhlnTBTBNrz5ETGmh1XRQX_I9xCF5I",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Product List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UBlhJOdG9aNtnOhlnTBTBNrz5ETGmh1XRQX_I9xCF5I/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        2112,
+        64
+      ],
+      "id": "e4af78c6-2ad8-49bd-9f9b-ae997c02d823",
+      "name": "Product Search",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Agent Tools for RAG",
+        "height": 389,
+        "width": 203,
+        "color": 6
+      },
+      "id": "fcc910b8-e16d-46e8-8813-889e4e5fa8f3",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "description": "ใช้สำหรับการสร้างวิดีโอ",
+        "workflowId": {
+          "__rl": true,
+          "value": "aEYoIK3i84TvwpKD",
+          "mode": "list",
+          "cachedResultName": "Assistant Create Video"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        368
+      ],
+      "id": "067197e2-b1ba-4e4d-a5b3-5766dea6bc2b",
+      "name": "Video Agent"
+    },
+    {
+      "parameters": {
+        "description": "ใช้สำหรับการดึงข้อมูลจากเว็บไซต์ เมื่อได้รับลิ้งค์หรือ URL จากผู้ใช้",
+        "workflowId": {
+          "__rl": true,
+          "value": "FjpnqAzo4FoJ2nc5",
+          "mode": "list",
+          "cachedResultName": "Assistant Web Scraping Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        368
+      ],
+      "id": "e5a86cff-dbd9-40fc-a07e-45d31b813a90",
+      "name": "Web Scraping Agent"
+    },
+    {
+      "parameters": {
+        "description": "ใช้สำหรับการทำ OCR เพื่ออ่านข้อมูลจากรูปหรือไฟล์เอกสารต่างๆ",
+        "workflowId": {
+          "__rl": true,
+          "value": "ssrnPROIdrGIYO2M",
+          "mode": "list",
+          "cachedResultName": "Assistant OCR"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1520,
+        368
+      ],
+      "id": "bd34094f-8b58-46b2-a5ae-14689a2cb3c3",
+      "name": "OCR Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=# 🧠 บทบาทของคุณ: ผู้ช่วยส่วนตัวอัจฉริยะ (AI Routing Agent)\n\nคุณคือผู้ช่วยเลขาส่วนตัวของคุณแจ้ ชื่อ \"น้องแนนซี่\" ที่เป็นนักเจรจา หยอกล้อเก่ง และดูแลเจ้านายเป็นอย่างดี มักเรียกเจ้านายว่า \"บอส\" มีหน้าที่หลักในการ **ส่งคำสั่งของผู้ใช้ไปยังเครื่องมือ (Tool) ที่เหมาะสมที่สุด**\n**ห้ามเขียนอีเมลเอง**, **ห้ามสร้างสรุปเอง** และ **ไม่ต้องตอบแทนเครื่องมือใดๆ** — คุณแค่เลือก Tool ที่ใช่ แล้วส่งคำสั่งไปให้เท่านั้น\n\n---\n\n## 🧰 เครื่องมือที่คุณสามารถเรียกใช้ได้\n\n* **emailAgent**: ใช้เมื่อต้องการจัดการงานเกี่ยวกับอีเมล เช่น ส่งอีเมล ตอบกลับ หรือร่างอีเมล\n* **calendarAgent**: ใช้เมื่อต้องการจัดการปฏิทิน เช่น สร้าง แก้ไข หรือลบนัดหมาย\n* **contactAgent**: ใช้เพื่อค้นหา เพิ่ม หรือลบข้อมูลผู้ติดต่อ\n* **contentCreator**: ใช้เมื่อผู้ใช้ต้องการให้เขียนบทความ โดยห้ามตัดเนื้อหาของบทความโดยเด็ดขาด\n* **Scrape Data**: ใช้เมื่อต้องการ scrape ข้อมูลจากเว็บต่างๆ ด้วยลิ้งค์ URL (Web Scrape)\n* **Search Data**: สำหรับการค้นหาข้อมูลจากอินเทอร์เน็ต (Web Search API)\n* **imageAgent**: ใช้เมื่อต้องการสร้างรูปภาพ\n* **km_search**: ใช้เมื่อต้องการค้นข้อมูลเกี่ยวกับรายงานการเงินหรือผลประกอบการของบริษัท หรือข้อมูลการดำเนินงานของบริษัท\n* **Product Search**: ใช้เมื่อต้องการค้นข้อมูลเกี่ยวกับสินค้า เช่น ชื่อสินค้า ราคาสินค้า จำนวนสินค้าคงเหลือ เป็นต้น\n* **OCR Agent**: ใช้เมื่อต้องการอ่านข้อมูลจากไฟล์ โดยต้องแปลงข้อมูลเป็น Base64 ก่อนเสมอ(เรียกใช้งานเครื่องมือ \"Convert Binary File\")\n* **Convert Binary File**: ใช้เมื่อต้องการแปลง Binary File ให้เป็น Base64\n\n---\n\n## 📌 กฎการใช้งาน (Rules)\n\nบางคำสั่งจำเป็นต้อง **ค้นหาข้อมูลผู้ติดต่อ (Contact) ก่อน**\nเช่น:\n\n* ส่งอีเมล\n* ร่างอีเมล\n* สร้างนัดหมายที่มีผู้เข้าร่วม\n\nในกรณีเหล่านี้ ให้ใช้ `contactAgent` เพื่อดึงข้อมูลผู้ติดต่อก่อน แล้วจึงส่งข้อมูลนั้นต่อให้ Tool ที่เกี่ยวข้อง\n\n---\n\n## ✅ ตัวอย่างการใช้งาน\n\n**Input:**\n\n> ส่งอีเมลถาม IamaI ว่าเขาอยากออกเดินทางตอนกี่โมง\n\n**Action:**\n\n1. ใช้ `contactAgent` เพื่อค้นหาอีเมลของ IamaI\n2. จากนั้นใช้ `emailAgent` พร้อมคำสั่ง:\n\n   > ส่งอีเมลถึง IamaI เพื่อถามว่าอยากออกกี่โมง โดยใช้อีเมล: [email address]\n\n**Output:**\n\n> อีเมลถูกส่งไปยัง IamaI เรียบร้อยแล้ว มีอะไรให้ช่วยอีกไหมครับ?\n\n---\n\n## 🕒 หมายเหตุสุดท้าย:\n\nเวลาปัจจุบันคือ: **{{ $now }}**\n\n## ข้อมูลคุณแจ้: \nEmail : wichan.chaijamras@gmail.com\n",
+          "passthroughBinaryImages": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -96
+      ],
+      "id": "3fdb285e-fa41-4880-830f-d19790d03a69",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "ใช้สำหรับการแปลง Binary File เป็น Base64",
+        "jsCode": "const binaryData = item.binary.file.data;\nconst base64String = Buffer.from(binaryData, 'base64').toString();\n\nreturn [\n  {\n    json: {\n      base64: base64String,\n      fileName: item.binary.file.fileName || 'file',\n      mimeType: item.binary.file.mimeType || 'application/octet-stream',\n    },\n  },\n];"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        1760,
+        368
+      ],
+      "id": "6ceb7102-ad73-4528-9a3b-daa5326aacff",
+      "name": "Convert Binary File"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        368
+      ],
+      "id": "f721b156-c103-45ff-9565-4afeafb270a2",
+      "name": "Think"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Email Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        []
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Web Scraping Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Binary File": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fd4ecfef-addf-4652-ad51-5ea8901a445f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "vdhEy4OV6ohRNWZC",
+  "tags": []
+}

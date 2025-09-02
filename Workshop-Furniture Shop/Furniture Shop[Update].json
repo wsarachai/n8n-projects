@@ -1,0 +1,708 @@
+{
+  "name": "Furniture Shop[Update]",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Line Webhook').item.json.body.events[0].message.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=### 🎯 **บทบาทของ Agent**\n\nคุณคือ **แชทบอทพนักงานขายของร้าน \"ฟิน ฟิน เฟอร์นิเจอร์\"** มีบุคลิกเป็นผู้หญิงพูดเก่ง ขายเก่ง ขี้เล่น เป็นกันเอง และสามารถโน้มน้าวลูกค้าได้ดี คุณต้องพูดด้วยภาษาไทย โดยแทนตัวเองว่า **\"เจ๊\"** และเรียกลูกค้าว่า **\"คุณน้อง\"** เสมอ\n\n---\n\n### 🛠️ **เครื่องมือที่ใช้งานได้ (Tools)**\n\n#### `Product List` (ฐานข้อมูลสินค้า)\n\nฐานข้อมูลนี้มีข้อมูลสินค้าในรูปแบบตาราง (Google Sheet) ที่มีคอลัมน์ต่อไปนี้:\n\n* `productCode` : รหัสเฉพาะของสินค้า\n* `productName` : ชื่อสินค้าเต็มที่ใช้แสดงให้ลูกค้าเห็น\n* `category` : หมวดหมู่ของสินค้า เช่น โซฟา เตียง โต๊ะ ฯลฯ\n* `brand` : ยี่ห้อของสินค้า\n* `price` : ราคาขายของสินค้า (บาท)\n* `color` : สีหลักของสินค้า\n* `material` : วัสดุที่ใช้ผลิต เช่น ไม้ ผ้า หนัง\n* `width`, `length`, `height` : ขนาดของสินค้า (ซม.)\n* `description` : รายละเอียด จุดเด่น หรือฟังก์ชันของสินค้า\n* `careInstructions` : คำแนะนำในการดูแลรักษา\n* `productImage` : URL ของภาพหลักของสินค้า\n* `productVideo` : URL ของวิดีโอแนะนำสินค้า (ถ้ามี)\n* `imageFolderUrl` : ลิงก์ไปยังโฟลเดอร์อัลบัมภาพหลายมุมของสินค้า\n\n---\n\n### ✅ **ภารกิจหลักของคุณ**\n\n#### 1. **พูดคุยและแนะนำสินค้า**\n\n* หากลูกค้ายังไม่แสดงความต้องการซื้อ ให้แนะนำหรือเสนอสินค้าโดยใช้ข้อมูลจาก `Product List`\n* แสดงชื่อสินค้า คำอธิบาย ราคา จุดเด่น และหากมีรูป หรืออัลบัมรูป หรือวิดีโอให้แนบด้วย\n\n#### 2. **เมื่อเข้าสู่กระบวนการสั่งซื้อ (ลูกค้าระบุความต้องการซื้อ)**\n\nให้เริ่มรวบรวมข้อมูลต่อไปนี้:\n\n* รายการสินค้าที่สั่งซื้อ:\n\n* `product_id`, `product_name`, `quantity`, `item_total_price`\n* `order_total`: ราคารวมทั้งหมด (รวมทุกรายการ)\n* `note`: บันทึกเพิ่มเติม (ถ้ามี)\n* `customer_name`, `customer_phone`, `customer_email`, `delivery_address`\n\n#### 3. **สรุปและยืนยันคำสั่งซื้อ**\n\n* แสดงข้อมูลที่รวบรวมทั้งหมดในรูปแบบสรุป และถามลูกค้าว่า: “กรุณาพิมพ์ว่า ‘ยืนยัน’ หากข้อมูลถูกต้องนะคะ”\n* เมื่อได้รับ `status_confirm = Y` ให้ขอบคุณลูกค้า และแจ้งว่า “ทางร้านจะติดต่อกลับโดยเร็วที่สุดค่ะ”\n\n#### 4. **กรณีลูกค้าไม่พอใจ / ขอเจ้าหน้าที่ / สอบถามเพิ่มเติม**\n\n* ตอบด้วยความเข้าใจและสุภาพ พร้อมให้ข้อมูลติดต่อ: ฟิน ฟิน เฟอร์นิเจอร์ / โทร 0123456789 / Line ID: finfinfurniture\n\n#### 5. **ข้อจำกัดเกี่ยวกับความจำของระบบ**\n\n* หากลูกค้าถามถึงข้อมูลการสั่งซื้อก่อนหน้า เช่น “ฉันเคยสั่งอะไรไปบ้าง”, “เจ๊จำได้มั้ยว่าฉันซื้ออะไร”: ห้ามนำข้อมูล JSON หรือ order ก่อนหน้า มาเปลี่ยนแปลงค่า Json ในปัจจุบันโดยเด็ดขาด\n\n---\n\n### 🚫 **กฎที่ต้องปฏิบัติตาม**\n\n* ห้ามเดาหรือแต่งข้อมูลสินค้าเองเด็ดขาด\n* ห้ามถามรหัสสินค้าจากลูกค้าโดยตรง ต้องค้นจาก `Product List` เท่านั้น\n* ต้องรักษาบุคลิก “เจ๊” และใช้โทนเสียงที่กำหนดตลอดเวลา\n\n---\n\n### 🗣️ **โทนการพูดคุย (Style)**\n\n* ใช้ภาษาไทยที่เป็นกันเอง สนุก ขี้เล่น แต่สุภาพ\n* แทนตัวเองว่า “เจ๊” และเรียกลูกค้าว่า “คุณน้อง”\n* เมื่อนำเสนอสินค้า ต้องเน้นประโยชน์ จุดเด่น และความคุ้มค่า\n\n---\n\n### 📦 **รูปแบบ Json Output ที่ต้องการ**\n\n{\n  \"message\": \"ข้อความสุดท้ายที่ส่งให้ลูกค้า\",\n  \"order_items\": [\n    {\n      \"product_id\": \"FF1001\",  // รหัสสินค้า\n      \"product_name\": \"โซฟาเบด Cozy\",  // ชื่อสินค้า\n      \"quantity\": 2,  // จำนวนที่สั่ง\n      \"item_total_price\": 4500  // ราคาสินค้า x จำนวน\n    }\n  ],\n  \"product_detail\": \"โซฟาเบด Cozy จำนวน 2 ตัว ราคารวม 4500 บาท\",\n  \"order_total\": 4500,  // ราคารวมทั้งหมด\n  \"note\": \"\",\n  \"customer_name\": \"รัชพงษ์\",\n  \"customer_phone\": \"0812345678\",\n  \"customer_email\": \"customer@example.com\",\n  \"delivery_address\": \"123/บางนา กรุงเทพฯ\",\n  \"status_confirm\": \"Y\"\n}\n\n---\n\n### 💬 **ตัวอย่างคำพูดของเจ๊**\n\n\"คุณน้องสนใจ 'โซฟาเบด Cozy' (รหัส FF1001) ใช่มั้ยคะ เจ๊แนบลิงก์รูปให้ด้วยนะคะ [https://yourshop.com/img/FF1001] หรือสามารถดูอัลบัมรูปเพิ่มเติมได้ที่ [https://yourshop.com/img/FF1001]\\nราคาพิเศษวันนี้ 2 ตัว 4,500 บาทเท่านั้น สนใจรับกี่ตัวดีคะ?\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1472,
+        208
+      ],
+      "id": "5224e262-ad4b-488d-a706-6bbba08f8f12",
+      "name": "AI Agent",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini-2025-08-07",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini-2025-08-07"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1632,
+        480
+      ],
+      "id": "a98877bf-f486-4af8-bf7f-d0bfd759d2cc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Line Webhook').item.json.body.events[0].source.userId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -1440,
+        480
+      ],
+      "id": "0f0f3643-4bf5-49f5-a0fd-e6f184f86d0c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"message\": \"ข้อความสุดท้ายที่ส่งให้ลูกค้า\",\n  \"order_items\": [\n    {\n      \"product_id\": \"FF1001\",\n      \"product_name\": \"โซฟาเบด Cozy\",\n      \"quantity\": 2,\n      \"item_total_price\": 4500\n    }\n  ],\n  \"product_detail\": \"โซฟาเบด Cozy จำนวน 2 ตัว ราคารวม 4500 บาท\",\n  \"order_total\": 4500,\n  \"note\": \"\",\n  \"customer_name\": \"รัชพงษ์\",\n  \"customer_phone\": \"0812345678\",\n  \"customer_email\": \"customer@example.com\",\n  \"delivery_address\": \"123/บางนา กรุงเทพฯ\",\n  \"status_confirm\": \"Y\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1088,
+        480
+      ],
+      "id": "f3cf7be2-ac0b-49e8-94fb-213cef088ecf",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Data Config').item.json.google_sheet_link }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Product List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12E2-65HoQZDORCbwmBrrwD3nqbB2G_LUps6ic88GFE8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -1248,
+        480
+      ],
+      "id": "d36a52cb-3c89-47eb-9342-7b00db3b19fe",
+      "name": "Product List",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6cb5e524-f131-4329-8f9a-1149c7ccc52e",
+              "leftValue": "={{ $('AI Agent').item.json.output.status_confirm }}",
+              "rightValue": "Y",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -816,
+        208
+      ],
+      "id": "5c63683c-3863-456b-aab2-6f11267616b8",
+      "name": "Is Confirm"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('AI Agent').item.json.output.customer_email }}",
+        "subject": "ขอขอบคุณสำหรับความสนใจในสินค้าของเรา - ร้านฟิน ฟิน เฟอร์นิเจอร์",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        400
+      ],
+      "id": "5989a441-90fe-4e4c-95b7-f0e572b62aa4",
+      "name": "Send Email",
+      "webhookId": "540c9816-a9af-4d71-94fb-27fa1f73b062",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output.toJsonString() }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=ช่วยนำข้อมูลที่ได้รับ มาเขียนเป็นเนื้อหา E-Mail ในรูปแบบ HTML เพื่อรองรับการแสดงข้อมู\nสินค้ามากกว่า 1 รายการ ตามตัวอย่างเทมเพลต HTML ดังนี้\n\n<!DOCTYPE html>\n<html lang=\"th\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>ยืนยันการสั่งซื้อ - ฟิน ฟิน เฟอร์นิเจอร์</title>\n</head>\n<body style=\"margin:0;padding:0;background-color:#f2f6fc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color:#f2f6fc;margin:0;padding:0;\">\n    <tr>\n      <td align=\"center\" style=\"padding:30px 10px;\">\n        <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(50,60,130,0.10);overflow:hidden;\">\n          <!-- HEADER -->\n          <tr>\n            <td style=\"background:linear-gradient(90deg,#2962ff 65%,#d32f2f 100%);color:#fff;font-size:1.4em;font-weight:bold;letter-spacing:2px;text-align:center;padding:24px 0 18px 0;\">\n              ฟิน ฟิน เฟอร์นิเจอร์<br>ขอบคุณสำหรับการสั่งซื้อค่ะ!\n            </td>\n          </tr>\n\n          <!-- GREETING -->\n          <tr>\n            <td style=\"padding:22px 28px 10px 28px;\">\n              <div style=\"background-color:#e3eafc;border-left:6px solid #2962ff;border-radius:8px;padding:18px 18px 10px 18px;margin-bottom:12px;\">\n                <p style=\"margin:0 0 8px 0;\">เรียน คุณ<strong> [ชื่อผู้ซื้อ]</strong></p>\n                <p style=\"margin:0;\">ขอขอบคุณที่ไว้ใจและเลือกซื้อสินค้ากับ <b>ฟิน ฟิน เฟอร์นิเจอร์</b> คำสั่งซื้อของคุณได้รับการบันทึกเรียบร้อยแล้วค่ะ</p>\n              </div>\n            </td>\n          </tr>\n\n          <!-- PRODUCT LIST -->\n          <tr>\n            <td style=\"padding:0 28px;\">\n              <div style=\"background-color:#e3eafc;border-left:6px solid #2962ff;border-radius:8px;padding:18px 10px 12px 18px;\">\n                <div style=\"color:#2962ff;font-weight:bold;font-size:1.13em;margin-bottom:8px;\">รายการสินค้าที่คุณสั่งซื้อ</div>\n                <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;font-size:1em;\">\n                  <tr>\n                    <th align=\"left\" style=\"background:#2962ff;color:#fff;padding:7px 8px;\">รหัสสินค้า</th>\n                    <th align=\"left\" style=\"background:#2962ff;color:#fff;padding:7px 8px;\">ชื่อสินค้า</th>\n                    <th align=\"left\" style=\"background:#2962ff;color:#fff;padding:7px 8px;\">จำนวน</th>\n                    <th align=\"left\" style=\"background:#2962ff;color:#fff;padding:7px 8px;\">ราคารวม</th>\n                  </tr>\n                  <!-- รายการสินค้า (copy แถวนี้ได้เลย)-->\n                  <tr>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">FN-1001</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">โซฟาเบด รุ่นโมเดิร์น</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">1</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">6,990 บาท</td>\n                  </tr>\n                  <tr>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">FN-2002</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">โต๊ะกลางไม้โอ๊ค</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">2</td>\n                    <td style=\"background:#f6faff;padding:7px 8px;border-bottom:1px solid #b0bec5;\">2,380 บาท</td>\n                  </tr>\n                  <!-- /รายการสินค้า -->\n                  <tr>\n                    <td colspan=\"3\" align=\"right\" style=\"font-weight:bold;background:#e3eafc;color:#d32f2f;padding:7px 8px;border-bottom:1px solid #b0bec5;\">ราคารวมทั้งหมด</td>\n                    <td style=\"font-weight:bold;background:#e3eafc;color:#d32f2f;padding:7px 8px;border-bottom:1px solid #b0bec5;\">9,370 บาท</td>\n                  </tr>\n                </table>\n              </div>\n            </td>\n          </tr>\n\n          <!-- ORDER INFO -->\n          <tr>\n            <td style=\"padding:0 28px;\">\n              <div style=\"background-color:#ffe4e3;border-left:6px solid #d32f2f;border-radius:8px;padding:18px 10px 8px 18px;margin-top:16px;margin-bottom:8px;\">\n                <div style=\"color:#d32f2f;font-weight:bold;font-size:1.13em;margin-bottom:8px;\">ข้อมูลการสั่งซื้อ</div>\n                <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"font-size:1em;\">\n                  <tr>\n                    <td style=\"width:150px;color:#d32f2f;padding:4px 0;\">ชื่อผู้ซื้อ</td>\n                    <td style=\"padding:4px 0;\">[ชื่อผู้ซื้อ]</td>\n                  </tr>\n                  <tr>\n                    <td style=\"color:#d32f2f;padding:4px 0;\">เบอร์โทร</td>\n                    <td style=\"padding:4px 0;\">[เบอร์โทร]</td>\n                  </tr>\n                  <tr>\n                    <td style=\"color:#d32f2f;padding:4px 0;\">E-Mail</td>\n                    <td style=\"padding:4px 0;\">[E-Mail]</td>\n                  </tr>\n                  <tr>\n                    <td style=\"color:#d32f2f;padding:4px 0;\">บันทึกเพิ่มเติม</td>\n                    <td style=\"padding:4px 0;\">[บันทึกเพิ่มเติม]</td>\n                  </tr>\n                </table>\n              </div>\n            </td>\n          </tr>\n\n          <!-- NOTICE -->\n          <tr>\n            <td style=\"padding:0 28px;\">\n              <div style=\"background:#fff8e1;border-left:6px solid #ffd600;border-radius:8px;padding:16px 18px 8px 18px;margin-top:10px;\">\n                <p style=\"margin:0;font-size:1em;\">กรุณาตรวจสอบข้อมูลการสั่งซื้อ หากมีข้อสงสัยหรือแก้ไขข้อมูล กรุณาติดต่อกลับทางร้านได้ทันที<br>\n                <b>โทร:</b> 09X-XXX-XXXX &nbsp;&nbsp; <b>Line:</b> @finfinfurniture</p>\n              </div>\n            </td>\n          </tr>\n\n          <!-- FOOTER -->\n          <tr>\n            <td style=\"padding:20px 10px 12px 10px;text-align:center;color:#999;font-size:0.95em;\">\n              ขอบคุณที่ไว้ใจ <b>ฟิน ฟิน เฟอร์นิเจอร์</b> เราหวังว่าจะได้บริการคุณอีกครั้งในอนาคตค่ะ\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -80,
+        400
+      ],
+      "id": "3756abb9-1850-47fe-b93a-1a0c54c97f6f",
+      "name": "Write Email"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.order_items",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "9b4556d6-018f-4871-834c-e44f78367371",
+      "name": "Split Order",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "chatId": "-1002527376187",
+        "text": "=<b>หมายเลขคำสั่งจองซื้อ :</b> {{ $('Generate OrderID').item.json.data }}\n<b>วันที่สั่งซื้อ :</b> {{ $now.format('yyyy-MM-dd') }}\n\n<b>ข้อมูลสินค้า :</b>\n{{ $json['output.order_items'].product_name }} จำนวน {{ $json['output.order_items'].quantity }} รายการ\n\n<b>ราคารวม :</b> {{ $json['output.order_items'].item_total_price }} บาท\n<b>สถานที่จัดส่ง :</b> {{ $json.output.delivery_address }}\n\n<b>ชื่อผู้ซื้อ :</b> {{ $json.output.customer_name }}\n<b>หมายเลขติดต่อ :</b> {{ $json.output.customer_phone }}\n<b>E-Mail :</b> {{ $json.output.customer_email }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        0
+      ],
+      "id": "1ea7d135-13b6-4331-bc18-8bf43ced4996",
+      "name": "Send Notify",
+      "webhookId": "e116ac5d-5933-48c9-afb1-c1c57798d0aa",
+      "credentials": {
+        "telegramApi": {
+          "id": "b641eKsXY2hl5rWr",
+          "name": "Telegram Account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "29061b98-7f28-4e25-97a2-3e5a94b8cb7f",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2096,
+        208
+      ],
+      "id": "0fb14a30-d7fb-401d-9a50-1806956de7a5",
+      "name": "Line Webhook",
+      "webhookId": "29061b98-7f28-4e25-97a2-3e5a94b8cb7f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"replyToken\": \"{{ $('Line Webhook').first().json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n        \"type\":\"text\",\n        \"text\": {{ JSON.stringify($('AI Agent').item.json.output.message) }}\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1024,
+        208
+      ],
+      "id": "79847fd2-22fd-448d-ac5b-6c5019a22509",
+      "name": "Reply Message",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "FURNITURE Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/chat/loading/start",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"chatId\": \"{{ $('Line Webhook').item.json.body.events[0].source.userId }}\",\n    \"loadingSeconds\": 5\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1712,
+        208
+      ],
+      "id": "9cb5d24c-85b4-46cc-ac6b-275646b7013b",
+      "name": "Loading Message",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "oxPu2Qips5O9mqgo",
+          "name": "FURNITURE Line Header Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "27b45df5-6335-420c-b408-9440b749b3d5",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "action": "generate"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        208
+      ],
+      "id": "bd387589-c0e8-4582-9fda-0ddba6aa63ae",
+      "name": "Generate OrderID"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "50211fd4-14a2-47e2-8a0a-81c0aa892c9c",
+              "name": "google_sheet_link",
+              "value": "https://docs.google.com/spreadsheets/d/12E2-65HoQZDORCbwmBrrwD3nqbB2G_LUps6ic88GFE8",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1904,
+        208
+      ],
+      "id": "364bd65e-c3e0-4f6d-8ee7-6e9db65d8602",
+      "name": "Data Config"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Data Config').item.json.google_sheet_link }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1241461512,
+          "mode": "list",
+          "cachedResultName": "Order List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UBlhJOdG9aNtnOhlnTBTBNrz5ETGmh1XRQX_I9xCF5I/edit#gid=1241461512"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "order_id": "={{ $('Generate OrderID').item.json.data }}",
+            "date": "={{ $now.format('yyyy-MM-dd') }}",
+            "productCode": "={{ $json['output.order_items'].product_id }}",
+            "quantity": "={{ $json['output.order_items'].quantity }}",
+            "totalPrice": "={{ $json['output.order_items'].item_total_price }}",
+            "note": "={{ $json.output.note }}",
+            "customer_name": "={{ $json.output.customer_name }}",
+            "phone": "={{ $json.output.customer_phone }}",
+            "email": "={{ $json.output.customer_email }}",
+            "delivery_area": "={{ $json.output.delivery_address }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "productCode",
+              "displayName": "productCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "quantity",
+              "displayName": "quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "totalPrice",
+              "displayName": "totalPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "note",
+              "displayName": "note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "customer_name",
+              "displayName": "customer_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "delivery_area",
+              "displayName": "delivery_area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        304,
+        208
+      ],
+      "id": "014834e8-6641-45ac-9f1d-1315cc405514",
+      "name": "Record Order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply Message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Write Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product List": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Confirm": {
+      "main": [
+        [
+          {
+            "node": "Generate OrderID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send Email": {
+      "main": [
+        []
+      ]
+    },
+    "Write Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Order": {
+      "main": [
+        [
+          {
+            "node": "Send Notify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Record Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Notify": {
+      "main": [
+        []
+      ]
+    },
+    "Line Webhook": {
+      "main": [
+        [
+          {
+            "node": "Data Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loading Message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply Message": {
+      "main": [
+        [
+          {
+            "node": "Is Confirm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Split Order",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Write Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OrderID": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Data Config": {
+      "main": [
+        [
+          {
+            "node": "Loading Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fce3ec3c-dc75-453e-97cf-d8dcceffca6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "w4dp4sGlYHctkV56",
+  "tags": []
+}

@@ -1,0 +1,414 @@
+{
+  "name": "USEC15-1-RSS Feed Basic",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        -160
+      ],
+      "id": "c1ea735f-ad1a-4ef5-985b-151d9519097b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.rss_feed }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        -160
+      ],
+      "id": "8b43c9d0-b19f-48f4-8dea-224410ace933",
+      "name": "RSS Read",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        32
+      ],
+      "id": "a5e6264d-2a7f-4cb2-bfa1-82c05f0c7aca",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"title\": \"A compelling and concise news headline\",\n  \"news_content\": \"A brief summary capturing the core message of the news article\",\n  \"date\": \"01 January 2025\",\n  \"ref\": \"https://link.to/the/original/news/source\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        32
+      ],
+      "id": "f7b63727-9bc3-4509-b9b8-0742f435a42f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=title:{{ $json.title }}\nnews_content:{{ $json['content:encodedSnippet'] }}\ndate:{{ $json.isoDate }}\nref:{{ $json.link }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a professional **News Summarization Expert**.\n\nYour task is to **analyze and summarize news articles** provided by the user. Extract only the most essential information and present it in a clear and concise format.\n\nYour output must be in **JSON format** with the following structure:\n\n{\n  \"title\": \"A compelling and concise news headline\",\n  \"news_content\": \"A brief summary capturing the core message of the news article\",\n  \"date\": \"01 January 2025\",\n  \"ref\": \"https://link.to/the/original/news/source\"\n}\n\n**Guidelines:**\n\n* Focus only on **key facts** and **important points**.\n* The `\"title\"` should be **engaging**, not just copied from the original.\n* The `\"news_content\"` should be **no more than 3–5 sentences**, summarizing what happened, when, where, and why it matters.\n* Format the `\"date\"` in this style: **01 January 2025**\n* The `\"ref\"` must include the **original source URL** provided by the user.\n\nDo not add any commentary, opinion, or unnecessary details. Only return the JSON."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        224,
+        -160
+      ],
+      "id": "fb7fd3e2-1b5a-4d75-a793-4bb37a2278eb",
+      "name": "News Summary"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        784,
+        -160
+      ],
+      "id": "e876b98e-faaf-437e-aae5-a355d8c7c23f",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate clean, modern HTML email content from the provided JSON data with these requirements:\n- Use table-based layout with inline CSS for email compatibility\n- Create card sections for each platform containing:\n  • Title header (20px) \n  • content (16px) \n  • Video/image suggestions (italic 14px)\n  • Hashtag list (inline-block with # prefix)\n  • Emoji preservation where present\n  • Call-to-action (bold 14px)\n\nRemove ALL code blocks and comments. Output ONLY the raw HTML with:\n- Platform cards in JSON order\n- All data elements represented\n- Mobile-responsive tables\n- W3C-valid markup\n\nInput data: {{ $json.data.toJsonString() }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        976,
+        -160
+      ],
+      "id": "d91f2fa2-fb2b-49b2-b419-233b4e2bad7b",
+      "name": "Write Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Set Master Config').item.json.send_email_to }}",
+        "subject": "={{ $('Set Master Config').item.json.email_topic }}",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        -160
+      ],
+      "id": "efd2c928-4013-4669-aa80-dc59c775b05e",
+      "name": "Send a message",
+      "webhookId": "b2b5f311-d84a-474f-9cb3-f7e027786ecf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HE6HGOQOJt9xrBO4",
+          "name": "Gmail Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c8bf5773-9232-411f-b8a6-a9bd14e8ca48",
+              "name": "sheet_id",
+              "value": "1T0IttSTZQxhyA7GauJbOFdUR7Sayqd0HHT-kvRQAKUc",
+              "type": "string"
+            },
+            {
+              "id": "9a4665a7-4129-443b-9aa1-fb0085eb4755",
+              "name": "send_email_to",
+              "value": "wittayayon70@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "49170cec-3b7b-4bed-9f1f-73e4b4d0d825",
+              "name": "email_topic",
+              "value": "ข้อมูลข่าว 5 ลำดับ อัพเดตประจำวัน",
+              "type": "string"
+            },
+            {
+              "id": "5411cb5d-ece5-478a-b108-c2eaf520f354",
+              "name": "rss_feed",
+              "value": "https://www.prachachat.net/ict/feed",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        -160
+      ],
+      "id": "562c5849-0349-43f1-8176-7a58326dcce0",
+      "name": "Set Master Config"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set Master Config').item.json.sheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T0IttSTZQxhyA7GauJbOFdUR7Sayqd0HHT-kvRQAKUc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Link": "={{ $json.output.ref }}",
+            "Title": "={{ $json.output.title }}",
+            "Content": "={{ $json.output.news_content }}",
+            "Date": "={{ $json.output.date }}"
+          },
+          "matchingColumns": [
+            "Link"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        576,
+        -160
+      ],
+      "id": "afefbb05-8327-4e5e-ad27-f604964dcb79",
+      "name": "Update News Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -160
+      ],
+      "id": "efa96753-ea8f-4c76-9530-aba63891736b",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Write Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "News Summary",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Summary": {
+      "main": [
+        [
+          {
+            "node": "Update News Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Write Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Email": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Master Config": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update News Sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "News Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3d8f6dff-94db-4375-be81-d25119d18168",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "s7OTbmfAr4woso5a",
+  "tags": []
+}

@@ -1,0 +1,541 @@
+{
+  "name": "USEC14-Thaiwatsadu FireCrawl",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        -120
+      ],
+      "id": "28a51232-8850-4346-98f1-54683da6a1a8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "useCustomBody": true,
+        "customBody": "{\n  \"url\": \"https://www.thaiwatsadu.com/th/brand\",\n  \"formats\": [ \"links\" ],\n  \"onlyMainContent\": true,\n  \"parsePDF\": true,\n  \"maxAge\": 14400000\n}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        -120
+      ],
+      "id": "f3773ade-42c0-4e9f-8e4a-c8aaae6d534d",
+      "name": "Get Product Brand",
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.links",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -120
+      ],
+      "id": "78909ca1-1c84-4301-9378-569116f4d5c6",
+      "name": "Split Brand"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "37881c2d-1f96-4d1c-ad41-fbdcea393dbf",
+              "leftValue": "={{ $json['data.links'] }}",
+              "rightValue": "/th/brand/",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        -120
+      ],
+      "id": "a4b04a11-8c6e-47b9-97e5-39a45fd8e4cb",
+      "name": "Filter Brand URL Only"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        340,
+        -120
+      ],
+      "id": "884a648b-0ed4-49f0-9b8f-99af92930791",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "useCustomBody": true,
+        "customBody": "={\n  \"url\": \"{{ $json['data.links'] }}\",\n  \"formats\": [ \"links\" ],\n  \"onlyMainContent\": true,\n  \"parsePDF\": true,\n  \"maxAge\": 14400000\n}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        240
+      ],
+      "id": "afce9871-c350-414a-ac20-6f9fda117549",
+      "name": "Get Product List",
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.links",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        240
+      ],
+      "id": "2a2c401d-707a-4495-ae46-dc174118084e",
+      "name": "Split Product Item"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5b97edae-89ff-4287-8bd5-afdd091ac5d9",
+              "leftValue": "={{ $json['data.links'] }}",
+              "rightValue": "/th/product/",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        240
+      ],
+      "id": "a15f5526-7b5c-4f70-a88a-94e2a72834a2",
+      "name": "Filter Product Page Only"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "useCustomBody": true,
+        "customBody": "={\n        \"url\": \"{{ $json['data.links'] }}\",\n\t\t\"formats\": [ \"markdown\" ],\n\t\t\"onlyMainContent\": true,\n\t\t\"parsePDF\": false,\n\t\t\"maxAge\": 14400000\n}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        500
+      ],
+      "id": "d33ef950-5b1a-44f1-b972-d71bca5d9036",
+      "name": "Get Product Detail",
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        340,
+        240
+      ],
+      "id": "ecf24304-dcd4-4a89-8186-fdc562bee570",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data.markdown.toJsonString() }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "ชื่อสินค้า",
+              "description": "ข้อมูลที่บ่งบอกถึงชื่อสินค้า"
+            },
+            {
+              "name": "รายละเอียดสินค้า",
+              "description": "ข้อมูลรายละเอียดหรือคำอธิบายสินค้าที่เกี่ยวข้องทั้งหมด"
+            },
+            {
+              "name": "ราคา",
+              "description": "ข้อมูลราคาของสินค้า"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        500
+      ],
+      "id": "54cf6c9c-9cf9-4bde-8de1-21cfde795b46",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        640
+      ],
+      "id": "fbe1c04d-69e6-4a42-ae9f-d74f5f3111c2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ลิสต์รายชื่อแบรนด์สินค้าทั้งหมด",
+        "height": 320,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "6515654f-dafe-41bc-bab4-1b751d3c7fd3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## เอารายชื่อที่ได้มาแยกเป็นรายการย่อย",
+        "height": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "79be00d0-8697-4661-8a52-dd4cf69d3e04",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## เอาลิ้งค์ที่ได้มากรองเอาเฉพาะลิ้งค์ที่ต้องการ",
+        "height": 320,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        20,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "7a40f6be-db50-477a-84f3-9ce787fd07f2",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## ทดสอบเอาแค่ 2 รายการแรกมาใช้ก่อน เพื่อประหยัดโควต้า",
+        "height": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        280,
+        -280
+      ],
+      "typeVersion": 1,
+      "id": "45bcd5c5-6957-452d-8961-2f60017c51b2",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## เข้าไปในหน้าแบรนด์แหลัก แล้วเอาเฉพาะลิงค์สินค้าของเขาออกมา",
+        "height": 340,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "0b2c173e-58c0-4084-a43f-cb7d077eb12a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## แยกลิ้งค์ที่ได้ออกมาเป็นลิ้งค์ย่อยๆ",
+        "height": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "08e8fec2-88f9-4f59-91f0-8205924226ac",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## เอาลิ้งค์ที่ได้มากรองเอาเฉพาะลิ้งค์ที่ต้องการ",
+        "height": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        20,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "f0640bf1-52f0-4c08-9c6e-4cbb6dca0033",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## ทดสอบเอาแค่ 2 รายการแรกมาใช้ก่อน เพื่อประหยัดโควต้า",
+        "height": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        280,
+        60
+      ],
+      "typeVersion": 1,
+      "id": "1a2e312a-05b2-4cb1-99de-c1301f2fa831",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## เอาข้อมูลที่ได้ มาทำความสะอาด และคัดเฉพาะข้อมูลตามที่ต้องการ",
+        "height": 360,
+        "width": 760,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        420
+      ],
+      "typeVersion": 1,
+      "id": "1854fb41-c7a6-4522-96ba-e913ce7a0619",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## ดึงข้อมูลสินค้าออกมา",
+        "height": 360,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        420
+      ],
+      "typeVersion": 1,
+      "id": "7b516d3e-4ee2-44ce-a9cd-f09f5b5bc44c",
+      "name": "Sticky Note10"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Product Brand",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Brand": {
+      "main": [
+        [
+          {
+            "node": "Split Brand",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Brand": {
+      "main": [
+        [
+          {
+            "node": "Filter Brand URL Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Brand URL Only": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Get Product List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product List": {
+      "main": [
+        [
+          {
+            "node": "Split Product Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Product Item": {
+      "main": [
+        [
+          {
+            "node": "Filter Product Page Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Product Page Only": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Get Product Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Product Detail": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2f150147-0992-4257-8365-312aac55979d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "jFqf8NZlhhCb3HiY",
+  "tags": []
+}

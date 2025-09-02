@@ -1,0 +1,387 @@
+{
+  "name": "Assistant-Calendar Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4.1",
+        "options": {}
+      },
+      "id": "e7a0638f-103b-4e91-aac0-f72e62b0328f",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        500
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "nztRNwxSDp8q9im9",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ab380a2-a8d3-421c-ab4e-748ea8fb7904",
+              "name": "response",
+              "value": "Unable to perform task. Please try again.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "86be20bb-93bc-4c59-b38d-5f30c56dc7b5",
+      "name": "Try Again",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39c2f302-03be-4464-a17a-d7cc481d6d44",
+              "name": "=response",
+              "value": "={{$json.output}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "33ca0eef-100f-482c-a5d7-6652aa6dd90e",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query || $json.chatInput }}",
+        "options": {
+          "systemMessage": "=# 🗓️ บทบาทของคุณ: ผู้ช่วยจัดการปฏิทิน (Calendar Assistant)\n\nคุณคือผู้ช่วยส่วนตัวสำหรับจัดการตารางนัดหมายของผู้ใช้\nหน้าที่ของคุณคือการ **สร้าง ตรวจสอบ แก้ไข และลบนัดหมาย** ในปฏิทินของผู้ใช้\n\n---\n\n🧰 เครื่องมือที่คุณสามารถใช้ได้ (Calendar Management Tools)\nCreate Event with Attendee\nใช้เมื่อมีผู้เข้าร่วมในการนัดหมาย เช่น การประชุมที่มีคนอื่นเข้าร่วมด้วย\n\nCreate Event\nใช้สำหรับนัดหมายที่ผู้ใช้จัดการเพียงคนเดียว เช่น การจองเวลาอ่านหนังสือ หรือออกกำลังกาย\n\nGet Events\nใช้เมื่อผู้ใช้ต้องการดูตารางนัดหมาย หรือรายการกิจกรรมในช่วงเวลาที่กำหนด\n\nDelete Event\nใช้เพื่อลบนัดหมายออกจากปฏิทิน\n(หมายเหตุ: ต้องใช้ \"Get Events\" ก่อน เพื่อให้ได้รหัส ID ของนัดหมายนั้น)\n\nUpdate Event\nใช้เพื่อแก้ไขรายละเอียดของนัดหมาย เช่น เวลา หัวข้อ หรือผู้เข้าร่วม\n(หมายเหตุ: ต้องใช้ \"Get Events\" ก่อน เพื่อให้ได้รหัส ID ของนัดหมายนั้น)\n\n---\n\n## 📝 หมายเหตุสำคัญ:\n\n* วันที่และเวลาปัจจุบันคือ: **{{ $now }}**\n* หากผู้ใช้ **ไม่ได้ระบุระยะเวลาของนัดหมาย** ให้ตั้งค่าเริ่มต้นเป็น **1 ชั่วโมง**"
+        }
+      },
+      "id": "dd58f216-7a0e-4087-81b3-1f685374b180",
+      "name": "Calendar Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -268,
+        220
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "xalpha.training@gmail.com",
+          "mode": "list",
+          "cachedResultName": "xalpha.training@gmail.com"
+        },
+        "start": "={{ $fromAI(\"eventStart\") }}",
+        "end": "={{ $fromAI(\"eventEnd\") }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ $fromAI(\"eventAttendeeEmail\") }}"
+          ],
+          "description": "={{ $fromAI(\"eventDetail\") }}",
+          "summary": "={{ $fromAI(\"eventTitle\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        500
+      ],
+      "id": "c75174c7-bc15-40f1-9682-688c07567c4d",
+      "name": "Create Event with Attendee",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FHMzDpht9gGA2OgG",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "xalpha.training@gmail.com",
+          "mode": "list",
+          "cachedResultName": "xalpha.training@gmail.com"
+        },
+        "start": "={{ $fromAI(\"eventStart\") }}",
+        "end": "={{ $fromAI(\"eventEnd\") }}",
+        "additionalFields": {
+          "attendees": [],
+          "summary": "={{ $fromAI(\"eventTitle\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        500
+      ],
+      "id": "08c80883-74e9-4792-abe2-429c2b3d650e",
+      "name": "Create Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FHMzDpht9gGA2OgG",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "xalpha.training@gmail.com",
+          "mode": "list",
+          "cachedResultName": "xalpha.training@gmail.com"
+        },
+        "timeMin": "={{ $fromAI(\"dayBefore\",\"the day before the date the user requested\") }}",
+        "timeMax": "={{ $fromAI(\"dayAfter\",\"the day after the date the user requested\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -100,
+        500
+      ],
+      "id": "6748a55a-025e-4baf-bc78-2d880570838d",
+      "name": "Get Events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FHMzDpht9gGA2OgG",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "xalpha.training@gmail.com",
+          "mode": "list",
+          "cachedResultName": "xalpha.training@gmail.com"
+        },
+        "eventId": "={{ $fromAI(\"eventID\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        40,
+        500
+      ],
+      "id": "31739c0c-8cc0-4436-86bd-727e221ba42a",
+      "name": "Delete Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FHMzDpht9gGA2OgG",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "xalpha.training@gmail.com",
+          "mode": "list",
+          "cachedResultName": "xalpha.training@gmail.com"
+        },
+        "eventId": "={{ $fromAI(\"eventID\") }}",
+        "updateFields": {
+          "end": "={{ $fromAI(\"endTime\") }}",
+          "start": "={{ $fromAI(\"startTime\") }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        200,
+        500
+      ],
+      "id": "f4126f2e-0bed-4505-9dde-203d23656564",
+      "name": "Update Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "FHMzDpht9gGA2OgG",
+          "name": "Google Calendar Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -620,
+        40
+      ],
+      "id": "46e960a4-2faf-4056-853d-df671d4506c5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -620,
+        220
+      ],
+      "id": "341b384c-9d24-46fe-a424-484b7273a42d",
+      "name": "When chat message received",
+      "webhookId": "30b926d5-ccf0-42f7-978f-5e76362768e7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Try Again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event with Attendee": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Calendar Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "jTr4iZVU2L5QEaBY",
+    "timezone": "Asia/Bangkok"
+  },
+  "versionId": "61fb0112-2676-4708-b890-d98d77c700ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b978f173fca38aeb96a271d98f47cb690ce1bf4049db933df056bd7e786e8d57"
+  },
+  "id": "gq4dW1Edia6jMzRq",
+  "tags": []
+}

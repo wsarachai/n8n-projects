@@ -1,0 +1,312 @@
+{
+  "name": "USEC07-1-TTS",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96fde24e-baa7-4fb9-979b-a0680043bca1",
+              "name": "TTS_Result_Folder_ID",
+              "value": "1zP9himc6ncbg3Pp-ymH9V061z5x06-2v",
+              "type": "string"
+            },
+            {
+              "id": "7a6ed481-ed8e-49af-b0e7-b6a413019ee4",
+              "name": "google_api_studio_key",
+              "value": "AIzaSyD6E5_IsSKFS4SlSgYO6BbxmYM1xI-Q0tA",
+              "type": "string"
+            },
+            {
+              "id": "2fb189a6-6ae4-44de-836a-bf404c7c001f",
+              "name": "STT_Result_Folder_ID",
+              "value": "1W1Wa5T4U9GIoPYiXO5-pOeSDXH7tJazl",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "2daa906d-ac34-4b2c-87e4-abdb5ef81804",
+      "name": "Set Config"
+    },
+    {
+      "parameters": {
+        "content": "### ตัวอย่างการเรียกใช้\n\nhttps://drive.google.com/uc?id={{ file_id }}&export=download",
+        "height": 140
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1488,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "c056fa0a-66fb-476e-9998-fdcc36dacf15",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### ตัวอย่าง Voice Style ที่ใช้ได้\n\n| Voice         | Description                         |\n|---------------|-------------------------------------|\n| Zephyr        | Bright - สดใส                      |\n| Puck          | Upbeat - ร่าเริง                   |\n| Charon        | Informative - ให้ข้อมูล            |\n| Kore          | Corporate - บริษัท                 |\n| Fenrir        | Excitable - ตื่นเต้นง่าย           |\n| Leda          | Youthful - อ่อนเยาว์               |\n| Orus          | Firm - มั่นคง                      |\n| Aoede         | Breezy - สบายๆ                     |\n| Callirrhoe    | Casual - สบายๆ                     |\n| Autonoe       | Bright - สดใส                      |\n| Enceladus     | Breathy - หายใจ                    |\n| Iapetus       | Clear - ชัดเจน                     |\n| Umbriel       | Casual - สบายๆ                     |\n| Algieba       | Smooth - นุ่มนวล                   |\n| Despina       | Smooth - นุ่มนวล                   |\n| Erinome       | Clear - ชัดเจน                     |\n| Algenib       | Gravelly - ห้าว                    |\n| Rasalgethi    | Informative - ให้ข้อมูล            |\n| Laomedeia     | Rhythmic - จังหวะสนุก             |\n| Achernar      | Soft - นุ่ม                        |\n| Alnilam       | Firm - มั่นคง                      |\n| Schedar       | Even - สม่ำเสมอ                    |\n| Gacrux        | Mature - ผู้ใหญ่                   |\n| Pulcherrima   | Forward - ส่งต่อ                   |\n| Achird        | Friendly - เป็นมิตร               |\n| Zubenelgenubi | Casual - สบายๆ                     |\n| Vindemiatrix  | Gentle - อ่อนโยน                  |\n| Sadachbia     | Lively - มีชีวิตชีวา              |\n| Sadaltager    | Knowledgeable - มีความรู้         |\n| Sulafat       | Warm - อบอุ่น                     |\n",
+        "height": 600,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        544,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "c524e8ef-00db-44da-8549-33210f0520a8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=ข้อความของ User : \n{{ $('When chat message received').item.json.chatInput }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## 🧠 **System Prompt: วิเคราะห์อารมณ์เพื่อสร้างเสียงพูด Gemini TTS พร้อมแนะนำ Voice Style**\n\n> **บทบาทของคุณ**:\n>\n> คุณคือ AI นักเขียนบทพูดเสียงระดับมืออาชีพ มีหน้าที่:\n>\n> 1. วิเคราะห์ข้อความจากผู้ใช้เพื่อแปลงเป็นประโยคที่มีคำสั่งควบคุมอารมณ์และโทนเสียง ตามที่ Gemini TTS รองรับ\n> 2. แนะนำชื่อเสียง (Voice Style) ที่เหมาะสมที่สุดจากรายการที่ให้ไว้\n> 3. สร้างผลลัพธ์ให้อยู่ในรูปแบบ JSON ที่ประกอบด้วย `prompt` และ `voice_style`\n> 4. ผลลัพธ์ต้องเน้นให้พูดเร็วมากๆ ทุกครั้ง\n\n\n---\n\n### 📥 **Input ตัวอย่าง (ข้อความต้นฉบับจากผู้ใช้)**:\n\n```\nขอแสดงความเสียใจด้วยครับ เราจะอยู่เคียงข้างคุณเสมอ\n```\n\n---\n\n### 🎯 **สิ่งที่คุณต้องทำ**:\n\n1. วิเคราะห์อารมณ์/เจตนาของข้อความ เช่น ตื่นเต้น เศร้า เป็นทางการ สนุกสนาน ฯลฯ\n2. เลือกคำสั่งควบคุมที่เหมาะสม จากรายการด้านล่าง และเพิ่มไปที่ต้นข้อความ\n\n| ประเภท         | ตัวอย่างคำสั่งนำหน้า                                    |\n| -------------- | ------------------------------------------------------- |\n| **อารมณ์**     | พูดด้วยความตื่นเต้น:, พูดอย่างเศร้า:, พูดอย่างสนุกสนาน: |\n| **ระดับเสียง** | พูดเสียงเบาๆ:, กระซิบ:, ตะโกน:                          |\n| **ความเร็ว**   | พูดช้าๆ:, พูดเร็ว:, พูดช้าและชัดเจน:                    |\n| **น้ำเสียง**   | พูดอย่างเป็นทางการ:, พูดแบบเป็นกันเอง:, พูดแบบมืออาชีพ: |\n\n3. เลือก **voice\\_name** จากตารางนี้ (ใช้ชื่อภาษาอังกฤษ) โดยอิงจากอารมณ์/โทนเสียงที่คุณวิเคราะห์ได้:\n\n| Voice        | Description               |\n| ------------ | ------------------------- |\n| Zephyr       | Bright - สดใส             |\n| Puck         | Upbeat - ร่าเริง          |\n| Charon       | Informative - ให้ข้อมูล   |\n| Kore         | Corporate - บริษัท        |\n| Fenrir       | Excitable - ตื่นเต้นง่าย  |\n| Leda         | Youthful - อ่อนเยาว์      |\n| Orus         | Firm - มั่นคง             |\n| Aoede        | Breezy - สบายๆ            |\n| Callirrhoe   | Casual - สบายๆ            |\n| Autonoe      | Bright - สดใส             |\n| Enceladus    | Breathy - หายใจ           |\n| Iapetus      | Clear - ชัดเจน            |\n| Algieba      | Smooth - นุ่มนวล          |\n| Despina      | Smooth - นุ่มนวล          |\n| Erinome      | Clear - ชัดเจน            |\n| Algenib      | Gravelly - ห้าว           |\n| Rasalgethi   | Informative - ให้ข้อมูล   |\n| Laomedeia    | Rhythmic - จังหวะสนุก     |\n| Achernar     | Soft - นุ่ม               |\n| Alnilam      | Firm - มั่นคง             |\n| Gacrux       | Mature - ผู้ใหญ่          |\n| Pulcherrima  | Forward - ส่งต่อ          |\n| Achird       | Friendly - เป็นมิตร       |\n| Vindemiatrix | Gentle - อ่อนโยน          |\n| Sadachbia    | Lively - มีชีวิตชีวา      |\n| Sadaltager   | Knowledgeable - มีความรู้ |\n| Sulafat      | Warm - อบอุ่น             |\n\n---\n\n### ✅ **รูปแบบ Output ที่คุณต้องสร้าง**:\n\n```json\n{\n  \"prompt\": \"[คำสั่งควบคุมโทนเสียง]: [ข้อความต้นฉบับ]\",\n  \"voice_style\": \"[ชื่อ voice ภาษาอังกฤษที่เลือกจากตาราง]\"\n}\n```\n\n---\n\n### 🧪 ตัวอย่างผลลัพธ์\n\n#### ✅ Input:\n\n```\nขอแสดงความเสียใจด้วยครับ เราจะอยู่เคียงข้างคุณเสมอ\n```\n\n#### ✅ Output:\n\n```json\n{\n  \"prompt\": \"พูดอย่างเศร้า พูดช้าๆ: ขอแสดงความเสียใจด้วยครับ เราจะอยู่เคียงข้างคุณเสมอ\",\n  \"voice_style\": \"Gacrux\"\n}\n```\n\n---\n\n#### ✅ อีกตัวอย่าง:\n\n##### Input:\n\n```\nวันนี้เรามีข่าวดีมาบอกทุกคน โปรโมชั่นสุดพิเศษตลอดเดือนนี้เท่านั้น!\n```\n\n##### Output:\n\n```json\n{\n  \"prompt\": \"พูดด้วยความตื่นเต้น พูดเร็ว: วันนี้เรามีข่าวดีมาบอกทุกคน โปรโมชั่นสุดพิเศษตลอดเดือนนี้เท่านั้น!\",\n  \"voice_style\": \"Fenrir\"\n}\n```\n\n---\n\n> 🧠 **ข้อควรระวัง**: ห้ามแปลความหมายหรือเปลี่ยนข้อความต้นฉบับโดยเด็ดขาด ให้แค่ใส่คำสั่งโทนเสียงที่เหมาะสม และเลือก voice style ที่ตรงที่สุดกับอารมณ์\n\n---\n\nหากต้องการแปลงเป็น System Prompt ของ GPT หรือใช้งานร่วมกับ n8n, LangChain, หรือ AI Agent ได้ทันที แจ้งผมได้นะครับ!"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        448,
+        0
+      ],
+      "id": "9e488a7a-b800-4653-8706-9f7739bf40c8",
+      "name": "Generate Prompt"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6962ad9a-01a7-4291-92c4-ecb455279a79",
+      "name": "When chat message received",
+      "webhookId": "01f182c3-fd25-426d-ace3-92e525a77cf7"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        224
+      ],
+      "id": "12d047b1-1639-4b02-83b3-f96ac2a4de01",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 👇 รับ base64 PCM data จากโหนดก่อนหน้า\nconst base64Data = items[0].json?.body?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;\n\nif (!base64Data) {\n  throw new Error('ไม่พบข้อมูล base64 PCM ใน input');\n}\n\n// 🔧 ฟังก์ชันจัดรูปแบบวันที่เป็น ddMMyyyyHHmm\nfunction formatDate(d) {\n  const pad = (n) => n.toString().padStart(2, '0');\n  return (\n    pad(d.getDate()) +\n    pad(d.getMonth() + 1) +\n    d.getFullYear() +\n    pad(d.getHours()) +\n    pad(d.getMinutes())\n  );\n}\n\nconst now = new Date();\nconst outputFilename = `${formatDate(now)}.wav`;\n\n// 🔧 สร้าง header WAV แบบเร็ว\nfunction createWavHeader(dataLength, sampleRate = 24000, channels = 1, bitDepth = 16) {\n  const byteRate = (sampleRate * channels * bitDepth) / 8;\n  const blockAlign = (channels * bitDepth) / 8;\n  const buffer = Buffer.allocUnsafe(44);\n\n  buffer.write('RIFF', 0);                            // ChunkID\n  buffer.writeUInt32LE(36 + dataLength, 4);           // ChunkSize\n  buffer.write('WAVE', 8);                            // Format\n  buffer.write('fmt ', 12);                           // Subchunk1ID\n  buffer.writeUInt32LE(16, 16);                       // Subchunk1Size (PCM)\n  buffer.writeUInt16LE(1, 20);                        // AudioFormat (PCM)\n  buffer.writeUInt16LE(channels, 22);                 // NumChannels\n  buffer.writeUInt32LE(sampleRate, 24);               // SampleRate\n  buffer.writeUInt32LE(byteRate, 28);                 // ByteRate\n  buffer.writeUInt16LE(blockAlign, 32);               // BlockAlign\n  buffer.writeUInt16LE(bitDepth, 34);                 // BitsPerSample\n  buffer.write('data', 36);                           // Subchunk2ID\n  buffer.writeUInt32LE(dataLength, 40);               // Subchunk2Size\n\n  return buffer;\n}\n\n// 🧠 แปลง base64 → PCM Buffer\nconst pcmData = Buffer.from(base64Data, 'base64');\n\n// ⚡️ รวม header + PCM ด้วย allocUnsafe + copy (เร็วกว่า Buffer.concat)\nconst wavHeader = createWavHeader(pcmData.length, 24000, 1, 16);\nconst outputBuffer = Buffer.allocUnsafe(wavHeader.length + pcmData.length);\nwavHeader.copy(outputBuffer, 0);\npcmData.copy(outputBuffer, wavHeader.length);\n\n// ✅ ส่งออกแบบ binary (สำหรับใช้กับ Download, Upload, GDrive ฯลฯ)\nreturn [\n  {\n    binary: {\n      data: {\n        fileName: outputFilename,\n        mimeType: 'audio/wav',\n        data: outputBuffer.toString('base64'),\n      }\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "67a2a91b-1bfa-47e1-87a8-3f1be2ad0b55",
+      "name": "Convert To WAV"
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').item.json.TTS_Result_Folder_ID }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "093ea9ff-9913-4988-9967-7509d8314e42",
+      "name": "Upload File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ตัวอย่าง Script\n\nขาเที่ยวทั้งหลาย ที่กำลังหาที่เที่ยวสุดชิว แถมเป็นทริปประหยัด งบน้อยก็เที่ยวได้ เรามาตามนี้เลยค่ะ 35 ที่เที่ยวใกล้กรุงเทพ งบไม่เกินพัน ไปเที่ยวฟินกันได้เลยจ้า งานนี้จะจูงมือแฟนเที่ยว ชวนเพื่อนเที่ยวกันทั้งแก๊งค์ ก็ดีต่อใจมากๆ สบายกระเป๋า แต่ก็ได้เที่ยวดีสุดๆ",
+        "height": 200,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "0eae90e3-b2d5-4aa8-95fd-45b779968bb6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [{\n    \"parts\":[{\n      \"text\": \"{{ $json.prompt }}\"\n    }]\n  }],\n  \"generationConfig\": {\n    \"responseModalities\": [\"AUDIO\"],\n    \"speechConfig\": {\n      \"voiceConfig\": {\n        \"prebuiltVoiceConfig\": {\n          \"voiceName\": \"{{ $json.voice_style }}\"\n        }\n      }\n    }\n  },\n  \"model\": \"gemini-2.5-flash-preview-tts\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "3fa55f30-4762-4982-8da1-ca7223d5a76a",
+      "name": "Text-to-Speech(TTS)",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "tbr9bxVzIJK6gWJf",
+          "name": "Google Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Prompt": {
+      "main": [
+        [
+          {
+            "node": "Text-to-Speech(TTS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert To WAV": {
+      "main": [
+        [
+          {
+            "node": "Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text-to-Speech(TTS)": {
+      "main": [
+        [
+          {
+            "node": "Convert To WAV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f0eb1934-832a-447f-b2e0-72f45802183e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "N6oJHMbjiC1DY6jt",
+  "tags": []
+}

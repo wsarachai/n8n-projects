@@ -1,0 +1,1418 @@
+{
+  "name": "USEC05-OCR",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8f52a4f0-83fa-471d-994b-cfa701330664",
+              "name": "pdf_file_id",
+              "value": "1QpQOA4I9Pnyu6GZv18WUur7WtXrAoj3r",
+              "type": "string"
+            },
+            {
+              "id": "74e2e456-cb07-4652-9e9b-ba189f8ddc24",
+              "name": "pdf_scan_file_id",
+              "value": "1C2_ojPWNi0GW-c1KVnrecdQF54yqfNrE",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        120
+      ],
+      "id": "abfb7db7-5e9d-4de7-8c8d-48f88552df18",
+      "name": "Master Config"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.pdf_scan_file_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        800,
+        120
+      ],
+      "id": "02e15162-5922-43fe-bf03-df7db8d5d033",
+      "name": "Download PDF(Scan) File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ทดสอบการอ่านไฟล์ PDF แบบสแกนเป็นรูป",
+        "height": 580,
+        "width": 260,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "4ad02efa-df95-4dc1-8948-6343a002cfcc",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://storage.googleapis.com/upload/storage/v1/b/iamaiduck/o?uploadType=media&name=กระทรวงการคลัง-Scan.pdf",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        120
+      ],
+      "id": "1c59e89f-6b3b-4e62-85e9-a289862a60a9",
+      "name": "Upload File To GCS",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        120
+      ],
+      "id": "79d3b243-b73b-41c9-81e5-f7d69946f5b8",
+      "name": "Wait",
+      "webhookId": "874e0af2-1628-433d-85e7-bbde1a5a98d4"
+    },
+    {
+      "parameters": {
+        "url": "=https://vision.googleapis.com/v1/{{ $('Google Vision-PDF').item.json.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1600,
+        120
+      ],
+      "id": "c3e4378b-044c-4cea-9484-396a042ce954",
+      "name": "Check Operation",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3e12e8f0-8c66-4038-899d-fb05c5d74719",
+              "leftValue": "={{ $json.done }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1760,
+        120
+      ],
+      "id": "b7f08748-405e-4d0d-8c78-6dcc2f6cea09",
+      "name": "Is Success"
+    },
+    {
+      "parameters": {
+        "url": "=https://storage.googleapis.com/storage/v1/b/{{$('Upload File To GCS').item.json.bucket}}/o?prefix=vision-result/&alt=json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        40
+      ],
+      "id": "639b84b1-dd84-43c8-ae7d-95da199d3f84",
+      "name": "Get All Result File",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        300
+      ],
+      "id": "ddf75565-0a33-4be5-93ac-81d8ae52db2d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2380,
+        40
+      ],
+      "id": "22e924b3-ab28-4a63-acfc-aeb9eb5f0462",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        2920,
+        380
+      ],
+      "id": "fa4c1e08-15da-4615-b876-130c23a2736a"
+    },
+    {
+      "parameters": {
+        "url": "=https://storage.googleapis.com/{{$json.bucket}}/{{ $json.name }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        300
+      ],
+      "id": "9af1a33c-61ad-42aa-93d5-8544eb8765c3",
+      "name": "Get Result Json",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// ลบ item แรกออก (index 0)\nitems.shift();\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        40
+      ],
+      "id": "02e2191f-20a6-4f38-b7e3-abb62351e831",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "### กรณีที่ 1 ใช้งานผ่าน Google Vision",
+        "height": 580,
+        "width": 2340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "184c7856-9382-410c-b254-2b4b2a87ba25",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vision.googleapis.com/v1/files:asyncBatchAnnotate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"inputConfig\": {\n        \"gcsSource\": {\n          \"uri\": \"gs://{{ $json.bucket }}/{{ $json.name }}\"\n        },\n        \"mimeType\": \"application/pdf\"\n      },\n      \"features\": [\n        {\n          \"type\": \"DOCUMENT_TEXT_DETECTION\"\n        }\n      ],\n      \"outputConfig\": {\n        \"gcsDestination\": {\n          \"uri\": \"gs://iamaiduck/vision-result/\"\n        },\n        \"batchSize\": 1\n      }\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        300
+      ],
+      "id": "5c9ccecf-19e8-4523-9286-97c963ac93a2",
+      "name": "Google Vision-PDF",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2260,
+        1540
+      ],
+      "id": "4fefdd70-86d9-4340-a404-936e2429f7f7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://vision.googleapis.com/v1/images:annotate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"image\": {\n        \"content\": \"{{ $('Extract from File').item.json.data }}\"\n      },\n      \"features\": [\n        {\n          \"type\": \"DOCUMENT_TEXT_DETECTION\"\n        }\n      ],\n      \"imageContext\": {\n        \"languageHints\": [\"th-t-i0-handwrit\"]\n      }\n    }\n  ]\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        1120
+      ],
+      "id": "7fbbd301-a51a-4fbd-96f8-20dd677c4da1",
+      "name": "OCR Google Vision",
+      "credentials": {
+        "googleOAuth2Api": {
+          "id": "Qq543zUNnilxFzQz",
+          "name": "Google Account-XAlpha DEV"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### กรณีที่ 1 OCR โดยใช้ Google Vision + AI Model",
+        "height": 400,
+        "width": 800,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        1020
+      ],
+      "typeVersion": 1,
+      "id": "d26ae36c-679f-41f8-a433-e7656891e348",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### กรณีที่ 2 OCR โดยใช้ GPT-Vision",
+        "height": 300,
+        "width": 280,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        1440
+      ],
+      "typeVersion": 1,
+      "id": "0f00317d-0a17-452f-b840-609a4464f545",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "=คุณมีความเชี่ยวชาญด้าน OCR มากๆ คุณต้องพยายามดึงข้อมูลทั้งหมดจากที่คุณได้รับมาให้มากที่สุดและมีความแม่นยำมากที่สุด",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1220,
+        1520
+      ],
+      "id": "0c2193cf-51b2-4e62-9e89-cf8651462f1c",
+      "name": "GPT-Vision",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### แยกรายการย่อย",
+        "height": 400,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1940,
+        1020
+      ],
+      "typeVersion": 1,
+      "id": "2a5f982b-3ddc-408b-a1b1-a4af818f306f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5928b66b-052d-4594-9a6c-316f70094d73",
+              "name": "image_link",
+              "value": "https://travelb2b.app/upload/article/acm_430461133684427.jpg",
+              "type": "string"
+            },
+            {
+              "id": "a7fbe597-e1b6-4d89-932b-515e8cdad927",
+              "name": "image_id",
+              "value": "1W5e4ArX3Uq5CSZo94hQHX3x0CmuImsIk",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        540,
+        1120
+      ],
+      "id": "9ad557b7-d011-4799-941a-9aff32e6c549",
+      "name": "Master Config1"
+    },
+    {
+      "parameters": {
+        "content": "### AI Model",
+        "height": 300,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2180,
+        1440
+      ],
+      "typeVersion": 1,
+      "id": "fc53421a-f5c5-4ac8-98f8-5e9da71c4eee",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d56fb34-c03f-4893-bb93-d6662f002318",
+              "name": "result_text",
+              "value": "={{ $json.responses[0].fullTextAnnotation.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2740,
+        300
+      ],
+      "id": "fab5f315-d2c5-492a-a5d6-9fd5fa5c8e24",
+      "name": "Set Result Per Page"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2920,
+        40
+      ],
+      "id": "6618bc4b-a27a-4960-a0dc-b899384fdfe4",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "compare": "={{ $json.result_text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3080,
+        40
+      ],
+      "id": "1ec98d42-c73b-4f44-a921-12932a280c57",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output['รายการสินค้า']",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "output['ประเภทเอกสาร'], output['เลขที่เอกสาร'], output['วันที่เอกสาร'], output['ชื่อบริษัท'], output['เลขที่ผู้เสียภาษี'], output['ข้อมูลติดต่อบริษัท'], output['ข้อมูลลูกค้า'], output['ส่วนลด'], output['ภาษีมูลค่าเพิ่ม'], output['ยอดชำระรวมทั้งสิ้น'], output['ผู้จัดทำเอกสาร'], output['หมายเหตุเพิ่มเติม']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1120
+      ],
+      "id": "e1ea6d88-6b7e-486c-a443-a34203d82baa",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('OCR Google Vision').item.json.responses[0].textAnnotations[0].description }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=คุณคือนักพิสูจน์อักษรที่เชี่ยวชาญ มีหน้าที่ตรวจสอบการสะกดคำ และแก้ไขให้ถูกต้องเท่านั้น สามารถแต่งเติมคำเพื่อให้ประโยคสมบูรณ์ได้ แต่ห้ามเปลี่ยนแปลงข้อมูลหรือรูปประโยคโดยเด็ดขาด"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1620,
+        1120
+      ],
+      "id": "97d9aac6-c225-434a-86c7-085b1d3ddf73",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {
+          "encoding": "utf8"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1120
+      ],
+      "id": "2fff12fb-2478-4a43-89a1-ff7b063603de",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "content": "### TOOL PDF\n\nhttps://pdf.co\n\nhttps://www.customjs.space/",
+        "height": 140,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        440,
+        440
+      ],
+      "typeVersion": 1,
+      "id": "90162530-b549-4075-879a-ae0cce587352",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        280,
+        120
+      ],
+      "id": "efb0d56e-e819-427f-b615-33187003c726",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.image_id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        800,
+        1120
+      ],
+      "id": "2f92002e-6aa0-4edf-b0fc-7095e0d79d44",
+      "name": "Download Image By Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Hxmvvj3yC9KPqa5e",
+          "name": "Google Drive Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### ดาวน์โหลดข้อมูล",
+        "height": 1040,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        1020
+      ],
+      "typeVersion": 1,
+      "id": "051bd402-98b1-4e94-b8ed-16a79d8b7673",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "result_text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3260,
+        40
+      ],
+      "id": "95340307-6de6-4bae-8c8e-15011499eefa",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "text": "={{ $('GPT-Vision').item.json.choices[0].message.content }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ประเภทเอกสาร\": {\n      \"type\": \"string\",\n      \"enum\": [\"ใบเสนอราคา\", \"ใบแจ้งหนี้\", \"ใบเสร็จรับเงิน\", \"ใบสั่งซื้อ\"],\n      \"description\": \"ระบุประเภทของเอกสาร\"\n    },\n    \"เลขที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ของเอกสาร เช่น INV-001, QUO-2025-001\"\n    },\n    \"วันที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"วันที่ออกเอกสาร เช่น '12 มิถุนายน 2568'\"\n    },\n    \"ชื่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อบริษัทผู้ออกเอกสาร\"\n    },\n    \"เลขที่ผู้เสียภาษี\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ผู้เสียภาษี หรือเลขทะเบียนบริษัท\"\n    },\n    \"ข้อมูลติดต่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อมูลบริษัท เช่น ที่อยู่ เบอร์โทร อีเมล\"\n    },\n    \"ข้อมูลลูกค้า\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"ชื่อลูกค้า\": { \"type\": \"string\" },\n        \"ที่อยู่ลูกค้า\": { \"type\": \"string\" },\n        \"เลขประจำตัวผู้เสียภาษี\": { \"type\": \"string\" }\n      },\n      \"required\": [\"ชื่อลูกค้า\"]\n    },\n    \"รายการสินค้า\": {\n      \"type\": \"array\",\n      \"description\": \"รายการสินค้า/บริการที่แสดงในเอกสาร\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"ชื่อสินค้า\": { \"type\": \"string\" },\n          \"จำนวน\": { \"type\": \"number\" },\n          \"หน่วย\": { \"type\": \"string\" },\n          \"ราคาต่อหน่วย\": { \"type\": \"number\" },\n          \"รวม\": { \"type\": \"number\" }\n        },\n        \"required\": [\"ชื่อสินค้า\", \"จำนวน\", \"ราคาต่อหน่วย\", \"รวม\"]\n      }\n    },\n    \"ส่วนลด\": {\n      \"type\": \"number\",\n      \"description\": \"ส่วนลดทั้งหมดของบิล (ถ้ามี)\"\n    },\n    \"ภาษีมูลค่าเพิ่ม\": {\n      \"type\": \"number\",\n      \"description\": \"จำนวนภาษีมูลค่าเพิ่ม (VAT) ที่คิดจากยอดก่อนรวมสุทธิ\"\n    },\n    \"ยอดชำระรวมทั้งสิ้น\": {\n      \"type\": \"number\",\n      \"description\": \"ยอดสุทธิหลังจากหักส่วนลดและรวม VAT แล้ว\"\n    },\n    \"ผู้จัดทำเอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อผู้รับผิดชอบในการออกเอกสาร\"\n    },\n    \"หมายเหตุเพิ่มเติม\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อความเพิ่มเติม เช่น เงื่อนไขการชำระเงิน, วิธีส่งของ\"\n    }\n  },\n  \"required\": [\n    \"ประเภทเอกสาร\",\n    \"เลขที่เอกสาร\",\n    \"วันที่เอกสาร\",\n    \"ชื่อบริษัท\",\n    \"ข้อมูลติดต่อบริษัท\",\n    \"ข้อมูลลูกค้า\",\n    \"รายการสินค้า\",\n    \"ส่วนลด\",\n    \"ภาษีมูลค่าเพิ่ม\",    \n    \"ยอดชำระรวมทั้งสิ้น\",\n    \"หมายเหตุเพิ่มเติม\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        1520
+      ],
+      "id": "8c339582-380b-4841-a628-c28e67d486d6",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "content": "### แยกโครงสร้างข้อมูล",
+        "height": 300,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1420,
+        1440
+      ],
+      "typeVersion": 1,
+      "id": "77c1726f-87e6-42ea-baa0-7d7ba458c207",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output['รายการสินค้า']",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "output['ประเภทเอกสาร'], output['เลขที่เอกสาร'], output['วันที่เอกสาร'], output['ชื่อบริษัท'], output['เลขที่ผู้เสียภาษี'], output['ข้อมูลติดต่อบริษัท'], output['ข้อมูลลูกค้า'], output['ส่วนลด'], output['ภาษีมูลค่าเพิ่ม'], output['ยอดชำระรวมทั้งสิ้น'], output['ผู้จัดทำเอกสาร'], output['หมายเหตุเพิ่มเติม']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1520
+      ],
+      "id": "190e4063-6e08-404e-8654-4d052523bd8c",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "content": "### แยกรายการย่อย",
+        "height": 300,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1940,
+        1440
+      ],
+      "typeVersion": 1,
+      "id": "de66328a-9783-4987-97c4-551902524b1f",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "### กรณีที่ 2 ใช้งานผ่าน MISTRAL OCR",
+        "height": 300,
+        "width": 300,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        620
+      ],
+      "typeVersion": 1,
+      "id": "244c65e2-aa16-4c0d-8998-86caf05c4aff",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        720
+      ],
+      "id": "14efad23-e756-444f-bf1f-2afb9e59509a",
+      "name": "Mistral OCR",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ประเภทเอกสาร\": {\n      \"type\": \"string\",\n      \"enum\": [\"ใบเสนอราคา\", \"ใบแจ้งหนี้\", \"ใบเสร็จรับเงิน\", \"ใบสั่งซื้อ\"],\n      \"description\": \"ระบุประเภทของเอกสาร\"\n    },\n    \"เลขที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ของเอกสาร เช่น INV-001, QUO-2025-001\"\n    },\n    \"วันที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"วันที่ออกเอกสาร เช่น '12 มิถุนายน 2568'\"\n    },\n    \"ชื่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อบริษัทผู้ออกเอกสาร\"\n    },\n    \"เลขที่ผู้เสียภาษี\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ผู้เสียภาษี หรือเลขทะเบียนบริษัท\"\n    },\n    \"ข้อมูลติดต่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อมูลบริษัท เช่น ที่อยู่ เบอร์โทร อีเมล\"\n    },\n    \"ข้อมูลลูกค้า\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"ชื่อลูกค้า\": { \"type\": \"string\" },\n        \"ที่อยู่ลูกค้า\": { \"type\": \"string\" },\n        \"เลขประจำตัวผู้เสียภาษี\": { \"type\": \"string\" }\n      },\n      \"required\": [\"ชื่อลูกค้า\"]\n    },\n    \"รายการสินค้า\": {\n      \"type\": \"array\",\n      \"description\": \"รายการสินค้า/บริการที่แสดงในเอกสาร\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"ชื่อสินค้า\": { \"type\": \"string\" },\n          \"จำนวน\": { \"type\": \"number\" },\n          \"หน่วย\": { \"type\": \"string\" },\n          \"ราคาต่อหน่วย\": { \"type\": \"number\" },\n          \"รวม\": { \"type\": \"number\" }\n        },\n        \"required\": [\"ชื่อสินค้า\", \"จำนวน\", \"ราคาต่อหน่วย\", \"รวม\"]\n      }\n    },\n    \"ส่วนลด\": {\n      \"type\": \"number\",\n      \"description\": \"ส่วนลดทั้งหมดของบิล (ถ้ามี)\"\n    },\n    \"ภาษีมูลค่าเพิ่ม\": {\n      \"type\": \"number\",\n      \"description\": \"จำนวนภาษีมูลค่าเพิ่ม (VAT) ที่คิดจากยอดก่อนรวมสุทธิ\"\n    },\n    \"ยอดชำระรวมทั้งสิ้น\": {\n      \"type\": \"number\",\n      \"description\": \"ยอดสุทธิหลังจากหักส่วนลดและรวม VAT แล้ว\"\n    },\n    \"ผู้จัดทำเอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อผู้รับผิดชอบในการออกเอกสาร\"\n    },\n    \"หมายเหตุเพิ่มเติม\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อความเพิ่มเติม เช่น เงื่อนไขการชำระเงิน, วิธีส่งของ\"\n    }\n  },\n  \"required\": [\n    \"ประเภทเอกสาร\",\n    \"เลขที่เอกสาร\",\n    \"วันที่เอกสาร\",\n    \"ชื่อบริษัท\",\n    \"ข้อมูลติดต่อบริษัท\",\n    \"ข้อมูลลูกค้า\",\n    \"รายการสินค้า\",\n    \"ส่วนลด\",\n    \"ภาษีมูลค่าเพิ่ม\",    \n    \"ยอดชำระรวมทั้งสิ้น\",\n    \"หมายเหตุเพิ่มเติม\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1620,
+        1280
+      ],
+      "id": "8ef3e0ff-9fa3-492b-a6c9-e0025dcb65c0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "### กรณีที่ 3 OCR โดยใช้ MISTRAL OCR",
+        "height": 300,
+        "width": 360,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        1760
+      ],
+      "typeVersion": 1,
+      "id": "69f43a47-b1a0-4c41-ae2a-635663df1e90",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-mistral-ocr.mistralOcr",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        1840
+      ],
+      "id": "708c51be-cd93-41b4-9f7e-706c2954ac52",
+      "name": "Mistral OCR1",
+      "credentials": {
+        "mistralApi": {
+          "id": "aSKI8hLwnrJyOQ6s",
+          "name": "Mistral Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.pages[0].markdown }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ประเภทเอกสาร\": {\n      \"type\": \"string\",\n      \"enum\": [\"ใบเสนอราคา\", \"ใบแจ้งหนี้\", \"ใบเสร็จรับเงิน\", \"ใบสั่งซื้อ\"],\n      \"description\": \"ระบุประเภทของเอกสาร\"\n    },\n    \"เลขที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ของเอกสาร เช่น INV-001, QUO-2025-001\"\n    },\n    \"วันที่เอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"วันที่ออกเอกสาร เช่น '12 มิถุนายน 2568'\"\n    },\n    \"ชื่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อบริษัทผู้ออกเอกสาร\"\n    },\n    \"เลขที่ผู้เสียภาษี\": {\n      \"type\": \"string\",\n      \"description\": \"เลขที่ผู้เสียภาษี หรือเลขทะเบียนบริษัท\"\n    },\n    \"ข้อมูลติดต่อบริษัท\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อมูลบริษัท เช่น ที่อยู่ เบอร์โทร อีเมล\"\n    },\n    \"ข้อมูลลูกค้า\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"ชื่อลูกค้า\": { \"type\": \"string\" },\n        \"ที่อยู่ลูกค้า\": { \"type\": \"string\" },\n        \"เลขประจำตัวผู้เสียภาษี\": { \"type\": \"string\" }\n      },\n      \"required\": [\"ชื่อลูกค้า\"]\n    },\n    \"รายการสินค้า\": {\n      \"type\": \"array\",\n      \"description\": \"รายการสินค้า/บริการที่แสดงในเอกสาร\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"ชื่อสินค้า\": { \"type\": \"string\" },\n          \"จำนวน\": { \"type\": \"number\" },\n          \"หน่วย\": { \"type\": \"string\" },\n          \"ราคาต่อหน่วย\": { \"type\": \"number\" },\n          \"รวม\": { \"type\": \"number\" }\n        },\n        \"required\": [\"ชื่อสินค้า\", \"จำนวน\", \"ราคาต่อหน่วย\", \"รวม\"]\n      }\n    },\n    \"ส่วนลด\": {\n      \"type\": \"number\",\n      \"description\": \"ส่วนลดทั้งหมดของบิล (ถ้ามี)\"\n    },\n    \"ภาษีมูลค่าเพิ่ม\": {\n      \"type\": \"number\",\n      \"description\": \"จำนวนภาษีมูลค่าเพิ่ม (VAT) ที่คิดจากยอดก่อนรวมสุทธิ\"\n    },\n    \"ยอดชำระรวมทั้งสิ้น\": {\n      \"type\": \"number\",\n      \"description\": \"ยอดสุทธิหลังจากหักส่วนลดและรวม VAT แล้ว\"\n    },\n    \"ผู้จัดทำเอกสาร\": {\n      \"type\": \"string\",\n      \"description\": \"ชื่อผู้รับผิดชอบในการออกเอกสาร\"\n    },\n    \"หมายเหตุเพิ่มเติม\": {\n      \"type\": \"string\",\n      \"description\": \"ข้อความเพิ่มเติม เช่น เงื่อนไขการชำระเงิน, วิธีส่งของ\"\n    }\n  },\n  \"required\": [\n    \"ประเภทเอกสาร\",\n    \"เลขที่เอกสาร\",\n    \"วันที่เอกสาร\",\n    \"ชื่อบริษัท\",\n    \"ข้อมูลติดต่อบริษัท\",\n    \"ข้อมูลลูกค้า\",\n    \"รายการสินค้า\",\n    \"ส่วนลด\",\n    \"ภาษีมูลค่าเพิ่ม\",    \n    \"ยอดชำระรวมทั้งสิ้น\",\n    \"หมายเหตุเพิ่มเติม\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        1580,
+        1840
+      ],
+      "id": "b42a8c75-eeca-499a-ad82-76e13b882068",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "content": "### แยกโครงสร้างข้อมูล",
+        "height": 300,
+        "width": 420,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1500,
+        1760
+      ],
+      "typeVersion": 1,
+      "id": "24e30f01-aa9e-4a7a-b900-b95942cc7bb8",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output['รายการสินค้า']",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "output['ประเภทเอกสาร'], output['เลขที่เอกสาร'], output['วันที่เอกสาร'], output['ชื่อบริษัท'], output['เลขที่ผู้เสียภาษี'], output['ข้อมูลติดต่อบริษัท'], output['ข้อมูลลูกค้า'], output['ส่วนลด'], output['ภาษีมูลค่าเพิ่ม'], output['ยอดชำระรวมทั้งสิ้น'], output['ผู้จัดทำเอกสาร'], output['หมายเหตุเพิ่มเติม']",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1840
+      ],
+      "id": "3c0f5481-fa7f-466c-9085-703efab419ff",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "content": "### แยกรายการย่อย",
+        "height": 300,
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1940,
+        1760
+      ],
+      "typeVersion": 1,
+      "id": "1742f6ce-6d44-4013-aa1a-daaea59f48b0",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "pdfName": "image",
+        "keepImages": true
+      },
+      "type": "@cntrlx/n8n-nodes-pdfgenie-pro.pdfkit",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        1840
+      ],
+      "id": "fea4b87c-d084-4fe3-be57-f39ab9740953",
+      "name": "PDFGenie"
+    }
+  ],
+  "pinData": {
+    "Aggregate": [
+      {
+        "json": {
+          "result_text": [
+            "หน้า ๒๔\nเล่ม ๑๓๔ ตอนพิเศษ ๑๖๖\nง\nราชกิจจานุเบกษา\n๑๒ กรกฎาคม ๒๕๖๕\nประกาศกระทรวงการคลัง\nเรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล\n(ฉบับที่ ๓) พ.ศ. ๒๕๖๕\nอาศัยอำานาจตามความในมาตรา ๔ และมาตรา ๒๖ แห่งพระราชกำหนดการประกอบธุรกิจ\nสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ รัฐมนตรีว่าการกระทรวงการคลัง ออกประกาศไว้ ดังต่อไปนี้\nข้อ ๑ ให้เพิ่มความต่อไปนี้เป็น (๑๑) ของบทนิยามคำว่า “ผู้ขอรับใบอนุญาต” ของข้อ ๒\nแห่งประกาศกระทรวงการคลัง เรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑\nลงวันที่ ๑๖ กรกฎาคม พ.ศ. ๒๕๖๑ ซึ่งแก้ไขเพิ่มเติมโดยประกาศกระทรวงการคลัง เรื่อง การอนุญาต\nการประกอบธุรกิจสินทรัพย์ดิจิทัล (ฉบับที่ ๒) พ.ศ. ๒๕๖๓ ลงวันที่ ๑๙ ตุลาคม พ.ศ. ๒๕๖๓\n“(๑๑) การเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัล”\nข้อ ๒ ให้เพิ่มบทนิยามคำว่า “บริษัทหลักทรัพย์” และคำว่า “ธนาคารพาณิชย์” ต่อจาก\nบทนิยามคำว่า “บริษัท” ของข้อ ๒ แห่งประกาศกระทรวงการคลัง เรื่อง การอนุญาตการประกอบ\nธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ ลงวันที่ ๑๖ กรกฎาคม พ.ศ. ๒๕๖๑ ซึ่งแก้ไขเพิ่มเติม\nโดยประกาศกระทรวงการคลัง เรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล (ฉบับที่ ๒) พ.ศ. ๒๕๖๓\nลงวันที่ ๑๙ ตุลาคม พ.ศ. ๒๕๖๓\nแ\n“ “บริษัทหลักทรัพย์” หมายความว่า บริษัทซึ่งได้รับใบอนุญาตให้ประกอบธุรกิจหลักทรัพย์\nตามกฎหมายว่าด้วยหลักทรัพย์และตลาดหลักทรัพย์\n“ธนาคารพาณิชย์” หมายความว่า ธนาคารพาณิชย์ตามกฎหมายว่าด้วยธุรกิจสถาบันการเงิน”\nข้อ ๓ ให้เพิ่มความต่อไปนี้เป็น (ค) และ (ง) ใน (๑) ของข้อ ๓ แห่งประกาศกระทรวงการคลัง\nเรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ ลงวันที่ ๑๖ กรกฎาคม พ.ศ. ๒๕๖๑\n“(ค) ในกรณีที่ขอรับใบอนุญาตประเภทการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัล ผู้ขอรับ\nใบอนุญาตต้องเป็นบริษัทหลักทรัพย์ ธนาคารพาณิชย์ สถาบันการเงินอื่นตามที่คณะกรรมการ ก.ล.ต.\nประกาศกำหนด ศูนย์รับฝากหลักทรัพย์ตามกฎหมายว่าด้วยหลักทรัพย์และตลาดหลักทรัพย์ หรือบริษัท\nที่จัดตั้งขึ้นใหม่เพื่อขอรับใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทการเป็นผู้ให้บริการรับฝาก\nและต้องมิใช่บริษัทที่ได้รับใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทอื่น\nสินทรัพย์ดิจิทัล\n(ง) ในกรณีที่ขอรับใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทอื่นนอกจาก (ค) ผู้ขอรับ\nใบอนุญาตต้องมิใช่บริษัทที่ได้รับใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทการเป็นผู้ให้บริการรับ\nฝากสินทรัพย์ดิจิทัล”\n๔\nข้อ ๔ ให้เพิ่มความต่อไปนี้เป็นวรรคสองใน (๗) ของข้อ ๓ แห่งประกาศกระทรวงการคลัง\nเรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ ลงวันที่ ๑๖ กรกฎาคม พ.ศ. ๒๕๖๑",
+            "เล่ม ๑๓๔ ตอนพิเศษ ๑๖๖ ง\nหน้า ๒๕\nราชกิจจานุเบกษา\n๑๒ กรกฎาคม ๒๕๖๕\n“ความในวรรคหนึ่ง (ง) ให้ใช้บังคับกับผู้ขอรับใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัล\nประเภทการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัล ซึ่งเป็นบริษัทที่จัดตั้งใหม่ในกลุ่มธุรกิจทางการเงิน\nตามกฎหมายว่าด้วยธุรกิจสถาบันการเงินด้วย”\nข้อ ๕ ให้ยกเลิกบัญชีอัตราค่าธรรมเนียมท้ายประกาศกระทรวงการคลัง เรื่อง การอนุญาต\nการประกอบธุรกิจสินทรัพย์ดิจิทัล (ฉบับที่ ๒) พ.ศ. ๒๕๖๓ ลงวันที่ ๑๙ ตุลาคม พ.ศ. ๒๕๖๓\nและให้ใช้บัญชีอัตราค่าธรรมเนียมท้ายประกาศนี้แทน\nข้อ 5 ผู้ให้บริการรับฝากสินทรัพย์ดิจิทัลที่ได้ประกอบธุรกิจอยู่ในวันก่อนวันที่ประกาศนี้\nใช้บังคับ หากประสงค์จะดำเนินกิจการต่อไป ให้ยื่นคำขอรับใบอนุญาตต่อสำนักงาน ก.ล.ต. ตามที่\nกำหนดไว้ในประกาศกระทรวงการคลัง เรื่อง การอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑\nและที่แก้ไขเพิ่มเติม ภายในเก้าสิบวันนับแต่วันที่ประกาศนี้มีผลใช้บังคับ และเมื่อได้ยื่นคำขออนุญาตแล้ว\nให้ดำเนินกิจการต่อไปได้จนกว่าจะมีคำสั่งไม่อนุญาต\nในกรณีที่คณะกรรมการ ก.ล.ต. พิจารณาเห็นว่าผู้ขอรับใบอนุญาตตามวรรคหนึ่งเป็นผู้มี\nคุณสมบัติถูกต้องและครบถ้วนตามที่กำหนดในข้อ ๓ แห่งประกาศกระทรวงการคลัง เรื่อง การอนุญาต\nการประกอบธุรกิจสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ และที่แก้ไขเพิ่มเติม ให้คณะกรรมการ ก.ล.ต.\nเสนอแนะรัฐมนตรีเพื่อพิจารณาอนุญาตภายในหนึ่งร้อยห้าสิบวันนับแต่วันที่สำนักงาน ก.ล.ต. ได้รับคำขอ\nรับใบอนุญาต เอกสารและหลักฐานครบถ้วนตามคู่มือสำหรับประชาชน และให้รัฐมนตรีพิจารณาให้แล้วเสร็จ\nภายในหกสิบวัน นับแต่วันที่ได้รับข้อเสนอแนะของคณะกรรมการ ก.ล.ต.\nเมื่อผู้ขอรับใบอนุญาตได้ดำเนินการตามวรรคหนึ่งแล้ว ให้สำนักงาน ก.ล.ต. ตรวจสอบความพร้อม\nในการประกอบธุรกิจตามข้อ ๗ (๑) แห่งประกาศกระทรวงการคลัง เรื่อง การอนุญาตการประกอบธุรกิจ\nสินทรัพย์ดิจิทัล พ.ศ. ๒๕๖๑ พร้อมกับการพิจารณาให้ใบอนุญาต และเมื่อได้รับใบอนุญาตแล้ว\nให้ผู้ได้รับใบอนุญาตเริ่มประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัลได้\nข้อ ๗ ประกาศนี้ให้ใช้บังคับตั้งแต่วันถัดจากวันประกาศในราชกิจจานุเบกษาเป็นต้นไป\nประกาศ ณ วันที่ ๑๐ มิถุนายน พ.ศ. ๒๕๖๕\nอาคม เติมพิทยาไพสิฐ\nรัฐมนตรีว่าการกระทรวงการคลัง",
+            "บัญชีอัตราค่าธรรมเนียมใบอนุญาตการประกอบธุรกิจสินทรัพย์ดิจิทัล\n๑. ค่าธรรมเนียมคำขอใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัล\n๑.๑ ค่าธรรมเนียมคำขอใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัลประเภทอื่นนอกเหนือจากข้อ ๑.๒ คำขอละ ๓๐,000 บาท\n๑.๒ ค่าธรรมเนียมคำขอใบอนุญาตประกอบธุรกิจการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัล คำขอละ ๕๐,๐๐๐ บาท\n๒. ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจสินทรัพย์ดิจิทัล\n๒.๑ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นศูนย์ซื้อขายสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นศูนย์ซื้อขายคริปโทเคอร์เรนซี\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นศูนย์ อขายโทเคนดิจิทัล\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นนายหน้าซื้อขายคริปโทเคอร์เรนซี\nค่าธรรมเนียมใบอนุญาต\n๒,๕๐๐,๐๐๐ บาท\n๒,๕๐๐,๐๐๐ บาท\n๒.๒ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นนายหน้าซื้อขายสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นนายหน้าซื้อขายโทเคนดิจิทัล\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นนายหน้าซื้อขายคริปโทเคอร์เรนซี หรือ\nการเป็นนายหน้าซื้อขายโทเคนดิจิทัล ที่มีใบอนุญาตประกอบธุรกิจหลักทรัพย์แบบ ก\nหรือ ใบอนุญาตประกอบธุรกิจหลักทรัพย์ประเภทการเป็นนายหน้าซื้อขายหลักทรัพย์\nตามพระราชบัญญัติหลักทรัพย์และตลาดหลักทรัพย์ พ.ศ. ๒๕๓๕ อยู่แล้ว\n๒.๓ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นผู้ค้าสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้ค้าคริปโทเคอร์เรนซี\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้ค้าโทเคนดิจิทัล\nค่าธรรมเนียมใบอนุญาต\n๑,๒๕๐,๐๐๐ บาท\n๑,๒๕๐,๐๐๐ บาท\nไม่มีค่าธรรมเนียม\nค่าธรรมเนียมใบอนุญาต\n9,000,000 บาท\n9,000,000 บาท",
+            "๒.๔ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นผู้จัดการเงินทุนสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้จัดการเงินทุนคริปโทเคอร์เรนซี\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้จัดการเงินทุนโทเคนดิจิทัล\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้จัดการเงินทุนคริปโทเคอร์เรนซี หรือ\nการเป็นผู้จัดการเงินทุนโทเคนดิจิทัล ที่มีใบอนุญาตประกอบธุรกิจหลักทรัพย์แบบ ก\nใบอนุญาตประกอบธุรกิจหลักทรัพย์แบบ ค ใบอนุญาตประกอบธุรกิจหลักทรัพย์ประเภท\nการจัดการกองทุนรวม หรือใบอนุญาตประกอบธุรกิจหลักทรัพย์ประเภทการจัดการกองทุน\nส่วนบุคคล ตามพระราชบัญญัติหลักทรัพย์และตลาดหลักทรัพย์ พ.ศ. ๒๕๓๕ อยู่แล้ว\nค่าธรรมเนียมใบอนุญาต\n๒.๕ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นที่ปรึกษาสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นที่ปรึกษาคริปโทเคอร์เรนซี\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นที่ปรึกษาโทเคนดิจิทัล\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นที่ปรึกษาคริปโทเคอร์เรนซี หรือ การเป็นที่ปรึกษา\nโทเคนดิจิทัล ที่มีใบอนุญาตประกอบธุรกิจหลักทรัพย์แบบ ก ใบอนุญาตประกอบธุรกิจ\nหลักทรัพย์แบบ ฃ ใบอนุญาตประกอบธุรกิจหลักทรัพย์แบบ ค หรือ ใบอนุญาตประกอบ\nธุรกิจหลักทรัพย์ประเภทการเป็นที่ปรึกษาการลงทุน ตามพระราชบัญญัติหลักทรัพย์และ\nตลาดหลักทรัพย์ พ.ศ. ๒๕๓๕ อยู่แล้ว\n๕๐๐,๐๐๐ บาท\n๕๐๐,๐๐๐ บาท\nไม่มีค่าธรรมเนียม\nค่าธรรมเนียมใบอนุญาต\n๑๕,๐๐๐ บาท\n๑๕,๐๐๐ บาท\nไม่มีค่าธรรมเนียม\n๒.๖ ค่าธรรมเนียมใบอนุญาตประกอบธุรกิจการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัลให้เป็นไปตามอัตราดังต่อไปนี้\nผู้ขอรับใบอนุญาต\nผู้ขอรับใบอนุญาตประกอบธุรกิจการเป็นผู้ให้บริการรับฝากสินทรัพย์ดิจิทัล\nค่าธรรมเนียมใบอนุญาต\n9,000,000 บาท"
+          ]
+        }
+      }
+    ],
+    "Google Vision-PDF": [
+      {
+        "json": {
+          "name": "projects/n8n-example-463806/operations/ba5b393b47a775d9"
+        }
+      }
+    ],
+    "Get All Result File": [
+      {
+        "json": {
+          "kind": "storage#objects",
+          "items": [
+            {
+              "kind": "storage#object",
+              "id": "iamaiduck/vision-result//1748477570263860",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/iamaiduck/o/vision-result%2F",
+              "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/iamaiduck/o/vision-result%2F?generation=1748477570263860&alt=media",
+              "name": "vision-result/",
+              "bucket": "iamaiduck",
+              "generation": "1748477570263860",
+              "metageneration": "1",
+              "contentType": "text/plain",
+              "storageClass": "STANDARD",
+              "size": "0",
+              "md5Hash": "1B2M2Y8AsgTpgAmY7PhCfg==",
+              "crc32c": "AAAAAA==",
+              "etag": "CLTW5MOyx40DEAE=",
+              "temporaryHold": false,
+              "eventBasedHold": false,
+              "timeCreated": "2025-05-29T00:12:50.277Z",
+              "updated": "2025-05-29T00:12:50.277Z",
+              "timeStorageClassUpdated": "2025-05-29T00:12:50.277Z",
+              "timeFinalized": "2025-05-29T00:12:50.277Z"
+            },
+            {
+              "kind": "storage#object",
+              "id": "iamaiduck/vision-result/output-1-to-1.json/1751544722056223",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/iamaiduck/o/vision-result%2Foutput-1-to-1.json",
+              "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/iamaiduck/o/vision-result%2Foutput-1-to-1.json?generation=1751544722056223&alt=media",
+              "name": "vision-result/output-1-to-1.json",
+              "bucket": "iamaiduck",
+              "generation": "1751544722056223",
+              "metageneration": "1",
+              "contentType": "application/octet-stream",
+              "storageClass": "STANDARD",
+              "size": "221009",
+              "md5Hash": "VVWrtj6gSVxfepASbJ8T7w==",
+              "crc32c": "axM4Ig==",
+              "etag": "CJ/I3cfUoI4DEAE=",
+              "timeCreated": "2025-07-03T12:12:02.070Z",
+              "updated": "2025-07-03T12:12:02.070Z",
+              "timeStorageClassUpdated": "2025-07-03T12:12:02.070Z",
+              "timeFinalized": "2025-07-03T12:12:02.070Z"
+            },
+            {
+              "kind": "storage#object",
+              "id": "iamaiduck/vision-result/output-2-to-2.json/1751544722404964",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/iamaiduck/o/vision-result%2Foutput-2-to-2.json",
+              "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/iamaiduck/o/vision-result%2Foutput-2-to-2.json?generation=1751544722404964&alt=media",
+              "name": "vision-result/output-2-to-2.json",
+              "bucket": "iamaiduck",
+              "generation": "1751544722404964",
+              "metageneration": "1",
+              "contentType": "application/octet-stream",
+              "storageClass": "STANDARD",
+              "size": "186492",
+              "md5Hash": "f9ZwX6LOrY0WHtGiqHckpQ==",
+              "crc32c": "zi5sOA==",
+              "etag": "COTs8sfUoI4DEAE=",
+              "timeCreated": "2025-07-03T12:12:02.418Z",
+              "updated": "2025-07-03T12:12:02.418Z",
+              "timeStorageClassUpdated": "2025-07-03T12:12:02.418Z",
+              "timeFinalized": "2025-07-03T12:12:02.418Z"
+            },
+            {
+              "kind": "storage#object",
+              "id": "iamaiduck/vision-result/output-3-to-3.json/1751544722075909",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/iamaiduck/o/vision-result%2Foutput-3-to-3.json",
+              "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/iamaiduck/o/vision-result%2Foutput-3-to-3.json?generation=1751544722075909&alt=media",
+              "name": "vision-result/output-3-to-3.json",
+              "bucket": "iamaiduck",
+              "generation": "1751544722075909",
+              "metageneration": "1",
+              "contentType": "application/octet-stream",
+              "storageClass": "STANDARD",
+              "size": "150685",
+              "md5Hash": "4ThOC6uZvHtksGVw9xlDdA==",
+              "crc32c": "llCD9w==",
+              "etag": "CIXi3sfUoI4DEAE=",
+              "timeCreated": "2025-07-03T12:12:02.099Z",
+              "updated": "2025-07-03T12:12:02.099Z",
+              "timeStorageClassUpdated": "2025-07-03T12:12:02.099Z",
+              "timeFinalized": "2025-07-03T12:12:02.099Z"
+            },
+            {
+              "kind": "storage#object",
+              "id": "iamaiduck/vision-result/output-4-to-4.json/1751544722577021",
+              "selfLink": "https://www.googleapis.com/storage/v1/b/iamaiduck/o/vision-result%2Foutput-4-to-4.json",
+              "mediaLink": "https://storage.googleapis.com/download/storage/v1/b/iamaiduck/o/vision-result%2Foutput-4-to-4.json?generation=1751544722577021&alt=media",
+              "name": "vision-result/output-4-to-4.json",
+              "bucket": "iamaiduck",
+              "generation": "1751544722577021",
+              "metageneration": "1",
+              "contentType": "application/octet-stream",
+              "storageClass": "STANDARD",
+              "size": "152039",
+              "md5Hash": "6Is7JXvzc7OXeJ3pzO+1pw==",
+              "crc32c": "avPuNQ==",
+              "etag": "CP2s/cfUoI4DEAE=",
+              "timeCreated": "2025-07-03T12:12:02.589Z",
+              "updated": "2025-07-03T12:12:02.589Z",
+              "timeStorageClassUpdated": "2025-07-03T12:12:02.589Z",
+              "timeFinalized": "2025-07-03T12:12:02.589Z"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Master Config": {
+      "main": [
+        [
+          {
+            "node": "Download PDF(Scan) File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF(Scan) File": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload File To GCS": {
+      "main": [
+        [
+          {
+            "node": "Google Vision-PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Operation": {
+      "main": [
+        [
+          {
+            "node": "Is Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Success": {
+      "main": [
+        [
+          {
+            "node": "Get All Result File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Result File": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Result Json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Result Json": {
+      "main": [
+        [
+          {
+            "node": "Set Result Per Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vision-PDF": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR Google Vision": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-Vision": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Config1": {
+      "main": [
+        [
+          {
+            "node": "Download Image By Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Result Per Page": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "OCR Google Vision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Master Config1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Master Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image By Google Drive": {
+      "main": [
+        [
+          {
+            "node": "GPT-Vision",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "PDFGenie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFGenie": {
+      "main": [
+        [
+          {
+            "node": "Mistral OCR1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral OCR1": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa9255d0-f6d6-4650-9500-36d842e44ac5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "jM4clk3brO8WoKrO",
+  "tags": []
+}

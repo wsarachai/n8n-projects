@@ -1,0 +1,425 @@
+{
+  "name": "USEC19-Gold Price Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        160
+      ],
+      "id": "f5b943ed-e36a-4a37-a942-45422c23a248",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Gk896Oiqx4KohQbl",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data.markdown }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"as_of_date_th\": \"19 สิงหาคม 2568\",\n  \"as_of_date_iso\": \"2025-08-19\",\n  \"source\": \"สมาคมค้าทองคำ (Gold Traders Association, Thailand)\",\n  \"currency\": \"THB\",\n  \"units\": {\n    \"per_baht_bar\": \"บาททองคำ\",\n    \"per_gram\": \"กรัม\"\n  },\n  \"prices\": [\n    {\n      \"category\": \"ทองคำแท่ง\",\n      \"purity_percent\": 96.5,\n      \"sell_thb_per_baht\": 51350.00,\n      \"buy_thb_per_baht\": 51250.00,\n      \"buy_thb_per_gram\": null\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 96.5,\n      \"sell_thb_per_baht\": 52150.00,\n      \"buy_thb_per_baht\": 50225.08,\n      \"buy_thb_per_gram\": 3313.00\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 99.99,\n      \"sell_thb_per_baht\": null,\n      \"buy_thb_per_baht\": 52046.71,\n      \"buy_thb_per_gram\": 3433.16\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 90.0,\n      \"sell_thb_per_baht\": null,\n      \"buy_thb_per_baht\": 45202.57,\n      \"buy_thb_per_gram\": 2981.70\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 80.0,\n      \"sell_thb_per_baht\": null,\n      \"buy_thb_per_baht\": 40180.06,\n      \"buy_thb_per_gram\": 2650.40\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 50.0,\n      \"sell_thb_per_baht\": null,\n      \"buy_thb_per_baht\": 22601.29,\n      \"buy_thb_per_gram\": 1490.85\n    },\n    {\n      \"category\": \"ทองรูปพรรณ\",\n      \"purity_percent\": 40.0,\n      \"sell_thb_per_baht\": null,\n      \"buy_thb_per_baht\": 17578.78,\n      \"buy_thb_per_gram\": 1159.55\n    }\n  ],\n  \"notes\": \"ค่าที่ไม่ระบุให้ใช้ null\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        -96
+      ],
+      "id": "72c19f5a-5ffc-4474-aa14-9405df487970",
+      "name": "Gold Price Extractor",
+      "retryOnFail": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "60c32b87-f002-47a2-8eb3-ef1257a4d0cc",
+              "name": "url_main",
+              "value": "https://xn--42cah7d0cxcvbbb9x.com",
+              "type": "string"
+            },
+            {
+              "id": "640d25cf-c93a-4273-a7f8-e90a70484539",
+              "name": "url_reserve",
+              "value": "https://www.goldtraders.or.th/DailyPrices.aspx",
+              "type": "string"
+            },
+            {
+              "id": "44a51793-36db-413a-aeeb-8a38aafaa120",
+              "name": "google_sheet_link",
+              "value": "=https://docs.google.com/spreadsheets/d/1xg7calbsSGzxp4B6jhXRe8Iu_TtDIbKO-IADdnJ0rhM",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        -96
+      ],
+      "id": "8c24d1e2-3c2d-4887-bef6-b636456a6bfb",
+      "name": "Set Config"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -800,
+        -96
+      ],
+      "id": "4f0e3f3d-87d6-4054-8e34-2bdfd3e1ccd0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Set Config').item.json.google_sheet_link }}",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ชีต1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xg7calbsSGzxp4B6jhXRe8Iu_TtDIbKO-IADdnJ0rhM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "วันที่": "={{ $json.output.as_of_date_th }}",
+            "ทองคำแท่ง 96.5% (ขาย)": "={{ $json.output.prices[0].sell_thb_per_baht }}",
+            "ทองคำแท่ง 96.5% (ซื้อ)": "={{ $json.output.prices[0].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 96.5% (ขาย)": "={{ $json.output.prices[1].sell_thb_per_baht }}",
+            "ทองรูปพรรณ 96.5% (ซื้อ)": "={{ $json.output.prices[1].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 99.99% (ขาย)": "={{ $json.output.prices[2].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 90% (ขาย)": "={{ $json.output.prices[3].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 80% (ขาย)": "={{ $json.output.prices[4].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 50% (ขาย)": "={{ $json.output.prices[5].buy_thb_per_baht }}",
+            "ทองรูปพรรณ 40% (ขาย)": "={{ $json.output.prices[6].buy_thb_per_baht }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "วันที่",
+              "displayName": "วันที่",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ทองคำแท่ง 96.5% (ขาย)",
+              "displayName": "ทองคำแท่ง 96.5% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองคำแท่ง 96.5% (ซื้อ)",
+              "displayName": "ทองคำแท่ง 96.5% (ซื้อ)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 96.5% (ขาย)",
+              "displayName": "ทองรูปพรรณ 96.5% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 96.5% (ซื้อ)",
+              "displayName": "ทองรูปพรรณ 96.5% (ซื้อ)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 99.99% (ขาย)",
+              "displayName": "ทองรูปพรรณ 99.99% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 90% (ขาย)",
+              "displayName": "ทองรูปพรรณ 90% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 80% (ขาย)",
+              "displayName": "ทองรูปพรรณ 80% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 50% (ขาย)",
+              "displayName": "ทองรูปพรรณ 50% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ทองรูปพรรณ 40% (ขาย)",
+              "displayName": "ทองรูปพรรณ 40% (ขาย)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        -96
+      ],
+      "id": "f7a8a838-49ca-41f2-be09-2c3fd8c3c486",
+      "name": "Record Gold Price",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "V96tffmmZdVEeLnH",
+          "name": "Google Sheets Account-XAlpha Training"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "useCustomBody": true,
+        "customBody": "={\n  \"url\": \"{{ $json.url_main }}\",\n  \"formats\": [ \"markdown\" ],\n  \"onlyMainContent\": true,\n  \"parsePDF\": true,\n  \"maxAge\": 14400000\n}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -96
+      ],
+      "id": "fc44d395-2ee8-46a3-8966-4c6c8f95544a",
+      "name": "Get Gold Price Tracker(Main)",
+      "retryOnFail": true,
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "Default",
+        "operation": "Scrape A Url And Get Its Content",
+        "useCustomBody": true,
+        "customBody": "={\n  \"url\": \"{{ $('Set Config').item.json.url_reserve }}\",\n  \"formats\": [ \"markdown\" ],\n  \"onlyMainContent\": true,\n  \"parsePDF\": true,\n  \"maxAge\": 14400000\n}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-firecrawl.fireCrawl",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        160
+      ],
+      "id": "be362eb7-4ea7-4dc5-bc48-11d62e303e27",
+      "name": "Get Gold Price Tracker(Reserve)",
+      "retryOnFail": true,
+      "credentials": {
+        "fireCrawlApi": {
+          "id": "OlPDhjyKm96txA21",
+          "name": "FireCrawl Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ดึงราคาทองคำ",
+        "height": 560,
+        "width": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "4905af60-5f95-44e8-9b17-cdfc90e2f92e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "errorMessage": "=พบข้อผิดพลาดการดึงข้อมูลวันที่ {{ $now }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        480,
+        144
+      ],
+      "id": "8d333dc7-5145-4edf-8602-200fdaffd24d",
+      "name": "Stop and Error"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gold Price Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gold Price Extractor": {
+      "main": [
+        [
+          {
+            "node": "Record Gold Price",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Get Gold Price Tracker(Main)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gold Price Tracker(Main)": {
+      "main": [
+        [
+          {
+            "node": "Gold Price Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Gold Price Tracker(Reserve)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Gold Price Tracker(Reserve)": {
+      "main": [
+        [
+          {
+            "node": "Gold Price Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f0b6da12-788f-4f6e-a8a1-49637398d34d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6c0e9708d6527459504dfe67ce2f0eb2d36ad3965aa79d063680543a510bdd1"
+  },
+  "id": "Qd8kf9hqncFxB6Ri",
+  "tags": []
+}
